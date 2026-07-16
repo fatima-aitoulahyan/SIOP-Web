@@ -1,0 +1,32 @@
+<div class="login-page">
+  <div class="login-container">
+    <div class="logo">
+      <img src="assets/logo-spelev.png" alt="SPELEV Logo" />
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <h2>Connexion</h2>
+      <p class="subtitle">Accédez à votre espace de gestion des ascenseurs</p>
+
+      <div class="form-group">
+        <label for="email">Adresse email</label>
+        <input id="email" type="email" formControlName="email" placeholder="nom@spelev.com" />
+      </div>
+
+      <div class="form-group">
+        <label for="motDePasse">Mot de passe</label>
+        <input id="motDePasse" type="password" formControlName="motDePasse" />
+      </div>
+
+      <div class="forgot-password">Mot de passe oublié ?</div>
+
+      <button type="submit" [disabled]="loginForm.invalid || loading()">
+        {{ loading() ? 'Connexion...' : 'Se connecter' }}
+      </button>
+
+      @if (errorMessage()) {
+        <p class="error">{{ errorMessage() }}</p>
+      }
+    </form>
+  </div>
+</div>

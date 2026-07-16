@@ -1,0 +1,23 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo-card">
+      <img src="/assets/logo-spelev.png" alt="SPELEV" />
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/dashboard/responsable-maintenance" routerLinkActive="active" class="menu-item">
+        Tableau de bord
+      </a>
+      <a routerLink="/ascenseurs" routerLinkActive="active" class="menu-item">Ascenseurs</a>
+      <a routerLink="/sites" routerLinkActive="active" class="menu-item">Sites</a>
+      <a routerLink="/techniciens" routerLinkActive="active" class="menu-item">Techniciens</a>
+      <a routerLink="/interventions" routerLinkActive="active" class="menu-item">Interventions</a>
+    </nav>
+
+    <button type="button" class="btn-deconnexion" (click)="deconnexion()">Déconnexion</button>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

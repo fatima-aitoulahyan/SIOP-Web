@@ -1,0 +1,13 @@
+<form class="assemblage-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input type="text" placeholder="Nom de la zone/sous-ensemble" formControlName="nom" />
+  <input type="text" placeholder="Description (optionnel)" formControlName="description" />
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  <div class="btns">
+    <button type="submit" [disabled]="form.invalid || loading()">Ajouter</button>
+    <button type="button" (click)="cancelled.emit()">Annuler</button>
+  </div>
+</form>

@@ -1,0 +1,109 @@
+<div class="dashboard-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo-box">
+      <img src="assets/logo-spelev.png" alt="SPELEV" />
+    </div>
+
+    <nav class="nav-menu">
+      <a routerLink="/dashboard/admin" routerLinkActive="active" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Tableau de bord
+      </a>
+      <a routerLink="/utilisateurs" routerLinkActive="active" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Utilisateurs
+      </a>
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Déconnexion
+    </button>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <h1>Tableau de bord</h1>
+        <p class="subtitle">Vue d'ensemble de la plateforme SIOP</p>
+      </div>
+      <a routerLink="/utilisateurs/creer" class="btn-add">+ Nouvel utilisateur</a>
+    </header>
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+
+    @if (loading()) {
+      <p class="loading">Chargement...</p>
+    } @else {
+      <!-- Stat cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total utilisateurs</span>
+          <span class="stat-value">{{ totalUtilisateurs() }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Comptes actifs</span>
+          <span class="stat-value stat-green">{{ utilisateursActifs() }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Techniciens</span>
+          <span class="stat-value">{{ totalTechniciens() }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Clients</span>
+          <span class="stat-value">{{ totalClients() }}</span>
+        </div>
+      </div>
+
+      <!-- Derniers utilisateurs -->
+      <div class="recent-card">
+        <div class="recent-header">
+          <h2>Derniers utilisateurs créés</h2>
+          <a routerLink="/utilisateurs" class="link-all">Voir tous →</a>
+        </div>
+
+        @if (derniersUtilisateurs().length > 0) {
+          <table>
+            <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Type</th>
+              <th>Statut</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (u of derniersUtilisateurs(); track u.id) {
+                <tr>
+                  <td>{{ u.prenom }} {{ u.nom }}</td>
+                  <td>{{ u.email }}</td>
+                  <td>{{ u.type }}</td>
+                  <td>
+                    <span class="badge" [class.badge-actif]="u.actif" [class.badge-inactif]="!u.actif">
+                      {{ u.actif ? 'Actif' : 'Inactif' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p class="empty">Aucun utilisateur pour le moment.</p>
+        }
+      </div>
+    }
+  </main>
+</div>

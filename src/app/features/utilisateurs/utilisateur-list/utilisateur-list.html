@@ -1,0 +1,57 @@
+<div class="page-wrapper">
+  <div class="list-card">
+    <div class="card-header">
+      <div>
+        <h2>Utilisateurs</h2>
+        <p class="subtitle">Gérez les comptes de la plateforme SIOP</p>
+      </div>
+      <a routerLink="/utilisateurs/creer" class="btn-add">+ Nouvel utilisateur</a>
+    </div>
+
+    @if (loading()) {
+      <p class="loading">Chargement...</p>
+    }
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+
+    @if (!loading() && utilisateurs().length > 0) {
+      <table>
+        <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Type</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (u of utilisateurs(); track u.id) {
+            <tr>
+              <td>{{ u.prenom }} {{ u.nom }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ labels[u.type] }}</td>
+              <td>
+                <span class="badge" [class.badge-actif]="u.actif" [class.badge-inactif]="!u.actif">
+                  {{ u.actif ? 'Actif' : 'Inactif' }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                @if (u.actif) {
+                  <button class="btn-link" (click)="desactiver(u.id)">Désactiver</button>
+                }
+                <button class="btn-link btn-danger" (click)="supprimer(u.id)">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && utilisateurs().length === 0) {
+      <p class="empty">Aucun utilisateur pour le moment.</p>
+    }
+  </div>
+</div>
