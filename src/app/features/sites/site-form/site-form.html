@@ -1,0 +1,93 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    <div class="card-header">
+      <h2>{{ modeEdition() ? 'Modifier le site' : 'Nouveau site' }}</h2>
+      <p class="subtitle">
+        {{ modeEdition() ? 'Mettre à jour les informations de ce site client.' : 'Renseignez les informations du nouveau site.' }}
+      </p>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="soumettre()">
+      <p class="section-title">Client</p>
+
+      <div class="form-group">
+        <label for="clientId">Client</label>
+        <div class="input-wrapper select-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <select id="clientId" formControlName="clientId">
+            <option [ngValue]="null">-- Sélectionner un client --</option>
+            @for (client of clients; track client.id) {
+              <option [ngValue]="client.id">{{ libelleClient(client) }}</option>
+            }
+          </select>
+        </div>
+        @if (modeEdition()) {
+          <span class="champ-erreur" style="color:#8a8f98;">Le client d'un site existant ne peut pas être modifié.</span>
+        } @else if (form.controls.clientId.touched && form.controls.clientId.invalid) {
+          <span class="champ-erreur">Le client est obligatoire.</span>
+        }
+      </div>
+
+      <p class="section-title">Localisation</p>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="ville">Ville</label>
+          <div class="input-wrapper select-wrapper">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 21h18M6 21V8l6-4 6 4v13M9 21v-6h6v6" />
+            </svg>
+            <select id="ville" formControlName="ville">
+              <option [ngValue]="null" disabled>Sélectionner une ville</option>
+              @for (v of villes; track v) {
+                <option [ngValue]="v">{{ villeLabels[v] }}</option>
+              }
+            </select>
+          </div>
+          @if (form.controls.ville.touched && form.controls.ville.invalid) {
+            <span class="champ-erreur">La ville est obligatoire.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="codePostal">Code postal</label>
+          <div class="input-wrapper">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 7l9 6 9-6" />
+            </svg>
+            <input id="codePostal" type="text" formControlName="codePostal" placeholder="Ex. 80000" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="adresse">Adresse</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0Z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <input id="adresse" type="text" formControlName="adresse" placeholder="Ex. 12 rue des Fleurs" />
+        </div>
+        @if (form.controls.adresse.touched && form.controls.adresse.invalid) {
+          <span class="champ-erreur">L'adresse est obligatoire.</span>
+        }
+      </div>
+
+      <div class="actions">
+        <a routerLink="/sites" class="btn-secondary">Annuler</a>
+        <button type="submit" [disabled]="envoiEnCours()">
+          {{ envoiEnCours() ? 'Enregistrement…' : (modeEdition() ? 'Enregistrer' : 'Créer le site') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+@if (ascenseur(); as a) {
+  <div class="ascenseur-detail">
+    <div class="header">
+      <h2>{{ a.nom }}</h2>
+      <a [routerLink]="['/ascenseurs', a.id, 'modifier']">Modifier</a>
+    </div>
+
+    <div class="tabs">
+      <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">Informations</button>
+      <button [class.active]="activeTab() === 'arborescence'" (click)="activeTab.set('arborescence')">
+        Arborescence (Assemblages & Composants)
+      </button>
+    </div>
+
+    @if (activeTab() === 'info') {
+      <div class="info-panel">
+        <p><strong>Fabricant :</strong> {{ a.fabricant }}</p>
+        <p><strong>Modèle :</strong> {{ a.modele }}</p>
+        <p><strong>Numéro de série :</strong> {{ a.numeroSerie }}</p>
+        <p><strong>Code-barre :</strong> {{ a.codeBarre }}</p>
+        <p><strong>Puissance :</strong> {{ a.puissance }}</p>
+        <p><strong>Client :</strong> {{ a.clientNomEntreprise }}</p>
+        <p><strong>Coût d'acquisition :</strong> {{ a.coutAcquisition }} MAD</p>
+        <p><strong>Mise en service :</strong> {{ a.dateMiseEnService }}</p>
+        <p><strong>Garantie jusqu'au :</strong> {{ a.dateExpirationGarantie }}</p>
+        <p><strong>Description :</strong> {{ a.description }}</p>
+      </div>
+    }
+
+    @if (activeTab() === 'arborescence') {
+      <div class="arborescence-panel">
+        <button class="btn-primary" (click)="showFormRacine.set(true)">
+          + Ajouter une zone principale
+        </button>
+
+        @if (showFormRacine()) {
+          <app-assemblage-form
+            [ascenseurId]="ascenseurId"
+            [niveau]="1"
+            [parentId]="null"
+            (created)="onZoneRacineAjoutee()"
+            (cancelled)="showFormRacine.set(false)" />
+        }
+
+        @if (arbre().length === 0) {
+          <p class="empty">Aucune zone définie. Commence par ajouter une zone principale.</p>
+        } @else {
+          <div class="tree">
+            @for (node of arbre(); track node.id) {
+              <app-assemblage-tree-node
+                [node]="node"
+                [ascenseurId]="ascenseurId"
+                (changed)="chargerArbre()" />
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

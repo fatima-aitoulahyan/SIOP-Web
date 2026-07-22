@@ -1,0 +1,39 @@
+<div class="tree-node" [style.marginLeft.px]="(node.niveau - 1) * 20">
+  <div class="node-header">
+    <button class="toggle" (click)="toggle()">{{ expanded() ? '▾' : '▸' }}</button>
+    <span class="nom">{{ node.nom }}</span>
+    <span class="niveau">niveau {{ node.niveau }}</span>
+
+    <div class="actions">
+      <button (click)="showSousZoneForm.set(!showSousZoneForm())">+ Sous-zone</button>
+      <button (click)="showComposants.set(!showComposants())">
+        {{ showComposants() ? 'Masquer' : 'Voir' }} composants
+      </button>
+      <button class="danger" (click)="onSupprimer()">Supprimer</button>
+    </div>
+  </div>
+
+  @if (showSousZoneForm()) {
+    <app-assemblage-form
+      [ascenseurId]="ascenseurId"
+      [niveau]="node.niveau + 1"
+      [parentId]="node.id"
+      (created)="onSousZoneAjoutee()"
+      (cancelled)="showSousZoneForm.set(false)" />
+  }
+
+  @if (showComposants()) {
+    <app-composant-list [assemblageId]="node.id" [assemblageNom]="node.nom" />
+  }
+
+  @if (expanded() && node.sousAssemblages?.length) {
+    <div class="children">
+      @for (child of node.sousAssemblages; track child.id) {
+        <app-assemblage-tree-node
+          [node]="child"
+          [ascenseurId]="ascenseurId"
+          (changed)="changed.emit()" />
+      }
+    </div>
+  }
+</div>

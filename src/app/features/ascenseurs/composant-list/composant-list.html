@@ -1,0 +1,43 @@
+<div class="composant-list">
+  <div class="header">
+    <h4>Composants — {{ assemblageNom }}</h4>
+    <button (click)="showForm.set(!showForm())">+ Ajouter un composant</button>
+  </div>
+
+  @if (showForm()) {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="composant-form">
+      <input type="text" placeholder="Nom" formControlName="nom" />
+      <input type="text" placeholder="Référence" formControlName="reference" />
+      <select formControlName="type">
+        @for (t of types; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+      <input type="text" placeholder="Fabricant" formControlName="fabricant" />
+      <input type="date" formControlName="dateInstallation" />
+      <input type="number" placeholder="Durée de vie (mois)" formControlName="dureeVieEstimeeMois" />
+      <button type="submit" [disabled]="form.invalid || loading()">Enregistrer</button>
+    </form>
+  }
+
+  @if (composants().length === 0) {
+    <p class="empty">Aucun composant pour cette zone.</p>
+  } @else {
+    <table>
+      <thead>
+      <tr><th>Nom</th><th>Référence</th><th>Type</th><th>Fabricant</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (c of composants(); track c.id) {
+          <tr>
+            <td>{{ c.nom }}</td>
+            <td>{{ c.reference }}</td>
+            <td>{{ c.type }}</td>
+            <td>{{ c.fabricant }}</td>
+            <td><button class="danger" (click)="onSupprimer(c.id)">Supprimer</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

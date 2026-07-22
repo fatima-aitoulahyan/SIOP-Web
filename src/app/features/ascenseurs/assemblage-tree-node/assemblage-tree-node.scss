@@ -1,0 +1,33 @@
+.tree-node {
+  margin-top: 0.5rem;
+  border-left: 2px solid #e0e0e0;
+  padding-left: 0.8rem;
+
+  .node-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0;
+
+    .toggle { background: none; border: none; cursor: pointer; font-size: 0.9rem; }
+    .nom { font-weight: 500; }
+    .niveau { font-size: 0.75rem; color: #999; }
+
+    .actions {
+      margin-left: auto;
+      display: flex;
+      gap: 0.4rem;
+
+      button {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border: 1px solid #ccc;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &.danger { color: #d32f2f; border-color: #d32f2f; }
+      }
+    }
+  }
+}

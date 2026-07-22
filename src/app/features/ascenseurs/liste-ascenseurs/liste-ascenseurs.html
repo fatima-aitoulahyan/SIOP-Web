@@ -1,0 +1,57 @@
+<div class="page-wrapper">
+  <div class="list-card">
+    <div class="card-header">
+      <div>
+        <h2>Ascenseurs</h2>
+        <p class="subtitle">{{ ascenseurs().length }} ascenseur(s) enregistré(s)</p>
+      </div>
+      <a routerLink="/ascenseurs/nouveau" class="btn-primary">+ Nouvel ascenseur</a>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement des ascenseurs…</p>
+    } @else if (ascenseurs().length === 0) {
+      <div class="etat-vide">
+        <p>Aucun ascenseur enregistré pour le moment.</p>
+        <a routerLink="/ascenseurs/nouveau" class="btn-primary">Créer le premier ascenseur</a>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Fabricant</th>
+            <th>Client</th>
+            <th>Site</th>
+            <th>Statut</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (ascenseur of ascenseurs(); track ascenseur.id) {
+              <tr>
+                <td>{{ ascenseur.nom }}</td>
+                <td>{{ ascenseur.fabricant }}</td>
+                <td>{{ ascenseur.clientNomEntreprise || '—' }}</td>
+                <td>{{ ascenseur.siteAdresse || '—' }}</td>
+                <td>
+                  <span class="badge" [class.badge-actif]="ascenseur.actif">
+                    {{ ascenseur.actif ? 'Actif' : 'Inactif' }}
+                  </span>
+                </td>
+                <td class="col-actions">
+                  <a [routerLink]="['/ascenseurs', ascenseur.id]" class="lien-action">Voir la fiche</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

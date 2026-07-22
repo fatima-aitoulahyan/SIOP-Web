@@ -1,0 +1,28 @@
+.assemblage-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.6rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  flex-wrap: wrap;
+
+  input {
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .error { color: #d32f2f; width: 100%; margin: 0; }
+
+  .btns button {
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+
+    &[type="submit"] { background: #1976d2; color: white; }
+    &[type="button"] { background: #eee; }
+  }
+}
