@@ -1,34 +1,42 @@
 import { Component, Input, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AssemblageService } from '../services/assemblage';
-import { TypeAssemblage } from '../../../core/models/assemblage.model';
+import { ComposantService } from '../services/composant';
+import { TypeComposant } from '../../../core/models/composant.model';
 
 @Component({
-  selector: 'app-assemblage-form',
+  selector: 'app-composant-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './assemblage-form.html',
-  styleUrl: './assemblage-form.scss',
+  templateUrl: './composant-form.html',
+  styleUrl: './composant-form.scss',
 })
-export class AssemblageFormComponent {
-  @Input({ required: true }) ascenseurId!: number;
-  @Input() parentId: number | null = null;
+export class ComposantFormComponent {
+  @Input({ required: true }) assemblageId!: number;
   @Output() created = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
 
   private fb = inject(FormBuilder);
-  private assemblageService = inject(AssemblageService);
+  private composantService = inject(ComposantService);
 
   loading = signal(false);
   errorMessage = signal<string | null>(null);
 
-  types: TypeAssemblage[] = ['CABINE', 'GAINE', 'MACHINERIE', 'PORTE', 'ELECTRIQUE', 'AUTRE'];
+  types: TypeComposant[] = [
+    'MOTEUR',
+    'FREIN',
+    'CABLE',
+    'CABINE',
+    'PORTE',
+    'CONTROLEUR',
+    'CAPTEUR',
+    'AUTRE',
+  ];
 
   form = this.fb.group({
     nom: ['', Validators.required],
     reference: ['', Validators.required],
-    type: ['CABINE' as TypeAssemblage, Validators.required],
+    type: ['MOTEUR' as TypeComposant, Validators.required],
     fabricant: [''],
     dateInstallation: [''],
     dureeVieEstimeeMois: [null as number | null],
@@ -40,7 +48,7 @@ export class AssemblageFormComponent {
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    this.assemblageService
+    this.composantService
       .creer({
         nom: this.form.value.nom!,
         reference: this.form.value.reference!,
@@ -48,8 +56,7 @@ export class AssemblageFormComponent {
         fabricant: this.form.value.fabricant || undefined,
         dateInstallation: this.form.value.dateInstallation || undefined,
         dureeVieEstimeeMois: this.form.value.dureeVieEstimeeMois ?? undefined,
-        ascenseurId: this.ascenseurId,
-        parentId: this.parentId ?? undefined,
+        assemblageId: this.assemblageId,
       })
       .subscribe({
         next: () => {

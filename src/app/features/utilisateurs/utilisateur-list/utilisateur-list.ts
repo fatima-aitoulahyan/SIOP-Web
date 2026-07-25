@@ -1,6 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { UtilisateurService } from '../services/utilisateur';
 import {
   UtilisateurResponseDTO,
@@ -10,7 +11,7 @@ import {
 @Component({
   selector: 'app-utilisateur-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './utilisateur-list.html',
   styleUrl: './utilisateur-list.scss',
 })
@@ -21,6 +22,41 @@ export class UtilisateurList implements OnInit {
   loading = signal(false);
   errorMessage = signal<string | null>(null);
   labels = TYPE_UTILISATEUR_LABELS;
+
+  // ---- Recherche / filtre ----
+  recherche = signal('');
+  filtreType = signal<string>('TOUS');
+  filtreStatut = signal<'TOUS' | 'ACTIF' | 'INACTIF'>('TOUS');
+
+  typesDisponibles = computed(() => {
+    const types = this.utilisateurs()
+      .map((u) => u.type)
+      .filter(Boolean);
+    return Array.from(new Set(types));
+  });
+
+  utilisateursFiltres = computed(() => {
+    const terme = this.recherche().trim().toLowerCase();
+    const type = this.filtreType();
+    const statut = this.filtreStatut();
+
+    return this.utilisateurs().filter((u) => {
+      const matchType = type === 'TOUS' || u.type === type;
+      if (!matchType) return false;
+
+      const matchStatut =
+        statut === 'TOUS' || (statut === 'ACTIF' && u.actif) || (statut === 'INACTIF' && !u.actif);
+      if (!matchStatut) return false;
+
+      if (!terme) return true;
+
+      return (
+        u.nom?.toLowerCase().includes(terme) ||
+        u.prenom?.toLowerCase().includes(terme) ||
+        u.email?.toLowerCase().includes(terme)
+      );
+    });
+  });
 
   ngOnInit() {
     this.charger();

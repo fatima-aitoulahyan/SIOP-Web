@@ -11,6 +11,7 @@ export interface AscenseurCreateDTO {
   description?: string;
   coutAcquisition?: number;
   fabricant: string;
+  marque: string;
   modele?: string;
   numeroSerie?: string;
   codeBarre?: string;
@@ -27,9 +28,11 @@ export interface AscenseurCreateDTO {
 
 export interface AscenseurUpdateDTO {
   nom: string;
+  siteId: number;
   description?: string;
   coutAcquisition?: number;
   fabricant: string;
+  marque: string;
   modele?: string;
   numeroSerie?: string;
   codeBarre?: string;
@@ -50,6 +53,7 @@ export interface AscenseurDTO {
   description?: string;
   coutAcquisition?: number;
   fabricant: string;
+  marque: string;
   modele?: string;
   numeroSerie?: string;
   codeBarre?: string;
@@ -63,13 +67,16 @@ export interface AscenseurDTO {
   dateExpirationGarantie?: string;
   informationsSupplementaires?: string;
   actif: boolean;
+
   clientId: number;
+  clientNom?: string;
+  clientPrenom?: string;
   clientNomEntreprise?: string;
+
   siteId: number;
   siteAdresse?: string;
   piecesJointes?: PieceJointeDTO[];
 }
-
 export interface PieceJointeDTO {
   id: number;
   nomFichier: string;

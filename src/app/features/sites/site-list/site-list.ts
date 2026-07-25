@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { SiteDTO } from '../../../core/models/site.model';
 import { SiteService } from '../services/site';
 
 @Component({
   selector: 'app-site-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './site-list.html',
   styleUrls: ['../site-theme.css', './site-list.scss'],
 })
@@ -19,6 +20,37 @@ export class SiteListComponent implements OnInit {
   erreur = signal<string | null>(null);
   siteASupprimer = signal<SiteDTO | null>(null);
   suppressionEnCours = signal(false);
+
+  // ---- Recherche / filtre ----
+  recherche = signal('');
+  filtreVille = signal<string>('TOUTES');
+
+  villesDisponibles = computed(() => {
+    const noms = this.sites()
+      .map((s) => s.villeNom)
+      .filter(Boolean);
+    return Array.from(new Set(noms)).sort();
+  });
+
+  sitesFiltres = computed(() => {
+    const terme = this.recherche().trim().toLowerCase();
+    const ville = this.filtreVille();
+
+    return this.sites().filter((s) => {
+      const matchVille = ville === 'TOUTES' || s.villeNom === ville;
+      if (!matchVille) return false;
+
+      if (!terme) return true;
+
+      return (
+        s.adresse?.toLowerCase().includes(terme) ||
+        s.villeNom?.toLowerCase().includes(terme) ||
+        s.zone?.toLowerCase().includes(terme) ||
+        s.clientNom?.toLowerCase().includes(terme) ||
+        s.codePostal?.toLowerCase().includes(terme)
+      );
+    });
+  });
 
   ngOnInit(): void {
     this.charger();

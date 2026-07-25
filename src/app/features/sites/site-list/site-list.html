@@ -3,9 +3,31 @@
     <div class="card-header">
       <div>
         <h2>Sites clients</h2>
-        <p class="subtitle">{{ sites().length }} site(s) enregistré(s)</p>
+        <p class="subtitle">{{ sitesFiltres().length }} / {{ sites().length }} site(s)</p>
       </div>
       <a routerLink="/sites/nouveau" class="btn-primary">+ Nouveau site</a>
+    </div>
+
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Rechercher par adresse, ville, zone, client..."
+          [ngModel]="recherche()"
+          (ngModelChange)="recherche.set($event)"
+        />
+      </div>
+
+      <select [ngModel]="filtreVille()" (ngModelChange)="filtreVille.set($event)">
+        <option value="TOUTES">Toutes les villes</option>
+        @for (ville of villesDisponibles(); track ville) {
+          <option [value]="ville">{{ ville }}</option>
+        }
+      </select>
     </div>
 
     @if (erreur()) {
@@ -19,6 +41,10 @@
         <p>Aucun site enregistré pour le moment.</p>
         <a routerLink="/sites/nouveau" class="btn-primary">Créer le premier site</a>
       </div>
+    } @else if (sitesFiltres().length === 0) {
+      <div class="etat-vide">
+        <p>Aucun site ne correspond à votre recherche.</p>
+      </div>
     } @else {
       <div class="table-wrapper">
         <table>
@@ -26,20 +52,21 @@
           <tr>
             <th>Adresse</th>
             <th>Ville</th>
+            <th>Zone</th>
             <th>Code postal</th>
             <th>Client</th>
             <th class="col-actions">Actions</th>
           </tr>
           </thead>
           <tbody>
-            @for (site of sites(); track site.id) {
+            @for (site of sitesFiltres(); track site.id) {
               <tr>
                 <td>{{ site.adresse }}</td>
                 <td>{{ site.villeNom }}</td>
+                <td>{{ site.zone || '—'}}</td>
                 <td>{{ site.codePostal || '—' }}</td>
                 <td>{{ site.clientNom }}</td>
                 <td class="col-actions">
-                  <a [routerLink]="['/sites', site.id]" class="lien-action">Détail</a>
                   <a [routerLink]="['/sites', site.id, 'modifier']" class="lien-action">Modifier</a>
                   <button type="button" class="lien-action lien-danger" (click)="demanderSuppression(site)">
                     Supprimer

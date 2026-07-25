@@ -28,4 +28,10 @@ export class ComposantService {
   supprimer(id: number) {
     return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
   }
+
+  uploaderImage(id: number, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ApiResponse<Composant>>(`${this.baseUrl}/${id}/image`, formData);
+  }
 }

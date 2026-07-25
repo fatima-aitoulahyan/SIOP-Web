@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { VilleDTO } from '../../../core/models/site.model';
 import { UtilisateurResponseDTO } from '../../../core/models/utilisateur.model';
 import { SiteService } from '../services/site';
+import { VilleService } from '../services/ville.service';
 import { UtilisateurService } from '../../utilisateurs/services/utilisateur';
 
 @Component({
@@ -18,12 +18,10 @@ import { UtilisateurService } from '../../utilisateurs/services/utilisateur';
 export class SiteFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private siteService = inject(SiteService);
+  private villeService = inject(VilleService);
   private utilisateurService = inject(UtilisateurService);
-  private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-
-  private readonly villesUrl = '/api/referentiel/villes';
 
   modeEdition = signal(false);
   siteId = signal<number | null>(null);
@@ -38,6 +36,16 @@ export class SiteFormComponent implements OnInit {
     villeId: [null as number | null, Validators.required],
     adresse: ['', Validators.required],
     codePostal: [''],
+    zone: [''],
+  });
+
+  // ---- Modale "Nouvelle ville" ----
+  showVilleModal = signal(false);
+  creatingVille = signal(false);
+  villeModalError = signal<string | null>(null);
+
+  villeForm = this.fb.nonNullable.group({
+    nom: ['', Validators.required],
   });
 
   ngOnInit(): void {
@@ -57,6 +65,7 @@ export class SiteFormComponent implements OnInit {
             clientId: site.clientId,
             adresse: site.adresse,
             codePostal: site.codePostal ?? '',
+            zone: site.zone ?? '',
           });
         },
         error: () => this.erreur.set('Impossible de charger le site demandé.'),
@@ -65,7 +74,7 @@ export class SiteFormComponent implements OnInit {
   }
 
   private chargerVilles(): void {
-    this.http.get<VilleDTO[]>(this.villesUrl).subscribe({
+    this.villeService.listerTous().subscribe({
       next: (villes) => this.villes.set(villes),
       error: () => this.erreur.set('Impossible de charger la liste des villes.'),
     });
@@ -79,6 +88,40 @@ export class SiteFormComponent implements OnInit {
       error: (err) => {
         console.error('Erreur lors du chargement des clients', err);
         this.erreur.set('Impossible de charger la liste des clients.');
+      },
+    });
+  }
+
+
+  ouvrirModalVille(): void {
+    this.villeModalError.set(null);
+    this.villeForm.reset();
+    this.showVilleModal.set(true);
+  }
+
+  fermerModalVille(): void {
+    this.showVilleModal.set(false);
+  }
+
+  onSubmitVille(): void {
+    if (this.villeForm.invalid) {
+      this.villeForm.markAllAsTouched();
+      return;
+    }
+
+    this.creatingVille.set(true);
+    this.villeModalError.set(null);
+
+    this.villeService.creer(this.villeForm.getRawValue()).subscribe({
+      next: (nouvelleVille) => {
+        this.creatingVille.set(false);
+        this.villes.set([...this.villes(), nouvelleVille]);
+        this.form.patchValue({ villeId: nouvelleVille.id });
+        this.showVilleModal.set(false);
+      },
+      error: (err) => {
+        this.creatingVille.set(false);
+        this.villeModalError.set(err?.error?.message ?? 'Erreur lors de la création de la ville.');
       },
     });
   }
@@ -99,6 +142,7 @@ export class SiteFormComponent implements OnInit {
           villeId: valeurs.villeId ?? undefined,
           adresse: valeurs.adresse,
           codePostal: valeurs.codePostal || null,
+          zone: valeurs.zone || undefined,
         })
         .subscribe({
           next: () => this.router.navigate(['/sites']),
@@ -114,6 +158,7 @@ export class SiteFormComponent implements OnInit {
           villeId: valeurs.villeId!,
           adresse: valeurs.adresse,
           codePostal: valeurs.codePostal || null,
+          zone: valeurs.zone || undefined,
         })
         .subscribe({
           next: () => this.router.navigate(['/sites']),

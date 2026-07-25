@@ -1,19 +1,18 @@
 <div class="login-page">
-  <div class="logo-card">
-    <img src="assets/logo-spelev.png" alt="SPELEV Logo" />
-  </div>
-  <div class="tagline">ELEVATOR &amp; INDUSTRY</div>
-
   <div class="login-container">
+    <div class="logo">
+      <img src="assets/logo-spelev.png" alt="SPELEV Logo" />
+    </div>
+
     @if (successMessage()) {
       <p class="success">{{ successMessage() }}</p>
     } @else if (!token()) {
       <p class="error">{{ errorMessage() }}</p>
     } @else {
-      <h2>Activation du compte</h2>
-      <p class="subtitle">Définissez votre mot de passe pour activer votre compte</p>
-
       <form [formGroup]="activationForm" (ngSubmit)="onSubmit()">
+        <h2>Activation du compte</h2>
+        <p class="subtitle">Définissez votre mot de passe pour activer votre compte</p>
+
         <div class="form-group">
           <label for="motDePasse">Nouveau mot de passe</label>
           <div class="input-wrapper">

@@ -37,4 +37,7 @@ export class AscenseurService {
   supprimer(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
   }
+  basculerStatut(id: number): Observable<ApiResponse<AscenseurDTO>> {
+    return this.http.patch<ApiResponse<AscenseurDTO>>(`${this.baseUrl}/${id}/statut`, {});
+  }
 }

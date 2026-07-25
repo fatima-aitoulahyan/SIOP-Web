@@ -28,6 +28,13 @@ export class AssemblageService {
     );
   }
 
+  genererArborescence(ascenseurId: number) {
+    return this.http.post<ApiResponse<void>>(
+      `${this.baseUrl}/ascenseur/${ascenseurId}/generer`,
+      {},
+    );
+  }
+
   creer(dto: AssemblageCreateDTO) {
     return this.http.post<ApiResponse<Assemblage>>(this.baseUrl, dto);
   }
@@ -38,5 +45,11 @@ export class AssemblageService {
 
   supprimer(id: number) {
     return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
+  }
+
+  uploaderImage(id: number, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ApiResponse<Assemblage>>(`${this.baseUrl}/${id}/image`, formData);
   }
 }

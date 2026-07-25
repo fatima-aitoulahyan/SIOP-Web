@@ -1,29 +1,17 @@
-import { Routes } from '@angular/router';
+import { ResponsableLayout } from './core/layout/responsable-layout/responsable-layout';
 import { authGuard } from './core/auth/auth-guard';
 import { roleGuard } from './core/auth/role-guard';
-import { ResponsableLayout } from './core/layout/responsable-layout/responsable-layout';
+import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then((m) => m.LoginComponent),
   },
-
   {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
-  },
-  {
-    path: 'utilisateurs',
-    loadChildren: () =>
-      import('./features/utilisateurs/utilisateurs.routes').then((m) => m.UTILISATEURS_ROUTES),
-  },
-  {
-    path: 'dashboard/admin',
-    loadComponent: () =>
-      import('./features/dashboard/dashboard-admin/dashboard-admin').then((m) => m.DashboardAdmin),
-    canActivate: [roleGuard(['ADMINISTRATEUR'])],
   },
   {
     path: 'activation-compte',
@@ -33,6 +21,29 @@ export const routes: Routes = [
       ),
   },
 
+  // ---- Espace Admin ----
+  {
+    path: '',
+    loadComponent: () =>
+      import('./core/layout/admin-layout/admin-layout').then((m) => m.AdminLayoutComponent),
+    canActivate: [authGuard, roleGuard(['ADMINISTRATEUR'])],
+    children: [
+      {
+        path: 'dashboard/admin',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard-admin/dashboard-admin').then(
+            (m) => m.DashboardAdmin,
+          ),
+      },
+      {
+        path: 'utilisateurs',
+        loadChildren: () =>
+          import('./features/utilisateurs/utilisateurs.routes').then((m) => m.UTILISATEURS_ROUTES),
+      },
+    ],
+  },
+
+  // ---- Espace Responsable maintenance ----
   {
     path: '',
     component: ResponsableLayout,

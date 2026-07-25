@@ -1,57 +1,146 @@
 @if (ascenseur(); as a) {
   <div class="ascenseur-detail">
     <div class="header">
-      <h2>{{ a.nom }}</h2>
-      <a [routerLink]="['/ascenseurs', a.id, 'modifier']">Modifier</a>
+      <div>
+        <h1>{{ a.nom }}</h1>
+        <p class="subtitle">{{ a.clientNomEntreprise }}</p>
+      </div>
+      <div class="header-actions">
+        <span class="badge" [class.badge-actif]="a.actif">
+          {{ a.actif ? 'Actif' : 'Inactif' }}
+        </span>
+        <a class="btn-secondary" [routerLink]="['/ascenseurs', a.id, 'modifier']">Modifier</a>
+      </div>
     </div>
 
     <div class="tabs">
-      <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">Informations</button>
       <button [class.active]="activeTab() === 'arborescence'" (click)="activeTab.set('arborescence')">
-        Arborescence (Assemblages & Composants)
+        Arborescence
       </button>
+      <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">Informations</button>
     </div>
-
-    @if (activeTab() === 'info') {
-      <div class="info-panel">
-        <p><strong>Fabricant :</strong> {{ a.fabricant }}</p>
-        <p><strong>Modèle :</strong> {{ a.modele }}</p>
-        <p><strong>Numéro de série :</strong> {{ a.numeroSerie }}</p>
-        <p><strong>Code-barre :</strong> {{ a.codeBarre }}</p>
-        <p><strong>Puissance :</strong> {{ a.puissance }}</p>
-        <p><strong>Client :</strong> {{ a.clientNomEntreprise }}</p>
-        <p><strong>Coût d'acquisition :</strong> {{ a.coutAcquisition }} MAD</p>
-        <p><strong>Mise en service :</strong> {{ a.dateMiseEnService }}</p>
-        <p><strong>Garantie jusqu'au :</strong> {{ a.dateExpirationGarantie }}</p>
-        <p><strong>Description :</strong> {{ a.description }}</p>
-      </div>
-    }
 
     @if (activeTab() === 'arborescence') {
       <div class="arborescence-panel">
-        <button class="btn-primary" (click)="showFormRacine.set(true)">
-          + Ajouter une zone principale
-        </button>
-
-        @if (showFormRacine()) {
-          <app-assemblage-form
+        @if (chargementInitial()) {
+          <div class="loading">Chargement de l'arborescence...</div>
+        } @else if (arbre().length === 0) {
+          <div class="empty">
+            <p>Aucune zone définie.</p>
+            <span>Générez automatiquement l'arborescence standard selon le type d'ascenseur ({{ a.type }}), ou créez vos zones manuellement.</span>
+            <div class="empty-actions">
+              <button class="btn-primary" (click)="genererArborescence()" [disabled]="generationEnCours()">
+                {{ generationEnCours() ? 'Génération en cours...' : "Générer l'arborescence standard" }}
+              </button>
+            </div>
+          </div>
+        } @else {
+          @if (rafraichissementEnCours()) {
+            <div class="refresh-indicator">Mise à jour...</div>
+          }
+          <app-assemblage-explorer
+            [nodes]="arbre()"
             [ascenseurId]="ascenseurId"
-            [niveau]="1"
-            [parentId]="null"
-            (created)="onZoneRacineAjoutee()"
-            (cancelled)="showFormRacine.set(false)" />
+            (changed)="chargerArbre()" />
+        }
+      </div>
+    }
+
+    @if (activeTab() === 'info') {
+      <div class="info-panel">
+        <p class="section-title">Rattachement</p>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Client</span>
+            <span class="value">
+  {{ ((a.clientPrenom || '') + ' ' + (a.clientNom || ''))}}
+</span>          </div>
+          <div class="info-item">
+            <span class="label">Site</span>
+            <span class="value">{{ a.siteAdresse || '—' }}</span>
+          </div>
+        </div>
+
+        <p class="section-title">Informations générales</p>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Fabricant</span>
+            <span class="value">{{ a.fabricant || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Marque</span>
+            <span class="value">{{ a.marque || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Modèle</span>
+            <span class="value">{{ a.modele || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Type</span>
+            <span class="value">{{ a.type || '—' }}</span>
+          </div>
+        </div>
+
+        <p class="section-title">Identification</p>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Numéro de série</span>
+            <span class="value">{{ a.numeroSerie || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Code-barre</span>
+            <span class="value">{{ a.codeBarre || '—' }}</span>
+          </div>
+        </div>
+
+        <p class="section-title">Caractéristiques techniques</p>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Nombre d'étages</span>
+            <span class="value">{{ a.nombreEtages ?? '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Capacité (personnes)</span>
+            <span class="value">{{ a.capacitePersonnes ?? '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Charge max</span>
+            <span class="value">{{ a.chargeMaxKg ? (a.chargeMaxKg + ' kg') : '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Vitesse</span>
+            <span class="value">{{ a.vitesse ? (a.vitesse + ' m/s') : '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Puissance</span>
+            <span class="value">{{ a.puissance || '—' }}</span>
+          </div>
+        </div>
+
+        <p class="section-title">Dates </p>
+        <div class="info-grid">
+
+          <div class="info-item">
+            <span class="label">Mise en service</span>
+            <span class="value">{{ a.dateMiseEnService || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Garantie jusqu'au</span>
+            <span class="value">{{ a.dateExpirationGarantie || '—' }}</span>
+          </div>
+        </div>
+
+        @if (a.description) {
+          <div class="description-block">
+            <span class="label">Description</span>
+            <p>{{ a.description }}</p>
+          </div>
         }
 
-        @if (arbre().length === 0) {
-          <p class="empty">Aucune zone définie. Commence par ajouter une zone principale.</p>
-        } @else {
-          <div class="tree">
-            @for (node of arbre(); track node.id) {
-              <app-assemblage-tree-node
-                [node]="node"
-                [ascenseurId]="ascenseurId"
-                (changed)="chargerArbre()" />
-            }
+        @if (a.informationsSupplementaires) {
+          <div class="description-block">
+            <span class="label">Informations supplémentaires</span>
+            <p>{{ a.informationsSupplementaires }}</p>
           </div>
         }
       </div>

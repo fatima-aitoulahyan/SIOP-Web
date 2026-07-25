@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AscenseurService } from '../services/ascenseur.service';
 import { UtilisateurService } from '../../utilisateurs/services/utilisateur';
@@ -26,9 +26,15 @@ export class CreerAscenseur implements OnInit {
   private siteService = inject(SiteService);
   private villeService = inject(VilleService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   submitting = signal(false);
   erreur = signal<string | null>(null);
+
+  // ---- Mode édition ----
+  ascenseurId = signal<number | null>(null);
+  isEditMode = signal(false);
+  chargementInitial = signal(false);
 
   types = Object.values(TypeAscenseur);
 
@@ -45,6 +51,16 @@ export class CreerAscenseur implements OnInit {
     villeId: [null as number | null, Validators.required],
     adresse: ['', Validators.required],
     codePostal: [''],
+    zone: [''],
+  });
+
+  // ---- Modale "Nouvelle ville" ----
+  showVilleModal = signal(false);
+  creatingVille = signal(false);
+  villeModalError = signal<string | null>(null);
+
+  villeForm = this.fb.nonNullable.group({
+    nom: ['', Validators.required],
   });
 
   form = this.fb.nonNullable.group({
@@ -53,6 +69,7 @@ export class CreerAscenseur implements OnInit {
     nom: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
     fabricant: ['', Validators.required],
+    marque: ['', Validators.required],
     modele: [''],
     numeroSerie: [''],
     codeBarre: [''],
@@ -79,6 +96,60 @@ export class CreerAscenseur implements OnInit {
         this.form.patchValue({ siteId: null });
       }
     });
+
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.isEditMode.set(true);
+      this.ascenseurId.set(+idParam);
+      this.chargerAscenseurExistant(+idParam);
+    }
+  }
+
+  chargerAscenseurExistant(id: number): void {
+    this.chargementInitial.set(true);
+
+    this.ascenseurService.getById(id).subscribe({
+      next: (res) => {
+        const a = res.data!;
+
+        // Charge d'abord les sites du client, puis remplit le formulaire
+        this.siteService.listerParClient(a.clientId).subscribe({
+          next: (sites) => {
+            this.sites = sites;
+
+            this.form.patchValue({
+              clientId: a.clientId,
+              siteId: a.siteId,
+              nom: a.nom,
+              description: a.description ?? '',
+              fabricant: a.fabricant,
+              marque: a.marque,
+              modele: a.modele ?? '',
+              numeroSerie: a.numeroSerie ?? '',
+              codeBarre: a.codeBarre ?? '',
+              puissance: a.puissance ?? '',
+              nombreEtages: a.nombreEtages ?? null,
+              capacitePersonnes: a.capacitePersonnes ?? null,
+              chargeMaxKg: a.chargeMaxKg ?? null,
+              vitesse: a.vitesse ?? null,
+              type: a.type ?? null,
+              dateMiseEnService: a.dateMiseEnService ?? '',
+              dateExpirationGarantie: a.dateExpirationGarantie ?? '',
+              informationsSupplementaires: a.informationsSupplementaires ?? '',
+            });
+
+            this.chargementInitial.set(false);
+          },
+          error: () => {
+            this.chargementInitial.set(false);
+          },
+        });
+      },
+      error: (err) => {
+        this.chargementInitial.set(false);
+        this.erreur.set(err?.error?.message ?? "Erreur lors du chargement de l'ascenseur.");
+      },
+    });
   }
 
   chargerClients(): void {
@@ -92,7 +163,10 @@ export class CreerAscenseur implements OnInit {
     this.siteService.listerParClient(clientId).subscribe({
       next: (sites) => {
         this.sites = sites;
-        this.form.patchValue({ siteId: null });
+        // En mode création on réinitialise le site choisi ; pas en mode édition initial
+        if (!this.isEditMode()) {
+          this.form.patchValue({ siteId: null });
+        }
       },
       error: (err) => {
         console.error('Erreur lors du chargement des sites', err);
@@ -108,7 +182,6 @@ export class CreerAscenseur implements OnInit {
     });
   }
 
-  // ---- Gestion de la modale "Nouveau site" ----
 
   ouvrirModalSite(): void {
     const clientId = this.form.controls.clientId.value;
@@ -145,6 +218,7 @@ export class CreerAscenseur implements OnInit {
         villeId: raw.villeId!,
         adresse: raw.adresse,
         codePostal: raw.codePostal || undefined,
+        zone: raw.zone || undefined,
       })
       .subscribe({
         next: (nouveauSite) => {
@@ -160,6 +234,41 @@ export class CreerAscenseur implements OnInit {
       });
   }
 
+  // ---- Gestion de la modale "Nouvelle ville" ----
+
+  ouvrirModalVille(): void {
+    this.villeModalError.set(null);
+    this.villeForm.reset();
+    this.showVilleModal.set(true);
+  }
+
+  fermerModalVille(): void {
+    this.showVilleModal.set(false);
+  }
+
+  onSubmitVille(): void {
+    if (this.villeForm.invalid) {
+      this.villeForm.markAllAsTouched();
+      return;
+    }
+
+    this.creatingVille.set(true);
+    this.villeModalError.set(null);
+
+    this.villeService.creer(this.villeForm.getRawValue()).subscribe({
+      next: (nouvelleVille) => {
+        this.creatingVille.set(false);
+        this.villes = [...this.villes, nouvelleVille];
+        this.siteForm.patchValue({ villeId: nouvelleVille.id });
+        this.showVilleModal.set(false);
+      },
+      error: (err) => {
+        this.creatingVille.set(false);
+        this.villeModalError.set(err?.error?.message ?? 'Erreur lors de la création de la ville.');
+      },
+    });
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -171,35 +280,69 @@ export class CreerAscenseur implements OnInit {
 
     const raw = this.form.getRawValue();
 
-    this.ascenseurService
-      .creer({
-        clientId: raw.clientId!,
-        siteId: raw.siteId!,
-        nom: raw.nom,
-        description: raw.description || undefined,
-        fabricant: raw.fabricant,
-        modele: raw.modele || undefined,
-        numeroSerie: raw.numeroSerie || undefined,
-        codeBarre: raw.codeBarre || undefined,
-        puissance: raw.puissance || undefined,
-        nombreEtages: raw.nombreEtages ?? undefined,
-        capacitePersonnes: raw.capacitePersonnes ?? undefined,
-        chargeMaxKg: raw.chargeMaxKg ?? undefined,
-        vitesse: raw.vitesse ?? undefined,
-        type: raw.type ?? undefined,
-        dateMiseEnService: raw.dateMiseEnService || undefined,
-        dateExpirationGarantie: raw.dateExpirationGarantie || undefined,
-        informationsSupplementaires: raw.informationsSupplementaires || undefined,
-      })
-      .subscribe({
-        next: (res) => {
-          this.submitting.set(false);
-          this.router.navigate(['/fiches-ascenseur', res.data!.id]);
-        },
-        error: (err) => {
-          this.submitting.set(false);
-          this.erreur.set(err?.error?.message ?? 'Erreur lors de la création.');
-        },
-      });
+    if (this.isEditMode()) {
+      this.ascenseurService
+        .modifier(this.ascenseurId()!, {
+          nom: raw.nom,
+          siteId: raw.siteId!,
+          description: raw.description || undefined,
+          fabricant: raw.fabricant,
+          marque: raw.marque,
+          modele: raw.modele || undefined,
+          numeroSerie: raw.numeroSerie || undefined,
+          codeBarre: raw.codeBarre || undefined,
+          puissance: raw.puissance || undefined,
+          nombreEtages: raw.nombreEtages ?? undefined,
+          capacitePersonnes: raw.capacitePersonnes ?? undefined,
+          chargeMaxKg: raw.chargeMaxKg ?? undefined,
+          vitesse: raw.vitesse ?? undefined,
+          type: raw.type ?? undefined,
+          dateMiseEnService: raw.dateMiseEnService || undefined,
+          dateExpirationGarantie: raw.dateExpirationGarantie || undefined,
+          informationsSupplementaires: raw.informationsSupplementaires || undefined,
+        })
+        .subscribe({
+          next: (res) => {
+            this.submitting.set(false);
+            this.router.navigate(['/ascenseurs', res.data!.id]);
+          },
+          error: (err) => {
+            this.submitting.set(false);
+            this.erreur.set(err?.error?.message ?? 'Erreur lors de la modification.');
+          },
+        });
+    } else {
+      this.ascenseurService
+        .creer({
+          clientId: raw.clientId!,
+          siteId: raw.siteId!,
+          nom: raw.nom,
+          description: raw.description || undefined,
+          fabricant: raw.fabricant,
+          marque: raw.marque,
+          modele: raw.modele || undefined,
+          numeroSerie: raw.numeroSerie || undefined,
+          codeBarre: raw.codeBarre || undefined,
+          puissance: raw.puissance || undefined,
+          nombreEtages: raw.nombreEtages ?? undefined,
+          capacitePersonnes: raw.capacitePersonnes ?? undefined,
+          chargeMaxKg: raw.chargeMaxKg ?? undefined,
+          vitesse: raw.vitesse ?? undefined,
+          type: raw.type ?? undefined,
+          dateMiseEnService: raw.dateMiseEnService || undefined,
+          dateExpirationGarantie: raw.dateExpirationGarantie || undefined,
+          informationsSupplementaires: raw.informationsSupplementaires || undefined,
+        })
+        .subscribe({
+          next: (res) => {
+            this.submitting.set(false);
+            this.router.navigate(['/fiches-ascenseur', res.data!.id]);
+          },
+          error: (err) => {
+            this.submitting.set(false);
+            this.erreur.set(err?.error?.message ?? 'Erreur lors de la création.');
+          },
+        });
+    }
   }
 }

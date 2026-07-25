@@ -6,6 +6,7 @@ export interface SiteDTO {
   codePostal: string | null;
   clientId: number;
   clientNom: string;
+  zone?: string;
 }
 
 export interface SiteCreateDTO {
@@ -13,12 +14,14 @@ export interface SiteCreateDTO {
   villeId: number;
   adresse: string;
   codePostal?: string | null;
+  zone?: string;
 }
 
 export interface SiteUpdateDTO {
   villeId?: number | null;
   adresse: string;
   codePostal?: string | null;
+  zone?: string;
 }
 
 export interface VilleDTO {
@@ -26,7 +29,4 @@ export interface VilleDTO {
   nom: string;
 }
 
-export interface ClientOptionDTO {
-  id: number;
-  nom: string;
-}
+

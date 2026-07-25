@@ -5,6 +5,7 @@ export interface Composant {
   id: number;
   nom: string;
   reference: string;
+  imageUrl?: string;
   type: TypeComposant;
   fabricant?: string;
   dateInstallation?: string;
@@ -18,6 +19,7 @@ export interface ComposantCreateDTO {
   nom: string;
   reference: string;
   type: TypeComposant;
+  imageUrl?: string;
   fabricant?: string;
   dateInstallation?: string;
   dureeVieEstimeeMois?: number;
@@ -28,6 +30,7 @@ export interface ComposantUpdateDTO {
   nom: string;
   reference: string;
   type: TypeComposant;
+  imageUrl?: string;
   fabricant?: string;
   dateInstallation?: string;
   dureeVieEstimeeMois?: number;
