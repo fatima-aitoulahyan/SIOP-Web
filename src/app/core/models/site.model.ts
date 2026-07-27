@@ -28,5 +28,3 @@ export interface VilleDTO {
   id: number;
   nom: string;
 }
-
-

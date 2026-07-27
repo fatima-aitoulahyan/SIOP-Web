@@ -49,7 +49,7 @@ export class LoginComponent {
     const routes: Record<string, string> = {
       ADMINISTRATEUR: '/dashboard/admin',
       TECHNICIEN: '/dashboard/technicien',
-      CLIENT: '/dashboard/client',
+      CLIENT: '/maintenance',
       RESPONSABLE_MAINTENANCE: '/dashboard/responsable-maintenance',
       RESPONSABLE_ACHATS: '/dashboard/responsable-achats',
     };

@@ -55,7 +55,6 @@
   }
 }
 
-// ===== Button =====
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -77,7 +76,6 @@
   }
 }
 
-// ===== Error banner =====
 .error {
   color: var(--color-error);
   font-size: 0.85rem;
@@ -89,7 +87,6 @@
   text-align: left;
 }
 
-// ===== Empty state =====
 .etat-vide {
   text-align: center;
   color: var(--color-text-muted);
@@ -104,7 +101,6 @@
   font-size: 0.9rem;
 }
 
-// ===== Table =====
 .table-wrapper {
   overflow-x: auto;
   border: 1px solid var(--color-border);
@@ -149,7 +145,6 @@ tbody tr {
   }
 }
 
-// ===== Badges =====
 .badge {
   display: inline-flex;
   align-items: center;
