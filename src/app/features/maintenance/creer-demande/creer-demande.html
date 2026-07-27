@@ -1,0 +1,124 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    <div class="card-header">
+      <h2>Nouvelle demande de maintenance</h2>
+      <p class="subtitle">
+        Signalez un problème sur l'un de vos ascenseurs. L'équipe maintenance en sera notifiée.
+      </p>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="soumettre()">
+      <p class="section-title">Ascenseur concerné</p>
+
+      <div class="form-group">
+        <label for="ascenseurId">Ascenseur</label>
+        <div class="input-wrapper select-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="2" width="16" height="20" rx="2" />
+            <path d="M9 8l3-3 3 3M9 16l3 3 3-3" />
+          </svg>
+          <select id="ascenseurId" formControlName="ascenseurId">
+            <option [ngValue]="null" disabled>
+              {{ chargementAscenseurs() ? 'Chargement…' : 'Sélectionner un ascenseur' }}
+            </option>
+            @for (asc of ascenseurs(); track asc.id) {
+              <option [ngValue]="asc.id">
+                {{ asc.nom }}{{ asc.siteAdresse ? ' — ' + asc.siteAdresse : '' }}
+              </option>
+            }
+          </select>
+        </div>
+        @if (!chargementAscenseurs() && ascenseurs().length === 0) {
+          <span class="champ-erreur" style="color:#8a8f98;">
+            Aucun ascenseur n'est rattaché à votre compte.
+          </span>
+        } @else if (form.controls.ascenseurId.touched && form.controls.ascenseurId.invalid) {
+          <span class="champ-erreur">L'ascenseur est obligatoire.</span>
+        }
+      </div>
+
+      <p class="section-title">Détails du problème</p>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="typeDemande">Type de problème</label>
+          <div class="input-wrapper select-wrapper">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.3 3.3a2 2 0 0 1 3.4 0l8 13.4A2 2 0 0 1 20 20H4a2 2 0 0 1-1.7-3.3Z" />
+              <path d="M12 9v4M12 17h.01" />
+            </svg>
+            <select id="typeDemande" formControlName="typeDemande">
+              <option [ngValue]="null" disabled>Sélectionner un type</option>
+              @for (t of types; track t) {
+                <option [ngValue]="t">{{ typeLabels[t] }}</option>
+              }
+            </select>
+          </div>
+          @if (form.controls.typeDemande.touched && form.controls.typeDemande.invalid) {
+            <span class="champ-erreur">Le type de problème est obligatoire.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="priorite">Priorité perçue</label>
+          <div class="input-wrapper select-wrapper">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1Z" />
+              <line x1="4" y1="22" x2="4" y2="15" />
+            </svg>
+            <select id="priorite" formControlName="priorite">
+              @for (p of priorites; track p) {
+                <option [ngValue]="p">{{ prioriteLabels[p] }}</option>
+              }
+            </select>
+          </div>
+          @if (form.controls.priorite.touched && form.controls.priorite.invalid) {
+            <span class="champ-erreur">La priorité est obligatoire.</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <div class="input-wrapper textarea-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 5h16M4 12h16M4 19h10" />
+          </svg>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="4"
+            placeholder="Décrivez la situation en quelques lignes (localisation, symptômes, depuis quand…)"
+          ></textarea>
+        </div>
+        @if (form.controls.description.touched && form.controls.description.invalid) {
+          <span class="champ-erreur">
+            Une description d'au moins 10 caractères est obligatoire.
+          </span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="dateSouhaitee">Date d'intervention souhaitée <span class="optionnel">(facultatif)</span></label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4M8 2v4M3 10h18" />
+          </svg>
+          <input id="dateSouhaitee" type="date" formControlName="dateSouhaitee" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <a routerLink="/maintenance" class="btn-secondary">Annuler</a>
+        <button type="submit" [disabled]="envoiEnCours()">
+          {{ envoiEnCours() ? 'Envoi…' : 'Envoyer la demande' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

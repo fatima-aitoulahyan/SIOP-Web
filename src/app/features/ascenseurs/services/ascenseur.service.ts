@@ -26,6 +26,10 @@ export class AscenseurService {
     return this.http.get<ApiResponse<AscenseurDTO[]>>(`${this.baseUrl}/client/${clientId}`);
   }
 
+  mesAscenseurs(): Observable<ApiResponse<AscenseurDTO[]>> {
+    return this.http.get<ApiResponse<AscenseurDTO[]>>(`${this.baseUrl}/mes-ascenseurs`);
+  }
+
   creer(dto: AscenseurCreateDTO): Observable<ApiResponse<AscenseurDTO>> {
     return this.http.post<ApiResponse<AscenseurDTO>>(this.baseUrl, dto);
   }
