@@ -1,32 +1,25 @@
-
 export interface SiteDTO {
   id: number;
   villeNom: string;
+  villeId: number;
+  villeCodePostal: string;
+  villeRegion: string;
   adresse: string;
-  codePostal: string | null;
   clientId: number;
   clientNom: string;
-  zone?: string;
+  parcId: number | null;
+  parcNom: string | null;
 }
 
 export interface SiteCreateDTO {
   clientId: number;
   villeId: number;
+  parcId: number;
   adresse: string;
-  codePostal?: string | null;
-  zone?: string;
 }
 
 export interface SiteUpdateDTO {
   villeId?: number | null;
+  parcId?: number | null;
   adresse: string;
-  codePostal?: string | null;
-  zone?: string;
 }
-
-export interface VilleDTO {
-  id: number;
-  nom: string;
-}
-
-

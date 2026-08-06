@@ -75,6 +75,8 @@ export interface AscenseurDTO {
 
   siteId: number;
   siteAdresse?: string;
+  parcId: number | null;
+  parcNom?: string;
   piecesJointes?: PieceJointeDTO[];
 }
 export interface PieceJointeDTO {

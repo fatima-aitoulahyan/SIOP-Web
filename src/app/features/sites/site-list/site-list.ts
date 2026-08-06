@@ -45,9 +45,8 @@ export class SiteListComponent implements OnInit {
       return (
         s.adresse?.toLowerCase().includes(terme) ||
         s.villeNom?.toLowerCase().includes(terme) ||
-        s.zone?.toLowerCase().includes(terme) ||
         s.clientNom?.toLowerCase().includes(terme) ||
-        s.codePostal?.toLowerCase().includes(terme)
+        s.parcNom?.toLowerCase().includes(terme)
       );
     });
   });

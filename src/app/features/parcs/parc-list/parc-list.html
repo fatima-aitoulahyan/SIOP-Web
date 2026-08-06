@@ -1,0 +1,70 @@
+<div class="page-wrapper">
+  <div class="list-card">
+    <div class="card-header">
+      <div>
+        <h2>Parcs</h2>
+        <p class="subtitle">{{ parcs().length }} parc(s)</p>
+      </div>
+      <a routerLink="/parcs/nouveau" class="btn-primary">+ Nouveau parc</a>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement des parcs…</p>
+    } @else if (parcs().length === 0) {
+      <div class="etat-vide">
+        <p>Aucun parc enregistré pour le moment.</p>
+        <a routerLink="/parcs/nouveau" class="btn-primary">Créer le premier parc</a>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Sites</th>
+            <th>Techniciens</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (parc of parcs(); track parc.id) {
+              <tr>
+                <td>{{ parc.nom }}</td>
+                <td>{{ parc.nombreSites }}</td>
+                <td>{{ parc.nombreTechniciens }}</td>
+                <td class="col-actions">
+  <a [routerLink]="['/parcs', parc.id]" class="lien-action">Voir</a>
+  <a [routerLink]="['/parcs', parc.id, 'modifier']" class="lien-action">Modifier</a>
+  <button type="button" class="lien-action lien-danger" (click)="demanderSuppression(parc)">
+    Supprimer
+  </button>
+</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  @if (parcASupprimer(); as parc) {
+    <div class="modale-overlay" (click)="annulerSuppression()">
+      <div class="modale" (click)="$event.stopPropagation()">
+        <h2>Supprimer ce parc ?</h2>
+        <p>
+          <strong>{{ parc.nom }}</strong> sera définitivement supprimé.
+        </p>
+        <div class="actions">
+          <button type="button" class="btn-secondary" (click)="annulerSuppression()">Annuler</button>
+          <button type="button" class="btn-danger" (click)="confirmerSuppression()" [disabled]="suppressionEnCours()">
+            {{ suppressionEnCours() ? 'Suppression…' : 'Supprimer définitivement' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
