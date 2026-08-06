@@ -45,16 +45,16 @@ export class LoginComponent {
     });
   }
 
-  private redirigerSelonRole(role: string): void {
-    const routes: Record<string, string> = {
-      ADMINISTRATEUR: '/dashboard/admin',
-      TECHNICIEN: '/dashboard/technicien',
-      CLIENT: '/dashboard/client',
-      RESPONSABLE_MAINTENANCE: '/dashboard/responsable-maintenance',
-      RESPONSABLE_ACHATS: '/dashboard/responsable-achats',
-    };
-    this.router.navigate([routes[role] ?? '/login']);
-  }  showPassword = signal(false);
+private redirigerSelonRole(role: string): void {
+  const routes: Record<string, string> = {
+    ADMINISTRATEUR: '/dashboard/admin',
+    TECHNICIEN: '/technicien/demandes',
+    CLIENT: '/client/demandes',
+    RESPONSABLE_MAINTENANCE: '/dashboard/responsable-maintenance',
+    RESPONSABLE_ACHATS: '/dashboard/responsable-achats',
+  };
+  this.router.navigate([routes[role] ?? '/login']);
+}  showPassword = signal(false);
   togglePassword() {
     this.showPassword.update(v => !v);
   }

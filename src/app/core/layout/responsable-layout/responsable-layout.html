@@ -5,13 +5,22 @@
     </div>
 
     <nav class="menu">
-      <a routerLink="/dashboard/responsable-maintenance" routerLinkActive="active" class="menu-item">
+      <!-- ADMIN -->
+      <a *ngIf="role() === 'ADMINISTRATEUR'" routerLink="/dashboard/admin" routerLinkActive="active" class="menu-item">
         Tableau de bord
       </a>
-      <a routerLink="/ascenseurs" routerLinkActive="active" class="menu-item">Ascenseurs</a>
-      <a routerLink="/sites" routerLinkActive="active" class="menu-item">Sites</a>
-      <a routerLink="/techniciens" routerLinkActive="active" class="menu-item">Techniciens</a>
-      <a routerLink="/interventions" routerLinkActive="active" class="menu-item">Interventions</a>
+      <a *ngIf="role() === 'ADMINISTRATEUR'" routerLink="/utilisateurs" routerLinkActive="active" class="menu-item">
+        Utilisateurs
+      </a>
+      <!-- RESPONSABLE -->
+      <a *ngIf="role() === 'RESPONSABLE_MAINTENANCE'" routerLink="/dashboard/responsable-maintenance" routerLinkActive="active" class="menu-item">
+        Tableau de bord
+      </a>
+      <a *ngIf="role() === 'RESPONSABLE_MAINTENANCE'" routerLink="/ascenseurs" routerLinkActive="active" class="menu-item">Ascenseurs</a>
+      <a *ngIf="role() === 'RESPONSABLE_MAINTENANCE'" routerLink="/sites" routerLinkActive="active" class="menu-item">Sites</a>
+      <a *ngIf="role() === 'RESPONSABLE_MAINTENANCE'" routerLink="/responsable/demandes" routerLinkActive="active" class="menu-item">Demandes</a>
+      <!-- TOUS -->
+      <a routerLink="/parcs" routerLinkActive="active" class="menu-item">Parcs</a>
     </nav>
 
     <button type="button" class="btn-deconnexion" (click)="deconnexion()">Déconnexion</button>
