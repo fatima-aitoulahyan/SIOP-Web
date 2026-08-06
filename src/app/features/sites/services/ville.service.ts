@@ -3,21 +3,22 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { ApiResponse } from '../../../core/models/api-response.model';
 import { VilleDTO } from '../../../core/models/ville.model';
+import { environment } from '../../../../environments/environment.development';
 
 @Injectable({ providedIn: 'root' })
 export class VilleService {
   private http = inject(HttpClient);
-  private baseUrl = '/api/villes';
+  private baseUrl = `${environment.apiUrl}`;
 
   listerTous(): Observable<VilleDTO[]> {
     return this.http
-      .get<ApiResponse<VilleDTO[]>>('/api/referentiel/villes')
+      .get<ApiResponse<VilleDTO[]>>(`${this.baseUrl}/referentiel/villes` )
       .pipe(map((res) => res.data!));
   }
 
-  creer(dto: { nom: string }): Observable<VilleDTO> {
+  creer(dto: { nom: string; region?: string; codePostal?: string }): Observable<VilleDTO> {
     return this.http
-      .post<ApiResponse<VilleDTO>>('/api/referentiel/villes', dto)
+      .post<ApiResponse<VilleDTO>>(`${this.baseUrl}/referentiel/villes` , dto)
       .pipe(map((res) => res.data!));
   }
 }

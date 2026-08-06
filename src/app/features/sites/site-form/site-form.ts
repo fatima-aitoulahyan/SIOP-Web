@@ -2,11 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { VilleDTO } from '../../../core/models/site.model';
+import { VilleDTO } from '../../../core/models/ville.model';
+import { ParcDTO } from '../../../core/models/parc.model';
 import { UtilisateurResponseDTO } from '../../../core/models/utilisateur.model';
 import { SiteService } from '../services/site';
 import { VilleService } from '../services/ville.service';
 import { UtilisateurService } from '../../utilisateurs/services/utilisateur';
+import { ParcService } from '../../parcs/services/parc.service';
 
 @Component({
   selector: 'app-site-form',
@@ -19,6 +21,7 @@ export class SiteFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private siteService = inject(SiteService);
   private villeService = inject(VilleService);
+  private parcService = inject(ParcService);
   private utilisateurService = inject(UtilisateurService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -28,16 +31,16 @@ export class SiteFormComponent implements OnInit {
   envoiEnCours = signal(false);
   erreur = signal<string | null>(null);
   villes = signal<VilleDTO[]>([]);
+  parcs = signal<ParcDTO[]>([]);
 
   clients: UtilisateurResponseDTO[] = [];
 
   form = this.fb.nonNullable.group({
-    clientId: [null as number | null, Validators.required],
-    villeId: [null as number | null, Validators.required],
-    adresse: ['', Validators.required],
-    codePostal: [''],
-    zone: [''],
-  });
+  clientId: [null as number | null, Validators.required],
+  villeId: [null as number | null, Validators.required],
+  parcId: [null as number | null, Validators.required],
+  adresse: ['', Validators.required],
+});
 
   // ---- Modale "Nouvelle ville" ----
   showVilleModal = signal(false);
@@ -46,11 +49,14 @@ export class SiteFormComponent implements OnInit {
 
   villeForm = this.fb.nonNullable.group({
     nom: ['', Validators.required],
+    region: [''],
+    codePostal: [''],
   });
 
   ngOnInit(): void {
     this.chargerVilles();
     this.chargerClients();
+    this.chargerParcs();
 
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -63,9 +69,8 @@ export class SiteFormComponent implements OnInit {
         next: (site) => {
           this.form.patchValue({
             clientId: site.clientId,
+            parcId: site.parcId,
             adresse: site.adresse,
-            codePostal: site.codePostal ?? '',
-            zone: site.zone ?? '',
           });
         },
         error: () => this.erreur.set('Impossible de charger le site demandé.'),
@@ -91,7 +96,13 @@ export class SiteFormComponent implements OnInit {
       },
     });
   }
-
+  
+ private chargerParcs(): void {
+  this.parcService.listerTous().subscribe({
+    next: (parcs) => this.parcs.set(parcs),
+    error: () => this.erreur.set('Impossible de charger la liste des parcs.'),
+  });
+}
 
   ouvrirModalVille(): void {
     this.villeModalError.set(null);
@@ -141,8 +152,7 @@ export class SiteFormComponent implements OnInit {
         .modifier(this.siteId()!, {
           villeId: valeurs.villeId ?? undefined,
           adresse: valeurs.adresse,
-          codePostal: valeurs.codePostal || null,
-          zone: valeurs.zone || undefined,
+          parcId: valeurs.parcId ?? null,
         })
         .subscribe({
           next: () => this.router.navigate(['/sites']),
@@ -157,8 +167,7 @@ export class SiteFormComponent implements OnInit {
           clientId: valeurs.clientId!,
           villeId: valeurs.villeId!,
           adresse: valeurs.adresse,
-          codePostal: valeurs.codePostal || null,
-          zone: valeurs.zone || undefined,
+          parcId: valeurs.parcId!,
         })
         .subscribe({
           next: () => this.router.navigate(['/sites']),
