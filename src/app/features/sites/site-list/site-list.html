@@ -16,7 +16,7 @@
         </svg>
         <input
           type="text"
-          placeholder="Rechercher par adresse, ville, zone, client..."
+          placeholder="Rechercher par adresse, ville, client..."
           [ngModel]="recherche()"
           (ngModelChange)="recherche.set($event)"
         />
@@ -52,8 +52,7 @@
           <tr>
             <th>Adresse</th>
             <th>Ville</th>
-            <th>Zone</th>
-            <th>Code postal</th>
+            <th>Parc</th>
             <th>Client</th>
             <th class="col-actions">Actions</th>
           </tr>
@@ -63,8 +62,7 @@
               <tr>
                 <td>{{ site.adresse }}</td>
                 <td>{{ site.villeNom }}</td>
-                <td>{{ site.zone || '—'}}</td>
-                <td>{{ site.codePostal || '—' }}</td>
+                <td>{{ site.parcNom || '—' }}</td>
                 <td>{{ site.clientNom }}</td>
                 <td class="col-actions">
                   <a [routerLink]="['/sites', site.id, 'modifier']" class="lien-action">Modifier</a>

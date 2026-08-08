@@ -6,6 +6,7 @@
         <p class="subtitle">{{ a.clientNomEntreprise }}</p>
       </div>
       <div class="header-actions">
+        <a routerLink="/ascenseurs" class="btn-secondary">← Retour</a>
         <span class="badge" [class.badge-actif]="a.actif">
           {{ a.actif ? 'Actif' : 'Inactif' }}
         </span>

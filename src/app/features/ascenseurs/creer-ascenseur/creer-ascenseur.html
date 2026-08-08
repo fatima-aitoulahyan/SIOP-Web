@@ -206,7 +206,7 @@
         />
 
         <div class="actions">
-          <a routerLink="/dashboard/responsable-maintenance" class="btn-secondary">Annuler</a>
+          <a routerLink="/ascenseurs" class="btn-secondary">Annuler</a>
           <button type="submit" [disabled]="submitting()">
             {{ submitting()
             ? (isEditMode() ? 'Enregistrement...' : 'Création en cours...')
@@ -253,11 +253,19 @@
           </div>
 
           <div class="form-group">
-            <label>Zone</label>
-            <div class="input-wrapper">
-              <input type="text" formControlName="zone" placeholder="Ex: Zone industrielle" />
-            </div>
-          </div>
+            <label>Parc *</label>
+            <div class="input-wrapper select-wrapper">
+              <select formControlName="parcId">
+              <option [ngValue]="null">-- Sélectionner un parc --</option>
+                 @for (parc of parcs; track parc.id) {
+              <option [ngValue]="parc.id">{{ parc.nom }}</option>
+                }
+             </select>
+           </div>
+              @if (siteForm.controls.parcId.invalid && siteForm.controls.parcId.touched) {
+              <span class="champ-erreur">Le parc est obligatoire.</span>
+               }
+           </div>
 
           <div class="form-group">
             <label>Adresse *</label>
@@ -269,12 +277,6 @@
             }
           </div>
 
-          <div class="form-group">
-            <label>Code postal</label>
-            <div class="input-wrapper">
-              <input type="text" formControlName="codePostal" />
-            </div>
-          </div>
 
           <div class="actions">
             <button type="button" class="btn-secondary" (click)="fermerModalSite()">Annuler</button>
@@ -307,6 +309,21 @@
             @if (villeForm.controls.nom.invalid && villeForm.controls.nom.touched) {
               <span class="champ-erreur">Le nom est obligatoire.</span>
             }
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label>Région</label>
+              <div class="input-wrapper">
+                <input type="text" formControlName="region" placeholder="Ex: Casablanca-Settat" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Code postal</label>
+              <div class="input-wrapper">
+                <input type="text" formControlName="codePostal" placeholder="Ex: 20000" />
+              </div>
+            </div>
           </div>
 
           <div class="actions">

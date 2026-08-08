@@ -3,11 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { ApiResponse } from '../../../core/models/api-response.model';
 import { SiteCreateDTO, SiteDTO, SiteUpdateDTO } from '../../../core/models/site.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class SiteService {
   private http = inject(HttpClient);
-  private readonly baseUrl = '/api/sites';
+  private readonly baseUrl = `${environment.apiUrl}/sites`;
 
   creer(dto: SiteCreateDTO): Observable<SiteDTO> {
     return this.http.post<ApiResponse<SiteDTO>>(this.baseUrl, dto).pipe(map((res) => res.data));
@@ -43,5 +44,13 @@ export class SiteService {
 
   supprimer(id: number): Observable<void> {
     return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`).pipe(map(() => undefined));
+  }
+
+  mesSites(): Observable<SiteDTO[]> {
+    return this.http.get<ApiResponse<SiteDTO[]>>(`${this.baseUrl}/mes-sites`).pipe(map((res) => res.data));
+  }
+
+  sitesDeMonParc(): Observable<SiteDTO[]> {
+     return this.http.get<ApiResponse<SiteDTO[]>>(`${this.baseUrl}/mon-parc`).pipe(map((res) => res.data));
   }
 }

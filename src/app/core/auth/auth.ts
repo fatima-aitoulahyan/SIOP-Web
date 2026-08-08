@@ -1,18 +1,12 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
-import { jwtDecode } from 'jwt-decode';
+import { Observable, tap, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
 import { LoginRequest, LoginResponse } from '../models/auth.model';
 import { ActivationCompteRequest } from '../models/utilisateur.model';
-
-interface JwtPayload {
-  sub: string;
-  exp: number;
-  [key: string]: any;
-}
+import { ProfilDTO } from '../models/utilisateur.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -20,8 +14,9 @@ export class AuthService {
   private tokenKey = 'siop_token';
   private typeKey = 'siop_type';
 
-  currentRole = signal<string | null>(this.getStoredRole());
+  currentRole = signal<string | null>(localStorage.getItem(this.typeKey));
   isAuthenticated = computed(() => !!this.currentRole());
+  authReady = signal(false);
 
   constructor(
     private http: HttpClient,
@@ -49,21 +44,22 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
-  private getStoredRole(): string | null {
-    const token = this.getToken();
-    if (!token) return null;
-
-    try {
-      const decoded = jwtDecode<JwtPayload>(token);
-      if (decoded.exp * 1000 < Date.now()) {
-        this.logout();
-        return null;
-      }
-      return localStorage.getItem(this.typeKey);
-    } catch {
-      return null;
-    }
+  me(): Observable<ProfilDTO> {
+    return this.http.get<ApiResponse<ProfilDTO>>(`${this.baseUrl}/me`).pipe(
+      tap((res) => {
+        this.currentRole.set(res.data.role);
+        localStorage.setItem(this.typeKey, res.data.role);
+      }),
+      map((res) => res.data),
+    );
   }
+
+  // Ne modifie pas currentRole/localStorage : pour les besoins ponctuels (formulaires),
+  // à ne pas confondre avec me() qui resynchronise la session au démarrage de l'app.
+  monProfil(): Observable<ProfilDTO> {
+    return this.http.get<ApiResponse<ProfilDTO>>(`${this.baseUrl}/me`).pipe(map((res) => res.data));
+  }
+
   activerCompte(dto: ActivationCompteRequest): Observable<ApiResponse<void>> {
     return this.http.post<ApiResponse<void>>(`${this.baseUrl}/activer-compte`, dto);
   }

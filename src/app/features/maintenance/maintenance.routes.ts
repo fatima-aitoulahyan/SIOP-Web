@@ -1,14 +1,34 @@
 import { Routes } from '@angular/router';
+import { roleGuard } from '../../core/auth/role-guard';
 
-export const MAINTENANCE_ROUTES: Routes = [
+export const MAINTENANCE_DEMANDES_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./mes-demandes/mes-demandes').then((m) => m.MesDemandesComponent),
+      import('./maintenance-list/maintenance-list').then((m) => m.MaintenanceListComponent),
   },
   {
-    path: 'nouvelle',
+    path: 'nouveau',
     loadComponent: () =>
-      import('./creer-demande/creer-demande').then((m) => m.CreerDemandeComponent),
+      import('./maintenance-form/maintenance-form').then((m) => m.MaintenanceFormComponent),
+    canActivate: [roleGuard(['CLIENT'])],
+  },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./maintenance-detail/maintenance-detail').then((m) => m.MaintenanceDetailComponent),
+  },
+];
+
+export const MAINTENANCE_ROUTES: Routes = [
+  {
+    path: 'demandes',
+    children: MAINTENANCE_DEMANDES_ROUTES,
+  },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./maintenance-gestion/maintenance-gestion').then((m) => m.MaintenanceGestionComponent),
+    canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
   },
 ];

@@ -11,6 +11,8 @@ import { TypeAscenseur } from '../../../core/models/ascenseur.model';
 import { UtilisateurResponseDTO } from '../../../core/models/utilisateur.model';
 import { SiteDTO } from '../../../core/models/site.model';
 import { VilleDTO } from '../../../core/models/ville.model';
+import { ParcDTO } from '../../../core/models/parc.model';
+import { ParcService } from '../../parcs/services/parc.service';
 
 // ⚠️ Adapter ces chemins selon l'emplacement réel de tes fichiers
 import { PieceJointeUploaderComponent } from '../../pieces-jointes/piece-jointe-uploader/piece-jointe-uploader';
@@ -56,17 +58,17 @@ export class CreerAscenseur implements OnInit {
   clients: UtilisateurResponseDTO[] = [];
   sites: SiteDTO[] = [];
   villes: VilleDTO[] = [];
+  parcs: ParcDTO[] = [];
 
   // ---- Modale "Nouveau site" ----
   showSiteModal = signal(false);
   creatingSite = signal(false);
   siteModalError = signal<string | null>(null);
 
-  siteForm = this.fb.nonNullable.group({
-    villeId: [null as number | null, Validators.required],
-    adresse: ['', Validators.required],
-    codePostal: [''],
-    zone: [''],
+   siteForm = this.fb.nonNullable.group({
+   villeId: [null as number | null, Validators.required],
+   parcId: [null as number | null, Validators.required],
+   adresse: ['', Validators.required],
   });
 
   // ---- Modale "Nouvelle ville" ----
@@ -76,6 +78,8 @@ export class CreerAscenseur implements OnInit {
 
   villeForm = this.fb.nonNullable.group({
     nom: ['', Validators.required],
+    region: [''],
+    codePostal: [''],
   });
 
   form = this.fb.nonNullable.group({
@@ -102,6 +106,7 @@ export class CreerAscenseur implements OnInit {
   ngOnInit(): void {
     this.chargerClients();
     this.chargerVilles();
+    this.chargerParcs();
 
     this.form.controls.clientId.valueChanges.subscribe((clientId) => {
       if (clientId) {
@@ -202,6 +207,14 @@ export class CreerAscenseur implements OnInit {
       error: (err) => console.error('Erreur lors du chargement des villes', err),
     });
   }
+  private parcService = inject(ParcService);
+
+  chargerParcs(): void {
+  this.parcService.listerTous().subscribe({
+    next: (parcs) => (this.parcs = parcs),
+    error: (err) => console.error('Erreur lors du chargement des parcs', err),
+  });
+}
 
   ouvrirModalSite(): void {
     const clientId = this.form.controls.clientId.value;
@@ -234,12 +247,11 @@ export class CreerAscenseur implements OnInit {
 
     this.siteService
       .creer({
-        clientId,
-        villeId: raw.villeId!,
-        adresse: raw.adresse,
-        codePostal: raw.codePostal || undefined,
-        zone: raw.zone || undefined,
-      })
+       clientId,
+       villeId: raw.villeId!,
+       parcId: raw.parcId!,
+       adresse: raw.adresse,
+     })
       .subscribe({
         next: (nouveauSite) => {
           this.creatingSite.set(false);

@@ -1,0 +1,22 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo-card">
+      <img src="/assets/logo-spelev.png" alt="SPELEV" />
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/client/demandes" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="menu-item">
+        Mes demandes
+      </a>
+      <a routerLink="/client/demandes/nouveau" routerLinkActive="active" class="menu-item">
+        Nouvelle demande
+      </a>
+    </nav>
+
+    <button type="button" class="btn-deconnexion" (click)="deconnexion()">Déconnexion</button>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

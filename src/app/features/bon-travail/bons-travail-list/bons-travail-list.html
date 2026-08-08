@@ -1,0 +1,95 @@
+<div class="page-wrapper">
+  <div class="list-card">
+    <div class="card-header">
+      <div>
+        <h2>{{ titre() }}</h2>
+        <p class="subtitle">{{ bonsTravauxFiltres().length }} bon(s) de travail</p>
+      </div>
+      @if (mode() === 'responsable') {
+        <a routerLink="/responsable/bons-travail/nouveau" class="btn-primary">+ Nouveau bon de travail</a>
+      }
+    </div>
+
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          placeholder="Rechercher par ascenseur, site, parc, technicien..."
+          [ngModel]="recherche()"
+          (ngModelChange)="recherche.set($event)"
+        />
+      </div>
+      <select (change)="changerFiltreStatut($event)" [value]="statutFiltre() ?? ''">
+        <option value="">Tous les statuts</option>
+        @for (s of statuts; track s) {
+          <option [value]="s">{{ statutLabel(s) }}</option>
+        }
+      </select>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement…</p>
+    } @else if (bonsTravaux().length === 0) {
+      <div class="etat-vide">
+        <p>Aucun bon de travail pour le moment.</p>
+        @if (mode() === 'responsable') {
+          <a routerLink="/responsable/bons-travail/nouveau" class="btn-primary">Créer un bon de travail</a>
+        }
+      </div>
+    } @else if (bonsTravauxFiltres().length === 0) {
+      <div class="etat-vide">
+        <p>Aucun bon de travail ne correspond à votre recherche.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Ascenseur</th>
+              <th>Site / Parc</th>
+              <th>Technicien responsable</th>
+              <th>Date prévue</th>
+              <th>Priorité</th>
+              <th>Statut</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (b of bonsTravauxFiltres(); track b.id) {
+              <tr>
+                <td>{{ b.id }}</td>
+                <td>{{ b.ascenseurNom }}</td>
+                <td>
+                  {{ b.siteAdresse ?? '—' }}
+                  <span class="muted">@if (b.parcNom) {· {{ b.parcNom }}}</span>
+                </td>
+                <td>{{ b.technicienResponsableNom ?? '—' }}</td>
+                <td>{{ b.dateInterventionPrevue | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td><span class="priorite-badge {{ prioriteClass(b.priorite) }}">{{ prioriteLabel(b.priorite) }}</span></td>
+                <td><span class="statut-badge {{ statutClass(b.statut) }}">{{ statutLabel(b.statut) }}</span></td>
+                <td class="col-actions">
+                  <a [routerLink]="detailLien(b)" class="lien-action">Voir</a>
+                  @if (peutAnnuler(b)) {
+                    <button
+                      type="button"
+                      class="lien-action lien-danger"
+                      [disabled]="annulationEnCours() === b.id"
+                      (click)="annuler(b)"
+                    >
+                      {{ annulationEnCours() === b.id ? 'Annulation…' : 'Annuler' }}
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
