@@ -18,7 +18,9 @@
         <input id="motDePasse" type="password" formControlName="motDePasse" />
       </div>
 
-      <div class="forgot-password">Mot de passe oublié ?</div>
+      <p class="forgot-password">
+        <a routerLink="/forgot-password">Mot de passe oublié ?</a>
+      </p>
 
       <button type="submit" [disabled]="loginForm.invalid || loading()">
         {{ loading() ? 'Connexion...' : 'Se connecter' }}

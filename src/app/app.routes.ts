@@ -1,8 +1,6 @@
-import { ResponsableLayout } from './core/layout/responsable-layout/responsable-layout';
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth-guard';
 import { roleGuard } from './core/auth/role-guard';
-import { Routes } from '@angular/router';
 import { ResponsableLayout } from './core/layout/responsable-layout/responsable-layout';
 
 export const routes: Routes = [
@@ -16,22 +14,16 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'activation-compte',
+    path: 'forgot-password',
     loadComponent: () =>
-      import('./features/utilisateurs/activation-compte/activation-compte').then(
-        (m) => m.ActivationCompte,
+      import('./features/auth/forgot-password/forgot-password').then(
+        (m) => m.ForgotPasswordComponent,
       ),
   },
   {
-    path: 'utilisateurs',
-    loadChildren: () =>
-      import('./features/utilisateurs/utilisateurs.routes').then((m) => m.UTILISATEURS_ROUTES),
-  },
-  {
-    path: 'dashboard/admin',
+    path: 'reset-password',
     loadComponent: () =>
-      import('./features/dashboard/dashboard-admin/dashboard-admin').then((m) => m.DashboardAdmin),
-    canActivate: [roleGuard(['ADMINISTRATEUR'])],
+      import('./features/auth/reset-password/reset-password').then((m) => m.ResetPasswordComponent),
   },
   {
     path: 'activation-compte',
@@ -45,6 +37,7 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/maintenance/maintenance.routes').then((m) => m.MAINTENANCE_ROUTES),
     canActivate: [roleGuard(['CLIENT'])],
+  },
 
   // ---- Espace Admin ----
   {

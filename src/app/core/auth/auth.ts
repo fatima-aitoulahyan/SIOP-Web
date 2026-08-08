@@ -67,4 +67,14 @@ export class AuthService {
   activerCompte(dto: ActivationCompteRequest): Observable<ApiResponse<void>> {
     return this.http.post<ApiResponse<void>>(`${this.baseUrl}/activer-compte`, dto);
   }
+  motDePasseOublie(email: string) {
+    return this.http.post<any>(`${this.baseUrl}/mot-de-passe-oublie`, { email });
+  }
+
+  reinitialiserMotDePasse(token: string, nouveauMotDePasse: string) {
+    return this.http.post<any>(`${this.baseUrl}/reinitialiser-mot-de-passe`, {
+      token,
+      nouveauMotDePasse,
+    });
+  }
 }

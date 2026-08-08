@@ -12,6 +12,10 @@ import {
 } from '../../../core/models/demande-maintenance.model';
 import { DemandeMaintenanceService } from '../services/demande-maintenance.service';
 
+// ⚠️ Adapter le chemin selon l'emplacement réel du service
+import { PieceJointeService } from '../../pieces-jointes/services/piece-jointe';
+import { PieceJointeDTO, TypeEntiteJointe } from '../../../core/models/piece-jointe.model';
+
 @Component({
   selector: 'app-mes-demandes',
   standalone: true,
@@ -22,6 +26,7 @@ import { DemandeMaintenanceService } from '../services/demande-maintenance.servi
 export class MesDemandesComponent implements OnInit {
   private demandeService = inject(DemandeMaintenanceService);
   private authService = inject(AuthService);
+  private pieceJointeService = inject(PieceJointeService);
 
   readonly typeLabels = TYPE_DEMANDE_LABELS;
   readonly prioriteLabels = PRIORITE_DEMANDE_LABELS;
@@ -35,6 +40,10 @@ export class MesDemandesComponent implements OnInit {
   demandeDetail = signal<DemandeMaintenanceDTO | null>(null);
   demandeAAnnuler = signal<DemandeMaintenanceDTO | null>(null);
   annulationEnCours = signal(false);
+
+  // ---- Pièces jointes de la demande affichée en détail ----
+  piecesJointesDetail = signal<PieceJointeDTO[]>([]);
+  chargementPiecesJointesDetail = signal(false);
 
   ngOnInit(): void {
     this.charger();
@@ -75,10 +84,26 @@ export class MesDemandesComponent implements OnInit {
 
   ouvrirDetail(demande: DemandeMaintenanceDTO): void {
     this.demandeDetail.set(demande);
+    this.chargerPiecesJointesDetail(demande.id);
   }
 
   fermerDetail(): void {
     this.demandeDetail.set(null);
+    this.piecesJointesDetail.set([]);
+  }
+
+  private chargerPiecesJointesDetail(demandeId: number): void {
+    this.chargementPiecesJointesDetail.set(true);
+    this.pieceJointeService.lister(TypeEntiteJointe.DEMANDE_MAINTENANCE, demandeId).subscribe({
+      next: (res) => {
+        this.piecesJointesDetail.set(res.data ?? []);
+        this.chargementPiecesJointesDetail.set(false);
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des pièces jointes', err);
+        this.chargementPiecesJointesDetail.set(false);
+      },
+    });
   }
 
   // ---- Annulation ----
@@ -98,9 +123,7 @@ export class MesDemandesComponent implements OnInit {
     this.annulationEnCours.set(true);
     this.demandeService.annuler(demande.id).subscribe({
       next: (maj) => {
-        this.demandes.update((liste) =>
-          liste.map((d) => (d.id === maj.id ? maj : d)),
-        );
+        this.demandes.update((liste) => liste.map((d) => (d.id === maj.id ? maj : d)));
         this.annulationEnCours.set(false);
         this.demandeAAnnuler.set(null);
       },

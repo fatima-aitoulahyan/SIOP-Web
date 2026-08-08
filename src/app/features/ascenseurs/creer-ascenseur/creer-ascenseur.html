@@ -197,6 +197,13 @@
             <textarea formControlName="informationsSupplementaires" rows="3"></textarea>
           </div>
         </div>
+        <p class="section-title">Pièces jointes</p>
+        <app-piece-jointe-uploader
+          #uploaderAscenseur
+          [entiteType]="TypeEntiteJointe.ASCENSEUR"
+          [entiteId]="ascenseurId()"
+          [piecesExistantes]="ascenseurPiecesJointes()"
+        />
 
         <div class="actions">
           <a routerLink="/dashboard/responsable-maintenance" class="btn-secondary">Annuler</a>

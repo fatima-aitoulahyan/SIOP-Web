@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AscenseurDTO } from '../../../core/models/ascenseur.model';
@@ -12,24 +12,32 @@ import {
 import { AscenseurService } from '../../ascenseurs/services/ascenseur.service';
 import { DemandeMaintenanceService } from '../services/demande-maintenance.service';
 
+// ⚠️ Adapter ces chemins selon l'emplacement réel de tes fichiers
+import { PieceJointeUploaderComponent } from '../../pieces-jointes/piece-jointe-uploader/piece-jointe-uploader';
+import { TypeEntiteJointe } from '../../../core/models/piece-jointe.model';
+
 @Component({
   selector: 'app-creer-demande',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, PieceJointeUploaderComponent],
   templateUrl: './creer-demande.html',
   styleUrl: './creer-demande.scss',
 })
 export class CreerDemandeComponent implements OnInit {
+  @ViewChild('uploaderDemande') uploaderDemande!: PieceJointeUploaderComponent;
+
   private fb = inject(FormBuilder);
   private demandeService = inject(DemandeMaintenanceService);
   private ascenseurService = inject(AscenseurService);
   private router = inject(Router);
 
-  // Options des listes déroulantes
   readonly types = Object.values(TypeDemande);
   readonly priorites = Object.values(PrioriteDemande);
   readonly typeLabels = TYPE_DEMANDE_LABELS;
   readonly prioriteLabels = PRIORITE_DEMANDE_LABELS;
+
+  // Exposé pour le template : évite de répéter "TypeEntiteJointe" partout
+  readonly TypeEntiteJointe = TypeEntiteJointe;
 
   ascenseurs = signal<AscenseurDTO[]>([]);
   chargementAscenseurs = signal(true);
@@ -81,11 +89,15 @@ export class CreerDemandeComponent implements OnInit {
         dateSouhaitee: valeurs.dateSouhaitee || null,
       })
       .subscribe({
-        next: () => this.router.navigate(['/maintenance']),
+        next: (res) => {
+          // Upload des pièces jointes sélectionnées avant la création de la demande
+          this.uploaderDemande.uploaderFichiersEnAttente(res.id);
+          this.router.navigate(['/maintenance']);
+        },
         error: (err) => {
           this.erreur.set(
             err?.error?.message ??
-              "La création de la demande a échoué. Vérifiez les informations saisies.",
+              'La création de la demande a échoué. Vérifiez les informations saisies.',
           );
           this.envoiEnCours.set(false);
         },

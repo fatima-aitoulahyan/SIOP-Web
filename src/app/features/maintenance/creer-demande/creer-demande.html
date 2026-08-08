@@ -112,6 +112,12 @@
           <input id="dateSouhaitee" type="date" formControlName="dateSouhaitee" />
         </div>
       </div>
+      <p class="section-title">Pièces jointes</p>
+      <app-piece-jointe-uploader
+        #uploaderDemande
+        [entiteType]="TypeEntiteJointe.DEMANDE_MAINTENANCE"
+        [entiteId]="null"
+      />
 
       <div class="actions">
         <a routerLink="/maintenance" class="btn-secondary">Annuler</a>

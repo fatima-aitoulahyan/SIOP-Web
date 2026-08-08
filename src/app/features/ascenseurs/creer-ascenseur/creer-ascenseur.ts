@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -12,14 +12,22 @@ import { UtilisateurResponseDTO } from '../../../core/models/utilisateur.model';
 import { SiteDTO } from '../../../core/models/site.model';
 import { VilleDTO } from '../../../core/models/ville.model';
 
+// ⚠️ Adapter ces chemins selon l'emplacement réel de tes fichiers
+import { PieceJointeUploaderComponent } from '../../pieces-jointes/piece-jointe-uploader/piece-jointe-uploader';
+import { PieceJointeService } from '../../pieces-jointes/services/piece-jointe';
+import { PieceJointeDTO, TypeEntiteJointe } from '../../../core/models/piece-jointe.model';
+
 @Component({
   selector: 'app-creer-ascenseur',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, PieceJointeUploaderComponent],
   templateUrl: './creer-ascenseur.html',
   styleUrl: './creer-ascenseur.scss',
 })
 export class CreerAscenseur implements OnInit {
+  // ---- Référence vers le composant d'upload de pièces jointes ----
+  @ViewChild('uploaderAscenseur') uploaderAscenseur!: PieceJointeUploaderComponent;
+
   private fb = inject(FormBuilder);
   private ascenseurService = inject(AscenseurService);
   private utilisateurService = inject(UtilisateurService);
@@ -27,9 +35,16 @@ export class CreerAscenseur implements OnInit {
   private villeService = inject(VilleService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private pieceJointeService = inject(PieceJointeService);
 
   submitting = signal(false);
   erreur = signal<string | null>(null);
+
+  // ---- Pièces jointes ----
+  // Exposé pour le template : évite de répéter "TypeEntiteJointe" partout
+  readonly TypeEntiteJointe = TypeEntiteJointe;
+  // Pièces jointes déjà existantes (utile en mode édition uniquement)
+  ascenseurPiecesJointes = signal<PieceJointeDTO[]>([]);
 
   // ---- Mode édition ----
   ascenseurId = signal<number | null>(null);
@@ -144,6 +159,12 @@ export class CreerAscenseur implements OnInit {
             this.chargementInitial.set(false);
           },
         });
+
+        // Chargement des pièces jointes déjà associées à cet ascenseur
+        this.pieceJointeService.lister(TypeEntiteJointe.ASCENSEUR, id).subscribe({
+          next: (res) => this.ascenseurPiecesJointes.set(res.data ?? []),
+          error: (err) => console.error('Erreur lors du chargement des pièces jointes', err),
+        });
       },
       error: (err) => {
         this.chargementInitial.set(false);
@@ -181,7 +202,6 @@ export class CreerAscenseur implements OnInit {
       error: (err) => console.error('Erreur lors du chargement des villes', err),
     });
   }
-
 
   ouvrirModalSite(): void {
     const clientId = this.form.controls.clientId.value;
@@ -303,6 +323,8 @@ export class CreerAscenseur implements OnInit {
         })
         .subscribe({
           next: (res) => {
+            // Upload des éventuelles nouvelles pièces jointes en attente
+            this.uploaderAscenseur.uploaderFichiersEnAttente(res.data!.id);
             this.submitting.set(false);
             this.router.navigate(['/ascenseurs', res.data!.id]);
           },
@@ -335,6 +357,8 @@ export class CreerAscenseur implements OnInit {
         })
         .subscribe({
           next: (res) => {
+            // Upload des pièces jointes sélectionnées avant la création
+            this.uploaderAscenseur.uploaderFichiersEnAttente(res.data!.id);
             this.submitting.set(false);
             this.router.navigate(['/fiches-ascenseur', res.data!.id]);
           },
