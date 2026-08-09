@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/auth/auth';
 import { BonTravailService } from '../services/bon-travail.service';
 import { environment } from '../../../../environments/environment';
+import { CommentaireDTO } from '../../../core/models/bon-travail.model';
 import {
   BonTravailDTO,
   ChecklistMaintenanceDTO,
@@ -60,7 +61,16 @@ export class ChecklistDetailComponent implements OnInit {
 
   edits = signal<Record<number, ItemEdit>>({});
 
+  commentaires = signal<CommentaireDTO[]>([]);
+  nouveauCommentaire = signal('');
+  envoiCommentaireEnCours = signal(false);
+  commentaireErreur = signal<string | null>(null);
+
   tempsEcoule = signal(0);
+  afficherCommentaires = signal(false);
+  commentaireSelectionne = signal<number | null>(null);
+  suppressionCommentaireEnCours = signal<number | null>(null);
+
   debutLocalMs: number | null = null;
 
   statutItemOptions = Object.values(StatutItem);
@@ -114,12 +124,22 @@ export class ChecklistDetailComponent implements OnInit {
 
   peutDemarrerBt = computed(() => {
     const bt = this.bonTravail();
-    return !!bt && this.pasDeChecklist() && this.estTechnicien() && bt.statut === StatutBonTravail.PLANIFIE;
+    return (
+      !!bt &&
+      this.pasDeChecklist() &&
+      this.estTechnicien() &&
+      bt.statut === StatutBonTravail.PLANIFIE
+    );
   });
 
   btEnCours = computed(() => {
     const bt = this.bonTravail();
-    return !!bt && this.pasDeChecklist() && this.estTechnicien() && bt.statut === StatutBonTravail.EN_COURS;
+    return (
+      !!bt &&
+      this.pasDeChecklist() &&
+      this.estTechnicien() &&
+      bt.statut === StatutBonTravail.EN_COURS
+    );
   });
 
   dureeTerminee = computed(() => {
@@ -138,35 +158,38 @@ export class ChecklistDetailComponent implements OnInit {
   tempsFormate = computed(() => ChecklistDetailComponent.formaterDuree(this.tempsEcoule()));
 
   constructor() {
-    effect(() => {
-      const cl = this.checklist();
-      const bt = this.bonTravail();
-      let debut: number | null = null;
-      let terminee = false;
+    effect(
+      () => {
+        const cl = this.checklist();
+        const bt = this.bonTravail();
+        let debut: number | null = null;
+        let terminee = false;
 
-      if (cl && cl.heureArrivee != null) {
-        if (cl.heureDepart != null) {
-          terminee = true;
-        } else {
-          debut = this.debutLocalMs ?? ChecklistDetailComponent.debutDepuisHeure(cl.heureArrivee);
+        if (cl && cl.heureArrivee != null) {
+          if (cl.heureDepart != null) {
+            terminee = true;
+          } else {
+            debut = this.debutLocalMs ?? ChecklistDetailComponent.debutDepuisHeure(cl.heureArrivee);
+          }
+        } else if (this.pasDeChecklist() && bt?.dateDebutReelle) {
+          if (bt.dateFinReelle) {
+            terminee = true;
+          } else {
+            debut = Date.parse(bt.dateDebutReelle);
+          }
         }
-      } else if (this.pasDeChecklist() && bt?.dateDebutReelle) {
-        if (bt.dateFinReelle) {
-          terminee = true;
-        } else {
-          debut = Date.parse(bt.dateDebutReelle);
-        }
-      }
 
-      if (debut == null || terminee) {
-        this.tempsEcoule.set(0);
-        return;
-      }
-      const maj = () => this.tempsEcoule.set(Math.max(0, Date.now() - debut!));
-      maj();
-      const id = setInterval(maj, 1000);
-      return () => clearInterval(id);
-    }, { allowSignalWrites: true });
+        if (debut == null || terminee) {
+          this.tempsEcoule.set(0);
+          return;
+        }
+        const maj = () => this.tempsEcoule.set(Math.max(0, Date.now() - debut!));
+        maj();
+        const id = setInterval(maj, 1000);
+        return () => clearInterval(id);
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   private static formaterDuree(ms: number): string {
@@ -223,6 +246,7 @@ export class ChecklistDetailComponent implements OnInit {
       next: (bt) => {
         this.bonTravail.set(bt);
         this.chargerChecklist(bt.id);
+        this.chargerCommentaires(bt.id);
       },
       error: () => {
         this.erreur.set('Impossible de charger le bon de travail.');
@@ -246,6 +270,11 @@ export class ChecklistDetailComponent implements OnInit {
         }
         this.chargement.set(false);
       },
+    });
+  }
+  private chargerCommentaires(btId: number): void {
+    this.bonTravailService.listerCommentaires(btId).subscribe({
+      next: (liste) => this.commentaires.set(liste),
     });
   }
 
@@ -293,7 +322,7 @@ export class ChecklistDetailComponent implements OnInit {
       },
       error: (err) => {
         this.demarrageEnCours.set(false);
-        this.erreur.set(err?.error?.message ?? 'Impossible de démarrer l\'intervention.');
+        this.erreur.set(err?.error?.message ?? "Impossible de démarrer l'intervention.");
       },
     });
   }
@@ -357,7 +386,7 @@ export class ChecklistDetailComponent implements OnInit {
       },
       error: () => {
         this.photoEnCours.set(null);
-        this.photoErreur.set("Erreur lors du téléversement de la photo.");
+        this.photoErreur.set('Erreur lors du téléversement de la photo.');
       },
     });
   }
@@ -365,7 +394,12 @@ export class ChecklistDetailComponent implements OnInit {
   ouvrirCloture(): void {
     if (!this.tousVerifies()) return;
     this.clotureErreur.set(null);
-    this.clotureForm.reset({ bilanIntervention: '', estMaintenance: false, estDepannage: false, estTravaux: false });
+    this.clotureForm.reset({
+      bilanIntervention: '',
+      estMaintenance: false,
+      estDepannage: false,
+      estTravaux: false,
+    });
     this.modaleCloture.set(true);
   }
 
@@ -550,5 +584,53 @@ export class ChecklistDetailComponent implements OnInit {
       ANNULE: 'statut-bt-annule',
     };
     return classes[statut] ?? '';
+  }
+  envoyerCommentaire(): void {
+    const texte = this.nouveauCommentaire().trim();
+    if (!texte) return;
+    const bt = this.bonTravail();
+    if (!bt) return;
+
+    this.envoiCommentaireEnCours.set(true);
+    this.commentaireErreur.set(null);
+
+    this.bonTravailService.ajouterCommentaire(bt.id, texte).subscribe({
+      next: (c) => {
+        this.commentaires.update((liste) => [...liste, c]);
+        this.nouveauCommentaire.set('');
+        this.envoiCommentaireEnCours.set(false);
+      },
+      error: (err) => {
+        this.envoiCommentaireEnCours.set(false);
+        this.commentaireErreur.set(err?.error?.message ?? "Erreur lors de l'envoi.");
+      },
+    });
+  }
+  estMonCommentaire(c: CommentaireDTO): boolean {
+    return c.auteurRole === (this.estTechnicien() ? 'TECHNICIEN' : 'RESPONSABLE_MAINTENANCE');
+  }
+  toggleCommentaires(): void {
+    this.afficherCommentaires.update((v) => !v);
+  }
+  toggleSelectionCommentaire(id: number): void {
+    this.commentaireSelectionne.update((sel) => (sel === id ? null : id));
+  }
+
+  supprimerCommentaire(c: CommentaireDTO): void {
+    const bt = this.bonTravail();
+    if (!bt) return;
+
+    this.suppressionCommentaireEnCours.set(c.id);
+    this.bonTravailService.supprimerCommentaire(bt.id, c.id).subscribe({
+      next: () => {
+        this.commentaires.update((liste) => liste.filter((x) => x.id !== c.id));
+        this.commentaireSelectionne.set(null);
+        this.suppressionCommentaireEnCours.set(null);
+      },
+      error: (err) => {
+        this.suppressionCommentaireEnCours.set(null);
+        this.commentaireErreur.set(err?.error?.message ?? 'Suppression impossible.');
+      },
+    });
   }
 }

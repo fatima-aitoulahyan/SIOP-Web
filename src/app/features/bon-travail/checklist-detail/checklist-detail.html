@@ -27,7 +27,7 @@
         @if (bt.demandeMaintenanceId) {
           <p><strong>Demande :</strong> #{{ bt.demandeMaintenanceId }}</p>
         }
-        <p><strong>Technicien responsable :</strong> {{ bt.technicienResponsableNom }}</p>
+        <p><strong>Technicien responsable  :</strong> {{ bt.technicienResponsableNom }}</p>
         @if (bt.techniciens.length > 1) {
           <p><strong>Équipe :</strong> {{ equipeLabel(bt) }}</p>
         }
@@ -466,5 +466,83 @@
         </div>
       </form>
     </div>
+  </div>
+}
+
+<!-- ===== Widget de messagerie flottant ===== -->
+@if (bonTravail(); as bt) {
+  <div class="chat-widget" [class.chat-widget--open]="afficherCommentaires()">
+
+    <button type="button" class="chat-header" (click)="toggleCommentaires()">
+      <span class="chat-avatar">
+        {{ bt.technicienResponsableNom ? bt.technicienResponsableNom.charAt(0) : '?' }}
+        <span class="chat-avatar-dot"></span>
+      </span>
+      <span class="chat-title">Messagerie</span>
+      @if (!afficherCommentaires() && commentaires().length > 0) {
+        <span class="chat-badge">{{ commentaires().length }}</span>
+      }
+      <span class="chat-chevron" [class.chat-chevron--open]="afficherCommentaires()">
+        <svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </button>
+
+    @if (afficherCommentaires()) {
+      <div class="chat-body">
+        <div class="chat-messages">
+          @if (commentaires().length === 0) {
+            <p class="chat-empty">Aucun message pour le moment.</p>
+          }
+          @for (c of commentaires(); track c.id) {
+            <div
+              class="chat-msg"
+              [class.chat-msg--self]="estMonCommentaire(c)"
+              [class.chat-msg--selected]="commentaireSelectionne() === c.id"
+              (click)="toggleSelectionCommentaire(c.id)"
+            >
+              <div class="chat-msg-meta">
+                <span class="chat-msg-author">{{ c.auteurNom }}</span>
+                <span class="chat-msg-date">{{ c.createdAt | date: 'dd/MM HH:mm' }}</span>
+              </div>
+              <p class="chat-msg-text">{{ c.contenu }}</p>
+
+              @if (commentaireSelectionne() === c.id && estMonCommentaire(c)) {
+                <div class="chat-msg-actions" (click)="$event.stopPropagation()">
+                  <button
+                    type="button"
+                    class="chat-msg-delete"
+                    [disabled]="suppressionCommentaireEnCours() === c.id"
+                    (click)="supprimerCommentaire(c)"
+                  >
+                    {{ suppressionCommentaireEnCours() === c.id ? 'Suppression…' : '🗑 Supprimer' }}
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        @if (commentaireErreur()) {
+          <p class="chat-error">{{ commentaireErreur() }}</p>
+        }
+
+        <div class="chat-input-row">
+          <textarea
+            rows="1"
+            placeholder="Écrire un message…"
+            [ngModel]="nouveauCommentaire()"
+            (ngModelChange)="nouveauCommentaire.set($event)"
+          ></textarea>
+          <button
+            type="button"
+            class="chat-send"
+            [disabled]="!nouveauCommentaire().trim() || envoiCommentaireEnCours()"
+            (click)="envoyerCommentaire()"
+          >
+            {{ envoiCommentaireEnCours() ? '…' : '➤' }}
+          </button>
+        </div>
+      </div>
+    }
   </div>
 }

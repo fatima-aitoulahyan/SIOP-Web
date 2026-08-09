@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth-guard';
 import { roleGuard } from './core/auth/role-guard';
 import { ResponsableLayout } from './core/layout/responsable-layout/responsable-layout';
-import { Routes } from '@angular/router';
 import { ClientLayout } from './core/layout/client-layout/client-layout';
 
 export const routes: Routes = [

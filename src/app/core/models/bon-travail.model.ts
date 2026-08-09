@@ -130,3 +130,11 @@ export interface ConflitTechnicienDTO {
   ascenseurNom: string;
   dateInterventionPrevue: string;
 }
+export interface CommentaireDTO {
+  id: number;
+  auteurId: number;
+  auteurNom: string;
+  auteurRole: 'TECHNICIEN' | 'RESPONSABLE_MAINTENANCE' | string;
+  contenu: string;
+  createdAt: string;
+}
