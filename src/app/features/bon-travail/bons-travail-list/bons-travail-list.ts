@@ -41,6 +41,7 @@ export class BonsTravailListComponent {
     if (!terme) return list;
     return list.filter(
       (b) =>
+        b.id.toString().includes(terme) ||
         b.ascenseurNom?.toLowerCase().includes(terme) ||
         b.siteAdresse?.toLowerCase().includes(terme) ||
         b.parcNom?.toLowerCase().includes(terme) ||

@@ -1,0 +1,64 @@
+<div class="page-wrapper">
+  <div class="list-card">
+    <div class="card-header">
+      <div>
+        <h2>Demandes d'évaluation</h2>
+        <p class="subtitle">{{ demandesFiltrees().length }} demande(s)</p>
+      </div>
+    </div>
+
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          placeholder="Rechercher par ascenseur, client..."
+          [ngModel]="recherche()"
+          (ngModelChange)="recherche.set($event)"
+        />
+      </div>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement…</p>
+    } @else if (demandesFiltrees().length === 0) {
+      <div class="etat-vide">
+        <p>Aucune demande d'évaluation pour le moment.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>N°</th>
+            <th>Client</th>
+            <th>Statut</th>
+            <th>Date</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (d of demandesFiltrees(); track d.id) {
+              <tr>
+                <td><strong>{{ d.id }}</strong></td>
+                <td>{{ d.clientNom }}</td>
+                <td>
+                  <span class="statut-badge {{ statutClass(d.statut) }}">
+                    {{ statutLabel(d.statut) }}
+                  </span>
+                </td>
+                <td>{{ d.createdAt | date: 'dd/MM/yyyy' }}</td>
+                <td class="col-actions">
+                  <a [routerLink]="['/responsable', d.id]" class="lien-action">Voir</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

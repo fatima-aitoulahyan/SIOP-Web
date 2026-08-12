@@ -3,10 +3,10 @@
 // =====================================================
 
 export enum TypeDemande {
-  PANNE = 'PANNE',
-  ENTRETIEN_PREVENTIF = 'ENTRETIEN_PREVENTIF',
-  BRUIT_ANORMAL = 'BRUIT_ANORMAL',
-  AUTRE = 'AUTRE',
+  PREVENTIVE = 'PREVENTIVE',
+  DEPANNAGE = 'PANNE',
+  TRAVAUX = 'TRAVAUX',
+  EVALUATION = 'EVALUATION',
 }
 
 export enum PrioriteDemande {
@@ -21,6 +21,7 @@ export enum StatutDemande {
   EN_COURS = 'EN_COURS',
   RESOLUE = 'RESOLUE',
   ANNULEE = 'ANNULEE',
+  REJETEE = 'REJETEE',
 }
 
 // =====================================================
@@ -28,10 +29,10 @@ export enum StatutDemande {
 // =====================================================
 
 export const TYPE_DEMANDE_LABELS: Record<TypeDemande, string> = {
-  [TypeDemande.PANNE]: 'Panne',
-  [TypeDemande.ENTRETIEN_PREVENTIF]: 'Entretien préventif',
-  [TypeDemande.BRUIT_ANORMAL]: 'Bruit anormal',
-  [TypeDemande.AUTRE]: 'Autre',
+  [TypeDemande.PREVENTIVE]: 'Maintenance préventive',
+  [TypeDemande.DEPANNAGE]: 'Dépannage',
+  [TypeDemande.TRAVAUX]: 'Travaux',
+  [TypeDemande.EVALUATION]: "Évaluation d'un nouvel ascenseur",
 };
 
 export const PRIORITE_DEMANDE_LABELS: Record<PrioriteDemande, string> = {
@@ -46,10 +47,23 @@ export const STATUT_DEMANDE_LABELS: Record<StatutDemande, string> = {
   [StatutDemande.EN_COURS]: 'En cours',
   [StatutDemande.RESOLUE]: 'Résolue',
   [StatutDemande.ANNULEE]: 'Annulée',
+  [StatutDemande.REJETEE]: 'Rejetée',
 };
 
 // =====================================================
-// DTOs (miroir du backend : dto/demandeMaintenance/*)
+// Sous-types
+// =====================================================
+
+export interface PieceJointeAvecUrlDTO {
+  id: number;
+  nomFichier: string;
+  url: string;
+  typeFichier: string;
+  description: string | null;
+}
+
+// =====================================================
+// DTOs (miroir du backend : dto/DemandeMaintenance/*)
 // =====================================================
 
 export interface DemandeMaintenanceCreateDTO {
@@ -60,18 +74,37 @@ export interface DemandeMaintenanceCreateDTO {
   dateSouhaitee?: string | null;
 }
 
+// DTO dédié pour la demande d'évaluation (pas d'ascenseurId ni de siteId :
+// ni l'un ni l'autre n'existent encore, le client tape ville/adresse en texte libre)
+export interface DemandeEvaluationCreateDTO {
+  ville: string;
+  adresse: string;
+  description: string;
+  dateSouhaitee?: string | null;
+}
+
+export interface RejetDemandeDTO {
+  motif: string;
+}
+
 export interface DemandeMaintenanceDTO {
   id: number;
   typeDemande: TypeDemande;
   priorite: PrioriteDemande;
   statut: StatutDemande;
   description: string;
-  dateSouhaitee?: string | null;
+  dateSouhaitee: string | null;
+  motifRejet: string | null;
 
-  ascenseurId: number;
-  ascenseurNom: string;
+  ascenseurId: number | null;
+  ascenseurNom: string | null;
+
+  villeSaisie: string | null;
+  adresseSaisie: string | null;
 
   clientId: number;
+  clientNom: string;
 
-  dateCreation?: string | null;
+  createdAt: string;
+  photos: PieceJointeAvecUrlDTO[];
 }

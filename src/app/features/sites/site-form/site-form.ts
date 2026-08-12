@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { VilleDTO } from '../../../core/models/ville.model';
@@ -25,6 +25,18 @@ export class SiteFormComponent implements OnInit {
   private utilisateurService = inject(UtilisateurService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  @Input() modeIncorpore = false;
+
+  // --- INPUTS / OUTPUTS MODIFIÉS POUR ÉMETTRE LE SITE CRÉÉ ---
+  @Input() set clientIdPredefini(id: number | null | undefined) {
+    if (id) {
+      this.form.patchValue({ clientId: id });
+      this.form.controls.clientId.disable();
+    }
+  }
+
+  @Output() siteCree = new EventEmitter<any>();
+  // -----------------------------------------------------------
 
   modeEdition = signal(false);
   siteId = signal<number | null>(null);
@@ -36,11 +48,11 @@ export class SiteFormComponent implements OnInit {
   clients: UtilisateurResponseDTO[] = [];
 
   form = this.fb.nonNullable.group({
-  clientId: [null as number | null, Validators.required],
-  villeId: [null as number | null, Validators.required],
-  parcId: [null as number | null, Validators.required],
-  adresse: ['', Validators.required],
-});
+    clientId: [null as number | null, Validators.required],
+    villeId: [null as number | null, Validators.required],
+    parcId: [null as number | null, Validators.required],
+    adresse: ['', Validators.required],
+  });
 
   // ---- Modale "Nouvelle ville" ----
   showVilleModal = signal(false);
@@ -96,13 +108,13 @@ export class SiteFormComponent implements OnInit {
       },
     });
   }
-  
- private chargerParcs(): void {
-  this.parcService.listerTous().subscribe({
-    next: (parcs) => this.parcs.set(parcs),
-    error: () => this.erreur.set('Impossible de charger la liste des parcs.'),
-  });
-}
+
+  private chargerParcs(): void {
+    this.parcService.listerTous().subscribe({
+      next: (parcs) => this.parcs.set(parcs),
+      error: () => this.erreur.set('Impossible de charger la liste des parcs.'),
+    });
+  }
 
   ouvrirModalVille(): void {
     this.villeModalError.set(null);
@@ -155,22 +167,36 @@ export class SiteFormComponent implements OnInit {
           parcId: valeurs.parcId ?? null,
         })
         .subscribe({
-          next: () => this.router.navigate(['/sites']),
+          next: () => {
+            this.envoiEnCours.set(false);
+            this.router.navigate(['/sites']);
+          },
           error: () => {
             this.erreur.set('La mise à jour du site a échoué.');
             this.envoiEnCours.set(false);
           },
         });
     } else {
+      const valeursCompletes = this.form.getRawValue();
+
       this.siteService
         .creer({
-          clientId: valeurs.clientId!,
-          villeId: valeurs.villeId!,
-          adresse: valeurs.adresse,
-          parcId: valeurs.parcId!,
+          clientId: valeursCompletes.clientId!,
+          villeId: valeursCompletes.villeId!,
+          adresse: valeursCompletes.adresse,
+          parcId: valeursCompletes.parcId!,
         })
         .subscribe({
-          next: () => this.router.navigate(['/sites']),
+          next: (nouveauSite) => {
+            this.envoiEnCours.set(false);
+
+            // Émission de l'objet site créé vers le composant parent
+            if (this.siteCree.observed) {
+              this.siteCree.emit(nouveauSite);
+            } else {
+              this.router.navigate(['/sites']);
+            }
+          },
           error: () => {
             this.erreur.set('La création du site a échoué.');
             this.envoiEnCours.set(false);

@@ -1,0 +1,81 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    <div class="card-header">
+      <div>
+        <h2>Détail de l'évaluation</h2>
+        @if (evaluation(); as e) {
+          <p class="subtitle">Par {{ e.technicienNom }} — {{ e.dateVisite | date: 'dd/MM/yyyy HH:mm' }}</p>
+        }
+      </div>
+      <a routerLink="/responsable/evaluations" class="btn-secondary">← Retour</a>
+    </div>
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement…</p>
+    } @else if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    } @else if (evaluation(); as e) {
+      <p class="section-title">Identification</p>
+      <div class="grid-2">
+        <div class="champ-info"><span>Fabricant</span><strong>{{ e.fabricant || '—' }}</strong></div>
+        <div class="champ-info"><span>Marque</span><strong>{{ e.marque || '—' }}</strong></div>
+        <div class="champ-info"><span>Modèle</span><strong>{{ e.modele || '—' }}</strong></div>
+        <div class="champ-info"><span>Type</span><strong>{{ e.type || '—' }}</strong></div>
+        <div class="champ-info"><span>N° série</span><strong>{{ e.numeroSerie || '—' }}</strong></div>
+        <div class="champ-info"><span>Code-barre</span><strong>{{ e.codeBarre || '—' }}</strong></div>
+      </div>
+
+      <p class="section-title">Caractéristiques techniques</p>
+      <div class="grid-2">
+        <div class="champ-info"><span>Nombre d'étages</span><strong>{{ e.nombreEtages ?? '—' }}</strong></div>
+        <div class="champ-info"><span>Capacité</span><strong>{{ e.capacitePersonnes ?? '—' }} pers.</strong></div>
+        <div class="champ-info"><span>Charge max</span><strong>{{ e.chargeMaxKg ?? '—' }} kg</strong></div>
+        <div class="champ-info"><span>Vitesse</span><strong>{{ e.vitesse ?? '—' }} m/s</strong></div>
+        <div class="champ-info"><span>Puissance</span><strong>{{ e.puissance || '—' }}</strong></div>
+        <div class="champ-info"><span>Mise en service</span><strong>{{ e.dateMiseEnService || '—' }}</strong></div>
+      </div>
+
+      <p class="section-title">Bilan terrain</p>
+      <div class="champ-info-bloc"><span>État des portes</span><p>{{ e.etatPortes || '—' }}</p></div>
+      <div class="champ-info-bloc"><span>Position cabine</span><p>{{ e.positionCabine || '—' }}</p></div>
+      <div class="champ-info-bloc"><span>Anomalies</span><p>{{ e.anomalies || 'Aucune' }}</p></div>
+      <div class="champ-info-bloc"><span>Cause extérieure</span><p>{{ e.causeExterieure || '—' }}</p></div>
+      <div class="champ-info-bloc"><span>Observations</span><p>{{ e.observations || '—' }}</p></div>
+
+      @if (e.statut === 'ENVOYEE') {
+        @if (!showRejetForm()) {
+          <div class="actions">
+            <button type="button" class="btn-secondary btn-danger" (click)="showRejetForm.set(true)">
+              Rejeter
+            </button>
+            <button type="button" class="btn-primary" [disabled]="envoiEnCours()" (click)="accepter()">
+              {{ envoiEnCours() ? 'Traitement…' : "Accepter et créer l'ascenseur" }}
+            </button>
+          </div>
+        } @else {
+          <form [formGroup]="rejetForm" (ngSubmit)="rejeter()">
+            <div class="form-group">
+              <label for="motif">Motif du rejet *</label>
+              <textarea id="motif" formControlName="motif" rows="3"
+                        placeholder="Expliquez pourquoi cette évaluation est rejetée…"></textarea>
+              @if (rejetForm.controls.motif.touched && rejetForm.controls.motif.invalid) {
+                <span class="champ-erreur">Le motif doit contenir au moins 10 caractères.</span>
+              }
+            </div>
+            <div class="actions">
+              <button type="button" class="btn-secondary" (click)="showRejetForm.set(false)">Annuler</button>
+              <button type="submit" class="btn-primary btn-danger" [disabled]="envoiEnCours()">
+                {{ envoiEnCours() ? 'Envoi…' : 'Confirmer le rejet' }}
+              </button>
+            </div>
+          </form>
+        }
+      } @else {
+        <div class="info-precharge">
+          Statut : <strong>{{ e.statut }}</strong>
+          @if (e.motifRefus) { — {{ e.motifRefus }} }
+        </div>
+      }
+    }
+  </div>
+</div>

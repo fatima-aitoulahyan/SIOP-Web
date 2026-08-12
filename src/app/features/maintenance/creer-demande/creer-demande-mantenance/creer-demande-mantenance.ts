@@ -3,24 +3,25 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { MaintenanceService } from '../services/maintenance.service';
-import { AuthService } from '../../../core/auth/auth';
-import { AscenseurService } from '../../ascenseurs/services/ascenseur.service';
-import { environment } from '../../../../environments/environment';
+import { MaintenanceService } from '../../services/maintenance.service';
+import { AuthService } from '../../../../core/auth/auth';
+import { AscenseurService } from '../../../ascenseurs/services/ascenseur.service';
+import { environment } from '../../../../../environments/environment';
 import {
-  TypeDemande,
   PrioriteDemande,
-} from '../../../core/models/maintenance.model';
-import { AscenseurDTO } from '../../../core/models/ascenseur.model';
+} from '../../../../core/models/maintenance.model';
+import { AscenseurDTO } from '../../../../core/models/ascenseur.model';
+import { TypeDemande } from '../../../../core/models/demande-maintenance.model';
+import { CreerDemandeEvaluationComponent } from '../creer-demande-evaluation/creer-demande-evaluation';
 
 @Component({
-  selector: 'app-maintenance-form',
+  selector: 'app-creer-demande-mantenance',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  templateUrl: './maintenance-form.html',
-  styleUrls: ['./maintenance-form.scss'],
+  templateUrl: './creer-demande-mantenance.html',
+  styleUrls: ['./creer-demande-mantenance.scss'],
 })
-export class MaintenanceFormComponent implements OnInit, OnDestroy {
+export class CreerDemandeMantenanceComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private maintenanceService = inject(MaintenanceService);
   private ascenseurService = inject(AscenseurService);
@@ -43,7 +44,7 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
   traitementAudio = signal(false);
 
   ascenseurs = signal<AscenseurDTO[]>([]);
-  types = Object.values(TypeDemande);
+  types = Object.values(TypeDemande).filter((t) => t !== TypeDemande.EVALUATION);
   priorites = Object.values(PrioriteDemande);
 
   private mediaRecorder: MediaRecorder | null = null;
@@ -53,7 +54,7 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
   form = this.fb.nonNullable.group({
     ascenseurId: [null as number | null, Validators.required],
     typeDemande: [null as TypeDemande | null, Validators.required],
-    priorite: [null as PrioriteDemande | null, Validators.required],
+    priorite: [PrioriteDemande.NORMALE],
     description: ['', [Validators.required, Validators.minLength(10)]],
     dateSouhaitee: [''],
   });
@@ -89,7 +90,9 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
     const combined = [...this.photosSelectionnees(), ...newFiles];
 
     if (combined.length > 5) {
-      this.photosErreur.set(`Maximum 5 photos autorisées. ${combined.length - 5} photo(s) non ajoutée(s).`);
+      this.photosErreur.set(
+        `Maximum 5 photos autorisées. ${combined.length - 5} photo(s) non ajoutée(s).`,
+      );
     } else {
       this.photosErreur.set(null);
     }
@@ -111,9 +114,7 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       this.audioStream = stream;
 
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm')
-        ? 'audio/webm'
-        : 'audio/ogg';
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg';
 
       this.mediaRecorder = new MediaRecorder(stream, { mimeType });
 
@@ -143,9 +144,7 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
         this.dureeEnregistrement.update((v) => v + 1);
       }, 1000);
     } catch {
-      this.audioErreur.set(
-        'Impossible d\'accéder au microphone. Vérifiez les permissions.',
-      );
+      this.audioErreur.set("Impossible d'accéder au microphone. Vérifiez les permissions.");
     }
   }
 
@@ -201,10 +200,9 @@ export class MaintenanceFormComponent implements OnInit, OnDestroy {
           const audio = this.audioBlob();
           if (audio) {
             const baseType = audio.type.split(';')[0];
-            const ext = baseType === 'audio/webm' ? 'webm' : baseType === 'audio/ogg' ? 'ogg' : 'mp4';
-            fichiers.push(
-              new File([audio], `enregistrement.${ext}`, { type: baseType }),
-            );
+            const ext =
+              baseType === 'audio/webm' ? 'webm' : baseType === 'audio/ogg' ? 'ogg' : 'mp4';
+            fichiers.push(new File([audio], `enregistrement.${ext}`, { type: baseType }));
           }
 
           if (fichiers.length === 0) {

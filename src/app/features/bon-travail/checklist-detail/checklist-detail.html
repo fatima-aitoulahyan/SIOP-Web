@@ -1,48 +1,78 @@
 <div class="page-wrapper">
   <div class="detail-card">
     @if (chargement()) {
-      <p class="etat-vide">Chargement…</p>
+      <div class="state-container">
+        <div class="spinner"></div>
+        <p class="etat-vide">Chargement des informations…</p>
+      </div>
     } @else if (erreur()) {
       <div class="card-header">
-        <h2>Erreur</h2>
+        <div>
+          <h2>Erreur</h2>
+          <p class="subtitle">Impossible de charger le bon de travail</p>
+        </div>
         <a [routerLink]="routeRetour()" class="btn-secondary">← Retour</a>
       </div>
-      <p class="error">{{ erreur() }}</p>
+      <div class="error-banner">{{ erreur() }}</div>
     } @else if (bonTravail(); as bt) {
+
+      <!-- En-tête principal -->
       <div class="card-header">
-        <div>
-          <h2>Bon de travail #{{ bt.id }} — {{ bt.ascenseurNom }}</h2>
-          <p class="subtitle">
-            {{ bt.siteAdresse || '—' }}
-            @if (bt.parcNom) { · Parc {{ bt.parcNom }} }
+        <div class="header-main-info">
+          <div class="title-badge-row">
+            <h2>Bon de travail  N° {{ bt.id }}</h2>
+            <span class="statut-badge {{ statutBtClass(bt.statut) }}">{{ statutBtLabel(bt.statut) }}</span>
+          </div>
+          <p class="subtitle-main">
+            <span class="highlight-ascenseur">{{ bt.ascenseurNom }}</span>
+            <span class="separator">•</span>
+            {{ bt.siteAdresse || 'Adresse non renseignée' }}
+            @if (bt.parcNom) { <span class="separator">•</span> Parc {{ bt.parcNom }} }
           </p>
         </div>
         <a [routerLink]="routeRetour()" class="btn-secondary">← Retour</a>
       </div>
 
-      <div class="detail-grid">
-        <p><strong>Statut :</strong> <span class="statut-badge {{ statutBtClass(bt.statut) }}">{{ statutBtLabel(bt.statut) }}</span></p>
-        <p><strong>Date prévue :</strong> {{ bt.dateInterventionPrevue | date: 'dd/MM/yyyy HH:mm' }}</p>
-        <p><strong>Priorité :</strong> {{ bt.priorite }}</p>
+      <!-- Grille d'informations clés -->
+      <div class="info-section-grid">
+        <div class="info-item">
+          <span class="info-label">Date prévue</span>
+          <span class="info-value">{{ bt.dateInterventionPrevue | date: 'dd/MM/yyyy à HH:mm' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Priorité</span>
+          <span class="info-value">{{ bt.priorite }}</span>
+        </div>
         @if (bt.demandeMaintenanceId) {
-          <p><strong>Demande :</strong> #{{ bt.demandeMaintenanceId }}</p>
+          <div class="info-item">
+            <span class="info-label">Demande liée</span>
+            <span class="info-value"> N° {{ bt.demandeMaintenanceId }}</span>
+          </div>
         }
-        <p><strong>Technicien responsable  :</strong> {{ bt.technicienResponsableNom }}</p>
+        <div class="info-item">
+          <span class="info-label">Technicien responsable</span>
+          <span class="info-value">{{ bt.technicienResponsableNom }}</span>
+        </div>
         @if (bt.techniciens.length > 1) {
-          <p><strong>Équipe :</strong> {{ equipeLabel(bt) }}</p>
+          <div class="info-item full-width">
+            <span class="info-label">Équipe d'intervention</span>
+            <span class="info-value">{{ equipeLabel(bt) }}</span>
+          </div>
         }
       </div>
 
+      <!-- Description initiale -->
       @if (bt.description) {
-        <div class="form-group">
-          <label>Description</label>
+        <div class="content-block">
+          <label class="block-label">Description de la demande</label>
           <div class="readonly-text">{{ bt.description }}</div>
         </div>
       }
 
+      <!-- Photos de la demande -->
       @if (bt.photosDemande.length) {
-        <div class="form-group">
-          <label>Photos de la demande</label>
+        <div class="content-block">
+          <label class="block-label">Photos initiales</label>
           <div class="photo-strip">
             @for (pj of bt.photosDemande; track pj.id) {
               @if (pj.typeFichier === 'IMAGE') {
@@ -51,6 +81,7 @@
                   [alt]="pj.nomFichier"
                   class="photo-mini"
                   (click)="ouvrirPhoto(pj.url)"
+                  title="Agrandir l'image"
                 />
               }
             }
@@ -58,61 +89,65 @@
         </div>
       }
 
+      <!-- Cas sans checklist (Intervention standard / Dépannage / Évaluation) -->
       @if (pasDeChecklist()) {
         @if (bt.statut === 'TERMINE') {
-          <div class="section-title">
-            <div>
+          <div class="section-divider">
+            <div class="section-title-wrapper">
               <h3>Rapport d'intervention</h3>
+              <p class="subtitle">Interprétation et actions menées</p>
             </div>
-            <div class="heures">
+            <div class="heures-badge-group">
               @if (bt.dateDebutReelle) {
-                <span>Début : {{ bt.dateDebutReelle | date: 'dd/MM/yyyy HH:mm' }}</span>
+                <span class="time-pill">Début : {{ bt.dateDebutReelle | date: 'dd/MM/yyyy HH:mm' }}</span>
               }
               @if (bt.dateFinReelle) {
-                <span>Fin : {{ bt.dateFinReelle | date: 'dd/MM/yyyy HH:mm' }}</span>
+                <span class="time-pill">Fin : {{ bt.dateFinReelle | date: 'dd/MM/yyyy HH:mm' }}</span>
               }
               @if (dureeBtTerminee()) {
-                <span class="info-type">Durée Intervention : {{ dureeBtTerminee() }}</span>
+                <span class="time-pill duration">Durée : {{ dureeBtTerminee() }}</span>
               }
             </div>
           </div>
 
-          @if (bt.diagnostic) {
-            <div class="form-group">
-              <label>Diagnostic</label>
-              <div class="readonly-text">{{ bt.diagnostic }}</div>
-            </div>
-          }
-          @if (bt.causeIdentifiee) {
-            <div class="form-group">
-              <label>Cause identifiée</label>
-              <div class="readonly-text">{{ bt.causeIdentifiee }}</div>
-            </div>
-          }
-          @if (bt.actionRealisee) {
-            <div class="form-group">
-              <label>Action réalisée</label>
-              <div class="readonly-text">{{ bt.actionRealisee }}</div>
-            </div>
-          }
-          @if (bt.piecesRemplacees) {
-            <div class="form-group">
-              <label>Pièces remplacées</label>
-              <div class="readonly-text">{{ bt.piecesRemplacees }}</div>
-            </div>
-          }
-          @if (bt.essaiConcluant != null) {
-            <div class="form-group">
-              <label>Essai concluant</label>
-              <div class="readonly-text">{{ essaiLabel(bt.essaiConcluant) }}</div>
-            </div>
-          }
-          @if (bt.recommandations) {
-            <div class="form-group">
-              <label>Recommandations</label>
-              <div class="readonly-text">{{ bt.recommandations }}</div>
-            </div>
-          }
+          <div class="report-grid">
+            @if (bt.diagnostic) {
+              <div class="content-block">
+                <label class="block-label">Diagnostic</label>
+                <div class="readonly-text">{{ bt.diagnostic }}</div>
+              </div>
+            }
+            @if (bt.causeIdentifiee) {
+              <div class="content-block">
+                <label class="block-label">Cause identifiée</label>
+                <div class="readonly-text">{{ bt.causeIdentifiee }}</div>
+              </div>
+            }
+            @if (bt.actionRealisee) {
+              <div class="content-block">
+                <label class="block-label">Action réalisée</label>
+                <div class="readonly-text">{{ bt.actionRealisee }}</div>
+              </div>
+            }
+            @if (bt.piecesRemplacees) {
+              <div class="content-block">
+                <label class="block-label">Pièces remplacées</label>
+                <div class="readonly-text">{{ bt.piecesRemplacees }}</div>
+              </div>
+            }
+            @if (bt.essaiConcluant != null) {
+              <div class="content-block">
+                <label class="block-label">Essai concluant</label>
+                <div class="readonly-text">{{ essaiLabel(bt.essaiConcluant) }}</div>
+              </div>
+            }
+            @if (bt.recommandations) {
+              <div class="content-block">
+                <label class="block-label">Recommandations</label>
+                <div class="readonly-text">{{ bt.recommandations }}</div>
+              </div>
+            }
+          </div>
         } @else {
           @if (interventionEnCours()) {
             <div class="timer-box">
@@ -122,47 +157,107 @@
             </div>
           }
 
+          <!-- Cas ÉVALUATION -->
+          @if (estEvaluation()) {
+            @if (estTechnicien()) {
+              <!-- Côté TECHNICIEN : accès au formulaire de saisie -->
+              @if (bt.statut === 'EN_COURS') {
+                <div class="actions-container">
+                  <a [routerLink]="['/technicien/evaluations', bt.id]" class="btn-primary-action">
+                    📋 Remplir / continuer l'évaluation de l'ascenseur
+                  </a>
+                  <p class="hint">Renseignez les caractéristiques constatées puis soumettez l'évaluation au responsable.</p>
+                </div>
+              }
+            } @else {
+              <!-- Côté RESPONSABLE : statut de l'évaluation + lien d'examen -->
+              <div class="content-block">
+                <label class="block-label">Évaluation de l'ascenseur</label>
+                @if (chargementEvaluation()) {
+                  <div class="readonly-text">Chargement du statut de l'évaluation…</div>
+                } @else if (evaluationLiee(); as evalu) {
+                  @switch (evalu.statut) {
+                    @case ('BROUILLON') {
+                      <div class="info-precharge">
+                        📝 Le technicien a commencé à remplir l'évaluation, mais ne l'a pas encore soumise.
+                      </div>
+                    }
+                    @case ('ENVOYEE') {
+                      <div class="actions-container">
+                        <a [routerLink]="['/responsable/evaluations', evalu.id]" class="btn-primary-action">
+                          🔍 Examiner l'évaluation soumise
+                        </a>
+                        <p class="hint">Le technicien a soumis son évaluation. Consultez-la pour l'accepter ou la rejeter.</p>
+                      </div>
+                    }
+                    @case ('ACCEPTEE') {
+                      <div class="info-precharge">
+                        ✅ Évaluation acceptée — l'ascenseur a été créé dans le système.
+                        <a [routerLink]="['/responsable/evaluations', evalu.id]" class="lien-action">Voir le détail</a>
+                      </div>
+                    }
+                    @case ('REFUSEE') {
+                      <div class="error-banner">
+                        ❌ Évaluation rejetée.
+                        <a [routerLink]="['/responsable/evaluations', evalu.id]" class="lien-action">Voir le motif</a>
+                      </div>
+                    }
+                  }
+                } @else {
+                  <div class="readonly-text">Le technicien n'a pas encore commencé l'évaluation.</div>
+                }
+              </div>
+            }
+          }
+
           @if (peutDemarrerBt()) {
-            <div class="actions-demo">
-              <button type="button" class="btn-primary" [disabled]="demarrageBtEnCours()" (click)="demarrerBt()">
-                {{ demarrageBtEnCours() ? 'Démarrage…' : '▶ Démarrer l\'intervention' }}
+            <div class="actions-container">
+              <button type="button" class="btn-primary-action" [disabled]="demarrageBtEnCours()" (click)="demarrerBt()">
+                {{ demarrageBtEnCours() ? 'Démarrage en cours…' : '▶ Démarrer l\'intervention' }}
               </button>
-              <p class="hint">Ce bon de travail n'a pas de checklist : démarrez directement l'intervention.</p>
+              <p class="hint">
+                @if (estEvaluation()) {
+                  Vous serez redirigé vers le formulaire d'évaluation de l'ascenseur.
+                } @else {
+                  Ce bon ne nécessite pas de checklist : vous pouvez démarrer l'intervention directement.
+                }
+              </p>
             </div>
-          } @else if (btEnCours()) {
-            <div class="actions-demo cloture">
-              <button type="button" class="btn-primary" (click)="ouvrirClotureBt()">
+          } @else if (btEnCours() && !estEvaluation()) {
+            <div class="actions-container cloture-zone">
+              <button type="button" class="btn-primary-action btn-danger-soft" (click)="ouvrirClotureBt()">
                 Clôturer l'intervention
               </button>
-              <p class="hint">L'intervention est en cours : cliquez sur Clôturer pour saisir le rapport final.</p>
+              <p class="hint">L'intervention est active. Cliquez pour rédiger et valider le rapport final.</p>
             </div>
-          } @else {
-            <div class="etat-vide">
-              <p>Aucune checklist pour ce bon de travail (intervention non préventive).</p>
+          } @else if (!estEvaluation()) {
+            <div class="state-container">
+              <p>Aucune checklist requise pour ce bon de travail (intervention non préventive).</p>
             </div>
           }
         }
       } @else if (checklist(); as cl) {
-        <div class="section-title">
-          <div>
-            <h3>Checklist — {{ cl.mois }}/{{ cl.annee }}</h3>
+
+        <!-- Section Checklist -->
+        <div class="section-divider">
+          <div class="section-title-wrapper">
+            <h3>Checklist de maintenance — {{ cl.mois }}/{{ cl.annee }}</h3>
             @if (cl.technicienNom) {
-              <p class="subtitle">Technicien : {{ cl.technicienNom }}</p>
+              <p class="subtitle">Assigné à : {{ cl.technicienNom }}</p>
             }
           </div>
-          <div class="heures">
+          <div class="heures-badge-group">
             @if (cl.heureArrivee) {
-              <span>Arrivée : {{ cl.heureArrivee }}</span>
+              <span class="time-pill">Arrivée : {{ cl.heureArrivee }}</span>
             }
             @if (cl.heureDepart) {
-              <span>Départ : {{ cl.heureDepart }}</span>
-              <span>Fin : {{ cl.heureDepart }}</span>
+              <span class="time-pill">Départ : {{ cl.heureDepart }}</span>
             }
             @if (dureeTerminee()) {
-              <span class="info-type">Durée Intervention : {{ dureeTerminee() }}</span>
+              <span class="time-pill duration">Durée : {{ dureeTerminee() }}</span>
             }
             @if (cl.bilanIntervention) {
-              <span class="info-type">
+              <span class="badge-type-intervention">
                 @if (cl.estMaintenance) { Maintenance }
                 @if (cl.estDepannage) { · Dépannage }
                 @if (cl.estTravaux) { · Travaux }
@@ -174,110 +269,116 @@
         @if (interventionEnCours()) {
           <div class="timer-box">
             <span class="timer-dot"></span>
-            <span class="timer-label">Intervention en cours</span>
+            <span class="timer-label">Chronomètre d'intervention</span>
             <span class="timer-valeur">{{ tempsFormate() }}</span>
           </div>
         }
 
         @if (peutDemarrer()) {
-          <div class="actions-demo">
-            <button type="button" class="btn-primary" [disabled]="demarrageEnCours()" (click)="demarrer()">
+          <div class="actions-container">
+            <button type="button" class="btn-primary-action" [disabled]="demarrageEnCours()" (click)="demarrer()">
               {{ demarrageEnCours() ? 'Démarrage…' : '▶ Démarrer l\'intervention' }}
             </button>
-            <p class="hint">Cliquez sur Démarrer pour lancer l'intervention et activer la checklist.</p>
+            <p class="hint">Le démarrage déverrouillera les points de contrôle de la checklist.</p>
           </div>
         }
 
         @if (!interventionDemarree() && !estLectureSeule()) {
-          <p class="hint lock-hint">La checklist est verrouillée tant que l'intervention n'est pas démarrée.</p>
+          <div class="warning-banner-inline">
+            🔒 La saisie de la checklist est verrouillée tant que l'intervention n'a pas été démarrée.
+          </div>
         }
 
         @if (itemErreur()) {
-          <p class="error">{{ itemErreur() }}</p>
+          <div class="error-banner">{{ itemErreur() }}</div>
         }
         @if (photoErreur()) {
-          <p class="error">{{ photoErreur() }}</p>
+          <div class="error-banner">{{ photoErreur() }}</div>
         }
 
+        <!-- Liste des éléments de checklist -->
         <div class="items-list">
           @for (item of cl.items; track item.id) {
-            <div class="item-row">
-              <div class="item-libelle">
-                <span class="ordre">{{ item.ordre }}</span>
-                <span>{{ item.libelle }}</span>
-              </div>
+            <div class="item-row" [class.item-row-locked]="!interventionDemarree()">
+              <div class="item-main-content">
+                <div class="item-libelle">
+                  <span class="ordre">{{ item.ordre }}</span>
+                  <span class="libelle-text">{{ item.libelle }}</span>
+                </div>
 
-              <div class="item-controle">
-                @if (estLectureSeule()) {
-                  <div class="lecture-seule">
-                    <span class="statut-badge {{ statutItemClass(item.statut) }}">{{ statutItemLabel(item.statut) }}</span>
-                    @if (item.gravite) {
-                      <span class="gravite-badge {{ graviteClass(item.gravite) }}">{{ graviteLabel(item.gravite) }}</span>
-                    }
-                    @if (item.remarque) {
-                      <span class="remarque-texte">{{ item.remarque }}</span>
-                    }
-                  </div>
-                } @else {
-                  <select
-                    [ngModel]="edit(item).statut"
-                    (ngModelChange)="majItem(item, 'statut', $event)"
-                    [disabled]="!interventionDemarree()"
-                  >
-                    @for (s of statutItemOptions; track s) {
-                      <option [value]="s">{{ statutItemLabel(s) }}</option>
-                    }
-                  </select>
-
-                  @if (edit(item).statut === 'ANOMALIE_DETECTEE') {
+                <div class="item-controle">
+                  @if (estLectureSeule()) {
+                    <div class="lecture-seule">
+                      <span class="{{ statutItemClass(item.statut) }}">{{ statutItemLabel(item.statut) }}</span>
+                      @if (item.gravite) {
+                        <span class="gravite-badge {{ graviteClass(item.gravite) }}">{{ graviteLabel(item.gravite) }}</span>
+                      }
+                      @if (item.remarque) {
+                        <span class="remarque-texte">« {{ item.remarque }} »</span>
+                      }
+                    </div>
+                  } @else {
                     <select
-                      class="gravite"
-                      [ngModel]="edit(item).gravite ?? ''"
-                      (ngModelChange)="majItem(item, 'gravite', $event === '' ? null : $event)"
+                      class="styled-select"
+                      [ngModel]="edit(item).statut"
+                      (ngModelChange)="majItem(item, 'statut', $event)"
                       [disabled]="!interventionDemarree()"
                     >
-                      <option value="">Choisir la gravité…</option>
-                      @for (g of graviteOptions; track g) {
-                        <option [value]="g">{{ graviteLabel(g) }}</option>
+                      @for (s of statutItemOptions; track s) {
+                        <option [value]="s">{{ statutItemLabel(s) }}</option>
                       }
                     </select>
+
+                    @if (edit(item).statut === 'ANOMALIE_DETECTEE') {
+                      <select
+                        class="styled-select gravite-select"
+                        [ngModel]="edit(item).gravite ?? ''"
+                        (ngModelChange)="majItem(item, 'gravite', $event === '' ? null : $event)"
+                        [disabled]="!interventionDemarree()"
+                      >
+                        <option value="">Niveau de gravité…</option>
+                        @for (g of graviteOptions; track g) {
+                          <option [value]="g">{{ graviteLabel(g) }}</option>
+                        }
+                      </select>
+                    }
+
+                    <input
+                      class="styled-input remarque-input"
+                      type="text"
+                      placeholder="Ajouter une remarque..."
+                      [ngModel]="edit(item).remarque"
+                      (ngModelChange)="majItem(item, 'remarque', $event)"
+                      [disabled]="!interventionDemarree()"
+                    />
+
+                    <button
+                      type="button"
+                      class="btn-enregistrer"
+                      [disabled]="sauvegardeItem() === item.id || !interventionDemarree()"
+                      (click)="enregistrerItem(item)"
+                    >
+                      {{ sauvegardeItem() === item.id ? 'Sauvegarde…' : 'Enregistrer' }}
+                    </button>
                   }
 
-                  <input
-                    class="remarque"
-                    type="text"
-                    placeholder="Remarque…"
-                    [ngModel]="edit(item).remarque"
-                    (ngModelChange)="majItem(item, 'remarque', $event)"
-                    [disabled]="!interventionDemarree()"
-                  />
-
-                  <button
-                    type="button"
-                    class="btn-enregistrer"
-                    [disabled]="sauvegardeItem() === item.id || !interventionDemarree()"
-                    (click)="enregistrerItem(item)"
-                  >
-                    {{ sauvegardeItem() === item.id ? 'Enregistrement…' : 'Enregistrer' }}
-                  </button>
-                }
-
-                @if (!estLectureSeule()) {
-                  <label class="btn-photo" [class.btn-desactive]="!interventionDemarree()">
-                    {{ photoEnCours() === item.id ? 'Upload…' : '📎 Photo' }}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      [disabled]="!interventionDemarree()"
-                      (change)="ajouterPhoto(item, $event)"
-                    />
-                  </label>
-                }
+                  @if (!estLectureSeule()) {
+                    <label class="btn-photo" [class.btn-desactive]="!interventionDemarree()">
+                      <span>📎 {{ photoEnCours() === item.id ? 'Chargement…' : 'Photo' }}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        [disabled]="!interventionDemarree()"
+                        (change)="ajouterPhoto(item, $event)"
+                      />
+                    </label>
+                  }
+                </div>
               </div>
 
               @if (item.piecesJointes.length) {
-                <div class="photo-strip">
+                <div class="photo-strip item-photos">
                   @for (pj of item.piecesJointes; track pj.id) {
                     @if (pj.typeFichier === 'IMAGE') {
                       <img
@@ -295,20 +396,20 @@
         </div>
 
         @if (cl.bilanIntervention) {
-          <div class="form-group" style="margin-top: 24px;">
-            <label>Bilan d'intervention</label>
+          <div class="content-block" style="margin-top: 2rem;">
+            <label class="block-label">Bilan final de la checklist</label>
             <div class="readonly-text">{{ cl.bilanIntervention }}</div>
           </div>
         }
 
         @if (!estLectureSeule()) {
-          <div class="actions-demo cloture">
+          <div class="actions-container cloture-zone">
             @if (!tousVerifies()) {
-              <p class="hint">Tous les items doivent être vérifiés avant de clôturer la checklist.</p>
+              <p class="hint text-warning">⚠️ Tous les points de contrôle doivent être évalués avant de pouvoir clôturer.</p>
             }
             <button
               type="button"
-              class="btn-primary"
+              class="btn-primary-action"
               [disabled]="!tousVerifies() || !interventionDemarree()"
               (click)="ouvrirCloture()"
             >
@@ -321,37 +422,39 @@
   </div>
 </div>
 
+<!-- ================= MODALE CLÔTURE CHECKLIST ================= -->
 @if (modaleCloture()) {
   <div class="modal-overlay" (click)="fermerCloture()">
     <div class="modal-card" (click)="$event.stopPropagation()">
-      <div class="card-header">
+      <div class="modal-header">
         <div>
-          <h2>Clôturer l'intervention</h2>
-          <p class="subtitle">Bilan final de la checklist</p>
+          <h3>Clôture de l'intervention</h3>
+          <p class="subtitle">Validation du compte-rendu de la checklist</p>
         </div>
+        <button type="button" class="modal-close" (click)="fermerCloture()">×</button>
       </div>
 
       @if (clotureErreur()) {
-        <p class="error">{{ clotureErreur() }}</p>
+        <div class="error-banner">{{ clotureErreur() }}</div>
       }
 
       <form [formGroup]="clotureForm" (ngSubmit)="cloturer()">
         <div class="form-group">
-          <label for="bilan">Bilan d'intervention *</label>
+          <label for="bilan">Bilan d'intervention <span class="required">*</span></label>
           <textarea
             id="bilan"
             formControlName="bilanIntervention"
             rows="4"
-            placeholder="Décrivez l'intervention réalisée..."
+            placeholder="Rédigez un résumé clair des opérations effectuées..."
           ></textarea>
           @if (clotureForm.controls.bilanIntervention.touched && clotureForm.controls.bilanIntervention.invalid) {
-            <span class="champ-erreur">Le bilan est obligatoire.</span>
+            <span class="field-error">Le bilan d'intervention est requis.</span>
           }
         </div>
 
         <div class="form-group">
-          <label>Type d'intervention</label>
-          <div class="check-list">
+          <label class="block-label">Type(s) d'intervention concerné(s)</label>
+          <div class="check-list-card">
             <label class="check-item">
               <input type="checkbox" formControlName="estMaintenance" /> Maintenance
             </label>
@@ -364,10 +467,10 @@
           </div>
         </div>
 
-        <div class="actions">
+        <div class="modal-actions">
           <button type="button" class="btn-secondary" (click)="fermerCloture()">Annuler</button>
-          <button type="submit" class="btn-primary" [disabled]="clotureEnCours()">
-            {{ clotureEnCours() ? 'Clôture…' : 'Valider la clôture' }}
+          <button type="submit" class="btn-primary-action" [disabled]="clotureEnCours()">
+            {{ clotureEnCours() ? 'Enregistrement…' : 'Confirmer la clôture' }}
           </button>
         </div>
       </form>
@@ -375,31 +478,33 @@
   </div>
 }
 
+<!-- ================= MODALE CLÔTURE BON DE TRAVAIL ================= -->
 @if (modaleClotureBt()) {
   <div class="modal-overlay" (click)="fermerClotureBt()">
     <div class="modal-card" (click)="$event.stopPropagation()">
-      <div class="card-header">
+      <div class="modal-header">
         <div>
-          <h2>Clôturer l'intervention</h2>
-          <p class="subtitle">Rapport final du bon de travail</p>
+          <h3>Clôture du Bon de Travail</h3>
+          <p class="subtitle">Rapport technique final</p>
         </div>
+        <button type="button" class="modal-close" (click)="fermerClotureBt()">×</button>
       </div>
 
       @if (clotureBtErreur()) {
-        <p class="error">{{ clotureBtErreur() }}</p>
+        <div class="error-banner">{{ clotureBtErreur() }}</div>
       }
 
       <form [formGroup]="clotureBtForm" (ngSubmit)="cloturerBt()">
         <div class="form-group">
-          <label for="diagnostic">Diagnostic *</label>
+          <label for="diagnostic">Diagnostic <span class="required">*</span></label>
           <textarea
             id="diagnostic"
             formControlName="diagnostic"
             rows="3"
-            placeholder="Quel est le problème constaté..."
+            placeholder="Décrivez précisément le dysfonctionnement ou l'état constaté..."
           ></textarea>
           @if (clotureBtForm.controls.diagnostic.touched && clotureBtForm.controls.diagnostic.invalid) {
-            <span class="champ-erreur">Le diagnostic est obligatoire.</span>
+            <span class="field-error">Le diagnostic est obligatoire.</span>
           }
         </div>
 
@@ -409,20 +514,20 @@
             id="cause"
             formControlName="causeIdentifiee"
             rows="2"
-            placeholder="Cause probable du problème..."
+            placeholder="Quelle est l'origine du problème..."
           ></textarea>
         </div>
 
         <div class="form-group">
-          <label for="action">Action réalisée *</label>
+          <label for="action">Action réalisée <span class="required">*</span></label>
           <textarea
             id="action"
             formControlName="actionRealisee"
             rows="3"
-            placeholder="Qu'avez-vous fait pour résoudre le problème..."
+            placeholder="Détaillez les actions correctives apportées..."
           ></textarea>
           @if (clotureBtForm.controls.actionRealisee.touched && clotureBtForm.controls.actionRealisee.invalid) {
-            <span class="champ-erreur">L'action réalisée est obligatoire.</span>
+            <span class="field-error">L'action réalisée est obligatoire.</span>
           }
         </div>
 
@@ -432,13 +537,13 @@
             id="pieces"
             formControlName="piecesRemplacees"
             rows="2"
-            placeholder="Liste des pièces remplacées..."
+            placeholder="Références ou libellés des pièces changées (optionnel)..."
           ></textarea>
         </div>
 
         <div class="form-group">
-          <label>Essai concluant</label>
-          <div class="check-list radio-row">
+          <label class="block-label">Essai concluant ?</label>
+          <div class="radio-row-card">
             <label class="check-item">
               <input type="radio" formControlName="essaiConcluant" [value]="true" /> Oui
             </label>
@@ -454,14 +559,14 @@
             id="recommandations"
             formControlName="recommandations"
             rows="2"
-            placeholder="Recommandations ou suivi à prévoir..."
+            placeholder="Consignes de suivi ou interventions futures à prévoir..."
           ></textarea>
         </div>
 
-        <div class="actions">
+        <div class="modal-actions">
           <button type="button" class="btn-secondary" (click)="fermerClotureBt()">Annuler</button>
-          <button type="submit" class="btn-primary" [disabled]="clotureBtEnCours()">
-            {{ clotureBtEnCours() ? 'Clôture…' : 'Valider la clôture' }}
+          <button type="submit" class="btn-primary-action" [disabled]="clotureBtEnCours()">
+            {{ clotureBtEnCours() ? 'Enregistrement…' : 'Confirmer la clôture' }}
           </button>
         </div>
       </form>
@@ -469,29 +574,26 @@
   </div>
 }
 
-<!-- ===== Widget de messagerie flottant ===== -->
+<!-- ================= WIDGET DE MESSAGERIE FLOTTANT ================= -->
 @if (bonTravail(); as bt) {
   <div class="chat-widget" [class.chat-widget--open]="afficherCommentaires()">
-
-    <button type="button" class="chat-header" (click)="toggleCommentaires()">
+    <button type="button" class="chat-header-btn" (click)="toggleCommentaires()">
       <span class="chat-avatar">
         {{ bt.technicienResponsableNom ? bt.technicienResponsableNom.charAt(0) : '?' }}
         <span class="chat-avatar-dot"></span>
       </span>
-      <span class="chat-title">Messagerie</span>
+      <span class="chat-title">Messagerie interne</span>
       @if (!afficherCommentaires() && commentaires().length > 0) {
         <span class="chat-badge">{{ commentaires().length }}</span>
       }
-      <span class="chat-chevron" [class.chat-chevron--open]="afficherCommentaires()">
-        <svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>
+      <span class="chat-chevron" [class.chat-chevron--open]="afficherCommentaires()">▼</span>
     </button>
 
     @if (afficherCommentaires()) {
       <div class="chat-body">
         <div class="chat-messages">
           @if (commentaires().length === 0) {
-            <p class="chat-empty">Aucun message pour le moment.</p>
+            <p class="chat-empty">Aucun message pour l'instant. Discutez des détails de l'intervention ici.</p>
           }
           @for (c of commentaires(); track c.id) {
             <div
@@ -514,7 +616,7 @@
                     [disabled]="suppressionCommentaireEnCours() === c.id"
                     (click)="supprimerCommentaire(c)"
                   >
-                    {{ suppressionCommentaireEnCours() === c.id ? 'Suppression…' : '🗑 Supprimer' }}
+                    {{ suppressionCommentaireEnCours() === c.id ? 'Suppression…' : '🗑 Supprimer le message' }}
                   </button>
                 </div>
               }
@@ -523,7 +625,7 @@
         </div>
 
         @if (commentaireErreur()) {
-          <p class="chat-error">{{ commentaireErreur() }}</p>
+          <div class="chat-error">{{ commentaireErreur() }}</div>
         }
 
         <div class="chat-input-row">
@@ -535,7 +637,7 @@
           ></textarea>
           <button
             type="button"
-            class="chat-send"
+            class="chat-send-btn"
             [disabled]="!nouveauCommentaire().trim() || envoiCommentaireEnCours()"
             (click)="envoyerCommentaire()"
           >

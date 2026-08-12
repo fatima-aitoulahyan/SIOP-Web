@@ -11,7 +11,12 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PieceJointeService } from '../services/piece-jointe';
-import { PieceJointeDTO, TypeEntiteJointe, TypeFichier } from '../../../core/models/piece-jointe.model';
+import {
+  PieceJointeDTO,
+  TypeEntiteJointe,
+  TypeFichier,
+} from '../../../core/models/piece-jointe.model';
+import { forkJoin, of, tap } from 'rxjs';
 
 export interface FichierEnAttente {
   file: File;
@@ -133,26 +138,40 @@ export class PieceJointeUploaderComponent implements OnInit, OnChanges {
       },
     });
   }
-
-  uploaderFichiersEnAttente(entiteId: number): void {
+  uploaderFichiersEnAttente(entiteId: number) {
     const fichiers = this.fichiersEnAttente();
-    if (fichiers.length === 0) return;
+    if (fichiers.length === 0) {
+      return of([]); // On retourne un tableau vide observable si pas de fichiers
+    }
 
-    fichiers.forEach((f) => {
-      this.pieceJointeService
-        .uploader(this.entiteType, entiteId, f.file, f.description || undefined)
-        .subscribe({
-          next: (res) => {
+    this.uploadEnCours.set(true);
+    this.erreur.set(null);
+
+    const requetesUpload = fichiers.map((f) =>
+      this.pieceJointeService.uploader(
+        this.entiteType,
+        entiteId,
+        f.file,
+        f.description || undefined,
+      ),
+    );
+
+    return forkJoin(requetesUpload).pipe(
+      tap({
+        next: (responses: any[]) => {
+          responses.forEach((res) => {
             this.pieces.update((liste) => [...liste, res.data]);
-            this.piecesChanged.emit();
-          },
-          error: () => {
-            this.erreur.set(`Échec de l'envoi de "${f.file.name}".`);
-          },
-        });
-    });
-
-    this.fichiersEnAttente.set([]);
+          });
+          this.fichiersEnAttente.set([]);
+          this.uploadEnCours.set(false);
+          this.piecesChanged.emit();
+        },
+        error: () => {
+          this.erreur.set(`Échec lors de l'envoi de certains fichiers.`);
+          this.uploadEnCours.set(false);
+        },
+      }),
+    );
   }
 
   get TypeFichier() {

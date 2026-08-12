@@ -1,0 +1,45 @@
+<div class="page-wrapper">
+  <div class="list-card">
+    <div class="card-header">
+      <h2>Évaluations en attente de validation</h2>
+      <p class="subtitle">{{ evaluations().length }} évaluation(s)</p>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement…</p>
+    } @else if (evaluations().length === 0) {
+      <div class="etat-vide">
+        <p>Aucune évaluation en attente pour le moment.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Technicien</th>
+            <th>Fabricant / Modèle</th>
+            <th>Date visite</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (e of evaluations(); track e.id) {
+              <tr>
+                <td>{{ e.technicienNom }}</td>
+                <td>{{ e.fabricant }} @if (e.modele) { — {{ e.modele }} }</td>
+                <td>{{ e.dateVisite | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td class="col-actions">
+                  <a [routerLink]="['/responsable/evaluations', e.id]" class="lien-action">Examiner</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/auth/auth';
 import { BonTravailService } from '../services/bon-travail.service';
@@ -16,6 +16,9 @@ import {
   StatutBonTravail,
   StatutItem,
 } from '../../../core/models/bon-travail.model';
+import { EvaluationAscenseurService } from '../../maintenance/services/evaluation-ascenseur.service';
+import { DemandeMaintenanceService } from '../../maintenance/services/demande-maintenance.service';
+import { EvaluationAscenseurDTO } from '../../../core/models/evaluation-ascenseur.model';
 
 interface ItemEdit {
   statut: StatutItem;
@@ -36,6 +39,10 @@ export class ChecklistDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private bonTravailService = inject(BonTravailService);
+  private router = inject(Router);
+  private demandeService = inject(DemandeMaintenanceService);
+  private demandeMaintenanceService = inject(DemandeMaintenanceService);
+  private evaluationAscenseurService = inject(EvaluationAscenseurService);
 
   bonTravail = signal<BonTravailDTO | null>(null);
   checklist = signal<ChecklistMaintenanceDTO | null>(null);
@@ -70,6 +77,10 @@ export class ChecklistDetailComponent implements OnInit {
   afficherCommentaires = signal(false);
   commentaireSelectionne = signal<number | null>(null);
   suppressionCommentaireEnCours = signal<number | null>(null);
+
+  // Évaluation liée (uniquement pertinent quand estEvaluation() est vrai)
+  evaluationLiee = signal<EvaluationAscenseurDTO | null>(null);
+  chargementEvaluation = signal(false);
 
   debutLocalMs: number | null = null;
 
@@ -156,6 +167,13 @@ export class ChecklistDetailComponent implements OnInit {
   });
 
   tempsFormate = computed(() => ChecklistDetailComponent.formaterDuree(this.tempsEcoule()));
+
+  // Un bon de travail sans ascenseur rattaché correspond à une évaluation
+  // (cf. BonTravailServiceImpl : "Restera null pour une évaluation, ce qui est correct")
+  estEvaluation = computed(() => {
+    const bt = this.bonTravail();
+    return !!bt && this.pasDeChecklist() && bt.ascenseurId == null;
+  });
 
   constructor() {
     effect(
@@ -247,10 +265,31 @@ export class ChecklistDetailComponent implements OnInit {
         this.bonTravail.set(bt);
         this.chargerChecklist(bt.id);
         this.chargerCommentaires(bt.id);
+
+        // Cas ÉVALUATION : on charge le statut de l'évaluation liée
+        // (utile pour affichage côté responsable et pour l'état côté technicien)
+        if (bt.ascenseurId == null) {
+          this.chargerEvaluationLiee(bt.id);
+        }
       },
       error: () => {
         this.erreur.set('Impossible de charger le bon de travail.');
         this.chargement.set(false);
+      },
+    });
+  }
+
+  private chargerEvaluationLiee(bonTravailId: number): void {
+    this.chargementEvaluation.set(true);
+    this.evaluationAscenseurService.getByBonTravailId(bonTravailId).subscribe({
+      next: (evalu) => {
+        this.evaluationLiee.set(evalu);
+        this.chargementEvaluation.set(false);
+      },
+      error: () => {
+        // 404 normal si aucun brouillon n'a encore été créé par le technicien
+        this.evaluationLiee.set(null);
+        this.chargementEvaluation.set(false);
       },
     });
   }
@@ -445,11 +484,18 @@ export class ChecklistDetailComponent implements OnInit {
     const bt = this.bonTravail();
     if (!bt) return;
     this.demarrageBtEnCours.set(true);
+
     this.bonTravailService.demarrerIntervention(bt.id).subscribe({
       next: (reponse) => {
         this.debutLocalMs = Date.now();
         this.bonTravail.set(reponse);
         this.demarrageBtEnCours.set(false);
+
+        // Cas ÉVALUATION : redirection vers le formulaire de saisie
+        if (this.estEvaluation()) {
+          this.router.navigate(['/technicien/evaluations', bt.id]);
+          return;
+        }
       },
       error: (err) => {
         this.demarrageBtEnCours.set(false);
@@ -457,7 +503,6 @@ export class ChecklistDetailComponent implements OnInit {
       },
     });
   }
-
   ouvrirClotureBt(): void {
     this.clotureBtErreur.set(null);
     this.clotureBtForm.reset({

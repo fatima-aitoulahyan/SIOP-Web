@@ -1,11 +1,23 @@
-<div class="page-wrapper">
-  <div class="form-card">
-    <div class="card-header">
-      <h2>{{ modeEdition() ? 'Modifier le site' : 'Nouveau site' }}</h2>
-      <p class="subtitle">
-        {{ modeEdition() ? 'Mettre à jour les informations de ce site client.' : 'Renseignez les informations du nouveau site.' }}
-      </p>
-    </div>
+@if (!modeIncorpore) {
+  <div class="page-wrapper">
+    <ng-container *ngTemplateOutlet="contenuFormulaire"></ng-container>
+    <ng-container *ngTemplateOutlet="modaleVille"></ng-container>
+  </div>
+} @else {
+  <ng-container *ngTemplateOutlet="contenuFormulaire"></ng-container>
+  <ng-container *ngTemplateOutlet="modaleVille"></ng-container>
+}
+
+<ng-template #contenuFormulaire>
+  <div class="form-card" [class.form-card--incorpore]="modeIncorpore">
+    @if (!modeIncorpore) {
+      <div class="card-header">
+        <h2>{{ modeEdition() ? 'Modifier le site' : 'Nouveau site' }}</h2>
+        <p class="subtitle">
+          {{ modeEdition() ? 'Mettre à jour les informations de ce site client.' : 'Renseignez les informations du nouveau site.' }}
+        </p>
+      </div>
+    }
 
     @if (erreur()) {
       <p class="error">{{ erreur() }}</p>
@@ -66,19 +78,19 @@
           }
         </div>
 
-       <div class="form-group">
-         <label for="parcId">Parc</label>
-         <div class="input-wrapper select-wrapper">
-           <select id="parcId" formControlName="parcId">
-           <option [ngValue]="null">-- Sélectionner un parc --</option>
-            @for (parc of parcs(); track parc.id) {
-           <option [ngValue]="parc.id">{{ parc.nom }}</option>
-          }
-          </select>
+        <div class="form-group">
+          <label for="parcId">Parc</label>
+          <div class="input-wrapper select-wrapper">
+            <select id="parcId" formControlName="parcId">
+              <option [ngValue]="null">-- Sélectionner un parc --</option>
+              @for (parc of parcs(); track parc.id) {
+                <option [ngValue]="parc.id">{{ parc.nom }}</option>
+              }
+            </select>
           </div>
-           @if (form.controls.parcId.touched && form.controls.parcId.invalid) {
-           <span class="champ-erreur">Le parc est obligatoire.</span>
-           }
+          @if (form.controls.parcId.touched && form.controls.parcId.invalid) {
+            <span class="champ-erreur">Le parc est obligatoire.</span>
+          }
         </div>
       </div>
 
@@ -97,14 +109,18 @@
       </div>
 
       <div class="actions">
-        <a routerLink="/sites" class="btn-secondary">Annuler</a>
+        @if (!modeIncorpore) {
+          <a routerLink="/sites" class="btn-secondary">Annuler</a>
+        }
         <button type="submit" [disabled]="envoiEnCours()">
           {{ envoiEnCours() ? 'Enregistrement…' : (modeEdition() ? 'Enregistrer' : 'Créer le site') }}
         </button>
       </div>
     </form>
   </div>
+</ng-template>
 
+<ng-template #modaleVille>
   @if (showVilleModal()) {
     <div class="modal-overlay" (click)="fermerModalVille()">
       <div class="modal-card" (click)="$event.stopPropagation()">
@@ -153,4 +169,4 @@
       </div>
     </div>
   }
-</div>
+</ng-template>

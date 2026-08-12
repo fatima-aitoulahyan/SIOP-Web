@@ -4,19 +4,21 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth';
 import { BonTravailCreateDTO } from '../../../core/models/bon-travail.model';
-import { PrioriteDemande } from '../../../core/models/maintenance.model';
-import { DemandeMaintenanceDTO } from '../../../core/models/maintenance.model';
+import { PrioriteDemande, DemandeMaintenanceDTO } from '../../../core/models/maintenance.model';
 import { AscenseurDTO } from '../../../core/models/ascenseur.model';
 import { TechnicienResumeDTO } from '../../../core/models/technicien.model';
+import { SiteDTO } from '../../../core/models/site.model';
 import { BonTravailService } from '../services/bon-travail.service';
 import { MaintenanceService } from '../../maintenance/services/maintenance.service';
 import { AscenseurService } from '../../ascenseurs/services/ascenseur.service';
 import { TechnicienService } from '../../../core/services/technicien.service';
+import { SiteService } from '../../sites/services/site';
+import { SiteFormComponent } from '../../sites/site-form/site-form';
 
 @Component({
   selector: 'app-bons-travail-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, SiteFormComponent],
   templateUrl: './bons-travail-form.html',
   styleUrls: ['./bons-travail-form.scss'],
 })
@@ -29,6 +31,7 @@ export class BonsTravailFormComponent {
   private maintenanceService = inject(MaintenanceService);
   private ascenseurService = inject(AscenseurService);
   private technicienService = inject(TechnicienService);
+  private siteService = inject(SiteService);
 
   origine = signal<'demande' | 'ascenseur'>('demande');
   demandePrechargee = signal<DemandeMaintenanceDTO | null>(null);
@@ -36,6 +39,16 @@ export class BonsTravailFormComponent {
   erreurListes = signal<string | null>(null);
   envoiEnCours = signal(false);
   erreur = signal<string | null>(null);
+
+  // Gestion de l'affichage du formulaire de site en superposition
+  necessiteCreationSite = signal(false);
+
+  // Gestion du choix entre sites existants du client (cas ÉVALUATION)
+  sitesClientExistants = signal<SiteDTO[]>([]);
+  necessiteChoixSite = signal(false);
+
+  // Stockage du parc sélectionné ou créé lors d'une demande d'évaluation
+  parcSelectionneId = signal<number | null>(null);
 
   iaEnCours = signal(false);
   iaErreur = signal<string | null>(null);
@@ -48,6 +61,8 @@ export class BonsTravailFormComponent {
 
   renfortIds = signal<number[]>([]);
   responsableSelectionne = signal<number | null>(null);
+
+  siteSelectionneId = signal<number | null>(null);
 
   priorites = Object.values(PrioriteDemande);
 
@@ -84,23 +99,17 @@ export class BonsTravailFormComponent {
       if (id != null) this.chargerTechniciensParc(Number(id));
       else this.techniciensParc.set([]);
     });
-    this.form.get('demandeMaintenanceId')!.valueChanges.subscribe((id) => {
-      if (this.origine() !== 'demande') return;
-      if (id != null) {
-        const demande = this.demandes().find((d) => d.id === Number(id));
-        if (demande) this.chargerTechniciensParc(demande.ascenseurId);
-      } else {
-        this.techniciensParc.set([]);
-      }
-    });
 
-    effect(() => {
-      if (!this.authService.authReady()) return;
-      untracked(() => {
-        this.chargerListes();
-        this.initDepuisRequete();
-      });
-    }, { allowSignalWrites: true });
+    effect(
+      () => {
+        if (!this.authService.authReady()) return;
+        untracked(() => {
+          this.chargerListes();
+          this.initDepuisRequete();
+        });
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   private initDepuisRequete(): void {
@@ -116,16 +125,59 @@ export class BonsTravailFormComponent {
         this.demandePrechargee.set(d);
         this.passerEnModeDemande();
         this.form.get('demandeMaintenanceId')!.setValue(d.id);
-        this.form.get('visitePreventive')!.setValue(d.typeDemande === 'ENTRETIEN_PREVENTIF');
-        this.demandes.update((liste) =>
-          liste.some((x) => x.id === d.id) ? liste : [d, ...liste],
-        );
-        this.chargerTechniciensParc(d.ascenseurId);
+        this.form.get('visitePreventive')!.setValue(d.typeDemande === 'PREVENTIVE');
+        this.demandes.update((liste) => (liste.some((x) => x.id === d.id) ? liste : [d, ...liste]));
+
+        if (d.ascenseurId != null) {
+          this.chargerTechniciensParc(d.ascenseurId);
+          return;
+        }
+
+        this.siteService.listerParClient(d.clientId).subscribe({
+          next: (sites) => {
+            if (sites.length > 0) {
+              this.sitesClientExistants.set(sites);
+              this.necessiteChoixSite.set(true);
+            } else {
+              this.necessiteCreationSite.set(true);
+            }
+          },
+          error: () => {
+            this.necessiteCreationSite.set(true);
+          },
+        });
       },
       error: () => {
         this.erreurListes.set(`Impossible de charger la demande #${id}.`);
       },
     });
+  }
+
+  choisirSiteExistant(site: SiteDTO): void {
+    this.necessiteChoixSite.set(false);
+    if (site.parcId != null) {
+      this.parcSelectionneId.set(site.parcId);
+      this.siteSelectionneId.set(site.id);
+      this.chargerTechniciensParcId(site.parcId);
+    } else {
+      this.erreurTechniciens.set("Ce site n'est rattaché à aucun parc.");
+    }
+  }
+
+  ouvrirCreationNouveauSite(): void {
+    this.necessiteChoixSite.set(false);
+    this.necessiteCreationSite.set(true);
+  }
+
+  surSiteCree(nouveauSite?: any): void {
+    this.necessiteCreationSite.set(false);
+    this.chargerListes();
+
+    if (nouveauSite?.parcId) {
+      this.parcSelectionneId.set(nouveauSite.parcId);
+      this.siteSelectionneId.set(nouveauSite.id ?? null);
+      this.chargerTechniciensParcId(nouveauSite.parcId);
+    }
   }
 
   private chargerListes(): void {
@@ -138,13 +190,25 @@ export class BonsTravailFormComponent {
     };
 
     this.maintenanceService.demandesEnAttente().subscribe({
-      next: (data) => { this.demandes.set(data); fini(); },
-      error: () => { this.erreurListes.set('Impossible de charger les demandes en attente.'); fini(); },
+      next: (data) => {
+        this.demandes.set(data);
+        fini();
+      },
+      error: () => {
+        this.erreurListes.set('Impossible de charger les demandes en attente.');
+        fini();
+      },
     });
 
     this.ascenseurService.listerTous().subscribe({
-      next: (res) => { this.ascenseurs.set(res.data); fini(); },
-      error: () => { this.erreurListes.set('Impossible de charger les ascenseurs.'); fini(); },
+      next: (res) => {
+        this.ascenseurs.set(res.data);
+        fini();
+      },
+      error: () => {
+        this.erreurListes.set('Impossible de charger les ascenseurs.');
+        fini();
+      },
     });
   }
 
@@ -207,9 +271,7 @@ export class BonsTravailFormComponent {
   }
 
   toggleRenfort(id: number, checked: boolean): void {
-    this.renfortIds.update((ids) =>
-      checked ? [...ids, id] : ids.filter((x) => x !== id),
-    );
+    this.renfortIds.update((ids) => (checked ? [...ids, id] : ids.filter((x) => x !== id)));
   }
 
   estRenfort(id: number): boolean {
@@ -244,9 +306,10 @@ export class BonsTravailFormComponent {
     this.erreur.set(null);
 
     const raw = this.form.getRawValue();
-    const date = raw.dateInterventionPrevue.length === 16
-      ? `${raw.dateInterventionPrevue}:00`
-      : raw.dateInterventionPrevue;
+    const date =
+      raw.dateInterventionPrevue.length === 16
+        ? `${raw.dateInterventionPrevue}:00`
+        : raw.dateInterventionPrevue;
 
     const dto: BonTravailCreateDTO = {
       technicienResponsableId: Number(raw.technicienResponsableId),
@@ -255,6 +318,8 @@ export class BonsTravailFormComponent {
       dureeEstimeeMinutes: Number(raw.dureeEstimeeMinutes),
       description: raw.description?.trim() ? raw.description.trim() : null,
       visitePreventive: raw.visitePreventive,
+      parcId: this.parcSelectionneId(),
+      siteId: this.siteSelectionneId(),
     };
 
     if (this.origine() === 'demande') {
@@ -265,6 +330,8 @@ export class BonsTravailFormComponent {
       dto.ascenseurId = Number(raw.ascenseurId);
       dto.demandeMaintenanceId = null;
       dto.priorite = raw.priorite;
+      dto.parcId = null;
+      dto.siteId = null;
     }
 
     this.bonTravailService.creer(dto).subscribe({

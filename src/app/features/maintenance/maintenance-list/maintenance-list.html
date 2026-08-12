@@ -14,20 +14,30 @@
       <div class="search-wrapper">
         <input
           type="text"
-          placeholder="Rechercher par ascenseur, client, type..."
+          placeholder="Rechercher par ascenseur, type..."
           [ngModel]="recherche()"
           (ngModelChange)="recherche.set($event)"
         />
       </div>
-      @if (mode() === 'responsable') {
+
+      <!-- Filtre par type -->
+      <select (change)="changerFiltreType($event)" [value]="typeFiltre() ?? ''">
+        <option value="">Tous les types</option>
+        @for (t of typesDisponibles; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+
+      <!-- Filtre par statut -->
+      @if (mode() === 'responsable' || mode() === 'client') {
         <select (change)="changerFiltreStatut($event)" [value]="statutFiltre() ?? ''">
+          <option value="">Tous les statuts</option>
           <option value="EN_ATTENTE">En attente</option>
           <option value="ASSIGNEE">Assignée</option>
           <option value="EN_COURS">En cours</option>
           <option value="RESOLUE">Résolue</option>
           <option value="ANNULEE">Annulée</option>
           <option value="REJETEE">Rejetée</option>
-          <option value="">Toutes</option>
         </select>
       }
     </div>
@@ -59,12 +69,15 @@
         <table>
           <thead>
           <tr>
+            <th>N° </th>
             @if (mode() !== 'client') {
               <th>Client</th>
             }
             <th>Ascenseur</th>
             <th>Type</th>
-            <th>Priorité</th>
+            @if (mode() !== 'client') {
+              <th>Priorité</th>
+            }
             <th>Statut</th>
             <th>Date</th>
             <th class="col-actions">Actions</th>
@@ -73,12 +86,15 @@
           <tbody>
             @for (d of demandesFiltrees(); track d.id) {
               <tr>
+                <td><strong>{{ d.id }}</strong></td>
                 @if (mode() !== 'client') {
                   <td>{{ d.clientNom }}</td>
                 }
-                <td>{{ d.ascenseurNom }}</td>
+                <td>{{ d.ascenseurNom || '—' }}</td>
                 <td>{{ d.typeDemande }}</td>
-                <td>{{ d.priorite }}</td>
+                @if (mode() !== 'client') {
+                  <td>{{ d.priorite }}</td>
+                }
                 <td><span class="statut-badge {{ statutClass(d.statut) }}">{{ statutLabel(d.statut) }}</span></td>
                 <td>{{ d.createdAt | date: 'dd/MM/yyyy' }}</td>
                 <td class="col-actions">

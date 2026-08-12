@@ -6,13 +6,13 @@ import { AuthService } from '../../../core/auth/auth';
 import { DemandeMaintenanceDTO } from '../../../core/models/maintenance.model';
 
 @Component({
-  selector: 'app-maintenance-detail',
+  selector: 'app-demande-detail',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './maintenance-detail.html',
-  styleUrls: ['./maintenance-detail.scss'],
+  templateUrl: './demande-detail.html',
+  styleUrls: ['./demande-detail.scss'],
 })
-export class MaintenanceDetailComponent implements OnInit {
+export class DemandeDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private maintenanceService = inject(MaintenanceService);
   private authService = inject(AuthService);
@@ -20,13 +20,35 @@ export class MaintenanceDetailComponent implements OnInit {
   retourLink = computed(() => {
     const role = this.authService.currentRole();
     if (role === 'TECHNICIEN') return '/technicien/demandes';
-    if (role === 'RESPONSABLE_MAINTENANCE' || role === 'ADMINISTRATEUR') return '/responsable/demandes';
+    if (role === 'RESPONSABLE_MAINTENANCE' || role === 'ADMINISTRATEUR')
+      return '/responsable/demandes';
     return '/client/demandes';
   });
 
   demande = signal<DemandeMaintenanceDTO | null>(null);
   chargement = signal(true);
   erreur = signal<string | null>(null);
+
+  // Dictionnaires de libellés
+  typeLabels: Record<string, string> = {
+    PANNE: 'Panne',
+    MAINTENANCE: 'Maintenance préventive',
+    EVALUATION: 'Évaluation site',
+  };
+
+  statutLabels: Record<string, string> = {
+    EN_ATTENTE: 'En attente',
+    ASSIGNEE: 'Assignée',
+    EN_COURS: 'En cours',
+    RESOLUE: 'Résolue',
+    ANNULEE: 'Annulée',
+  };
+
+  prioriteLabels: Record<string, string> = {
+    BASSE: 'Basse',
+    NORMALE: 'Normale',
+    URGENTE: 'Urgente',
+  };
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -52,7 +74,35 @@ export class MaintenanceDetailComponent implements OnInit {
       error: () => this.erreur.set("Impossible d'annuler la demande."),
     });
   }
+
   openPhoto(url: string): void {
     window.open(url, '_blank');
+  }
+
+  // Méthode manquante pour vérifier s'il y a des images
+  aDesImages(photos: any[]): boolean {
+    return photos?.some((p) => p.typeFichier === 'IMAGE') ?? false;
+  }
+
+  // Classes dynamiques pour les statuts
+  classeStatut(statut: string): string {
+    const map: Record<string, string> = {
+      EN_ATTENTE: 'badge-statut-en-attente',
+      ASSIGNEE: 'badge-statut-assignee',
+      EN_COURS: 'badge-statut-en-cours',
+      RESOLUE: 'badge-statut-resolue',
+      ANNULEE: 'badge-statut-annulee',
+    };
+    return `badge ${map[statut] || ''}`;
+  }
+
+  // Classes dynamiques pour les priorités
+  classePriorite(priorite: string): string {
+    const map: Record<string, string> = {
+      BASSE: 'badge-priorite-basse',
+      NORMALE: 'badge-priorite-normale',
+      URGENTE: 'badge-priorite-urgente',
+    };
+    return map[priorite] || '';
   }
 }

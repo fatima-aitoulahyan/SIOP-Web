@@ -10,13 +10,23 @@ export const MAINTENANCE_DEMANDES_ROUTES: Routes = [
   {
     path: 'nouveau',
     loadComponent: () =>
-      import('./maintenance-form/maintenance-form').then((m) => m.MaintenanceFormComponent),
+      import('./creer-demande/creer-demande-mantenance/creer-demande-mantenance').then(
+        (m) => m.CreerDemandeMantenanceComponent,
+      ),
+    canActivate: [roleGuard(['CLIENT'])],
+  },
+  {
+    path: 'nouvelle-evaluation',
+    loadComponent: () =>
+      import('./creer-demande/creer-demande-evaluation/creer-demande-evaluation').then(
+        (m) => m.CreerDemandeEvaluationComponent,
+      ),
     canActivate: [roleGuard(['CLIENT'])],
   },
   {
     path: ':id',
     loadComponent: () =>
-      import('./maintenance-detail/maintenance-detail').then((m) => m.MaintenanceDetailComponent),
+      import('./demande-detail/demande-detail').then((m) => m.DemandeDetailComponent),
   },
 ];
 
@@ -28,7 +38,9 @@ export const MAINTENANCE_ROUTES: Routes = [
   {
     path: ':id',
     loadComponent: () =>
-      import('./maintenance-gestion/maintenance-gestion').then((m) => m.MaintenanceGestionComponent),
+      import('./maintenance-gestion/maintenance-gestion').then(
+        (m) => m.MaintenanceGestionComponent,
+      ),
     canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
   },
 ];

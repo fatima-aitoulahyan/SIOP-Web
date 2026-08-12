@@ -3,6 +3,9 @@ import { authGuard } from './core/auth/auth-guard';
 import { roleGuard } from './core/auth/role-guard';
 import { ResponsableLayout } from './core/layout/responsable-layout/responsable-layout';
 import { ClientLayout } from './core/layout/client-layout/client-layout';
+import {
+  EvaluationsEnAttenteComponent
+} from './features/maintenance/evaluation-ascenseur/evaluations-en-attente/evaluations-en-attente';
 
 export const routes: Routes = [
   {
@@ -106,11 +109,67 @@ export const routes: Routes = [
               import('./features/bon-travail/bon-travail.routes').then((m) => m.BON_TRAVAIL_ROUTES),
           },
           {
+            // Route mise à jour pour pointer vers votre nouveau composant d'affichage des évaluations
+            path: 'evaluations',
+            loadComponent: () =>
+              import('./features/maintenance/evaluation-ascenseur/evaluations-demandes-list/evaluations-demandes-list').then(
+                (m) => m.EvaluationsDemandesListComponent,
+              ),
+          },
+          {
+            // Route mise à jour pour pointer vers votre nouveau composant d'affichage des évaluations
+            path: 'evaluations-en-attente',
+            loadComponent: () =>
+              import('./features/maintenance/evaluation-ascenseur/evaluations-en-attente/evaluations-en-attente').then(
+                (m) => m.EvaluationsEnAttenteComponent,
+              ),
+          },
+          {
+            // AJOUTEZ CETTE ROUTE ICI pour gérer le détail d'une évaluation spécifique (ex: /responsable/evaluations/4)
+            path: 'evaluations/:id',
+            loadComponent: () =>
+              import('./features/maintenance/evaluation-ascenseur/evaluation-detail/evaluation-detail').then(
+                (m) => m.EvaluationDetailComponent,
+              ),
+          },
+          {
             path: ':id',
             loadComponent: () =>
               import('./features/maintenance/maintenance-gestion/maintenance-gestion').then(
                 (m) => m.MaintenanceGestionComponent,
               ),
+          },
+        ],
+      },
+      {
+        path: 'responsable/evaluations',
+        children: [
+          // Liste des évaluations à valider
+          {
+            path: 'en-attente',
+            loadComponent: () =>
+              import('./features/maintenance/evaluation-ascenseur/evaluations-en-attente/evaluations-en-attente').then(
+                (m) => m.EvaluationsEnAttenteComponent,
+              ),
+            canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
+          },
+          // Liste des demandes d'évaluation (Nouvelles installations)
+          {
+            path: 'demandes-list',
+            loadComponent: () =>
+              import('./features/maintenance/evaluation-ascenseur/evaluations-demandes-list/evaluations-demandes-list').then(
+                (m) => m.EvaluationsDemandesListComponent,
+              ),
+            canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
+          },
+          // Détail d'une évaluation
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/maintenance/evaluation-ascenseur/evaluation-detail/evaluation-detail').then(
+                (m) => m.EvaluationDetailComponent,
+              ),
+            canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
           },
         ],
       },
@@ -179,6 +238,13 @@ export const routes: Routes = [
             path: 'bons-travail',
             loadChildren: () =>
               import('./features/bon-travail/bon-travail.routes').then((m) => m.BON_TRAVAIL_ROUTES),
+          },
+          {
+            path: 'evaluations',
+            loadChildren: () =>
+              import('./features/maintenance/evaluation-ascenseur/evaluation-ascenseur.routes').then(
+                (m) => m.EVALUATION_TECHNICIEN_ROUTES,
+              ),
           },
         ],
       },

@@ -12,17 +12,42 @@
       <a *ngIf="role() === 'ADMINISTRATEUR'" routerLink="/utilisateurs" routerLinkActive="active" class="menu-item">
         Utilisateurs
       </a>
+
       <!-- RESPONSABLE -->
-      <a *ngIf="role() === 'RESPONSABLE_MAINTENANCE'" routerLink="/dashboard/responsable-maintenance" routerLinkActive="active" class="menu-item">
-        Tableau de bord
-      </a>
-      <a *ngIf="role() === 'RESPONSABLE_MAINTENANCE'" routerLink="/ascenseurs" routerLinkActive="active" class="menu-item">Ascenseurs</a>
-      <a *ngIf="role() === 'RESPONSABLE_MAINTENANCE'" routerLink="/sites" routerLinkActive="active" class="menu-item">Sites</a>
-      <a *ngIf="role() === 'RESPONSABLE_MAINTENANCE'" routerLink="/responsable/demandes" routerLinkActive="active" class="menu-item">Demandes</a>
-      <a *ngIf="role() === 'RESPONSABLE_MAINTENANCE'" routerLink="/responsable/bons-travail" routerLinkActive="active" class="menu-item">Bons de travail</a>
+      <ng-container *ngIf="role() === 'RESPONSABLE_MAINTENANCE'">
+        <a routerLink="/dashboard/responsable-maintenance" routerLinkActive="active" class="menu-item">Tableau de bord</a>
+        <a routerLink="/ascenseurs" routerLinkActive="active" class="menu-item">Ascenseurs</a>
+        <a routerLink="/sites" routerLinkActive="active" class="menu-item">Sites</a>
+
+        <!-- Menu déroulant "Demandes" -->
+        <div class="dropdown-menu-container">
+          <button type="button" class="menu-item dropdown-toggle" (click)="toggleDemandes()">
+            <span>Demandes</span>
+            <span class="arrow" [class.open]="demandesOuvert()">▼</span>
+          </button>
+
+          <div class="dropdown-content" [class.show]="demandesOuvert()">
+            <a routerLink="/responsable/demandes" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" class="menu-item sub-item">
+              Maintenance
+            </a>
+            <a routerLink="/responsable/evaluations" routerLinkActive="active" class="menu-item sub-item">
+              Nouvelles installations
+            </a>
+            <a routerLink="/responsable/evaluations-en-attente" routerLinkActive="active" class="menu-item sub-item">
+              Rapports à valider
+            </a>
+          </div>
+        </div>
+
+        <a routerLink="/responsable/bons-travail" routerLinkActive="active" class="menu-item">Bons de travail</a>
+      </ng-container>
+
       <!-- TECHNICIEN -->
-      <a *ngIf="role() === 'TECHNICIEN'" routerLink="/technicien/bons-travail" routerLinkActive="active" class="menu-item">Mes interventions</a>
-      <a *ngIf="role() === 'TECHNICIEN'" routerLink="/technicien/demandes" routerLinkActive="active" class="menu-item">Demandes</a>
+      <ng-container *ngIf="role() === 'TECHNICIEN'">
+        <a routerLink="/technicien/bons-travail" routerLinkActive="active" class="menu-item">Mes interventions</a>
+        <a routerLink="/technicien/demandes" routerLinkActive="active" class="menu-item">Demandes</a>
+      </ng-container>
+
       <!-- TOUS -->
       <a *ngIf="role() !== 'TECHNICIEN'" routerLink="/parcs" routerLinkActive="active" class="menu-item">Parcs</a>
     </nav>

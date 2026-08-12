@@ -4,10 +4,7 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MaintenanceService } from '../services/maintenance.service';
 import { AuthService } from '../../../core/auth/auth';
-import {
-  DemandeMaintenanceDTO,
-  StatutDemande,
-} from '../../../core/models/maintenance.model';
+import { DemandeMaintenanceDTO, StatutDemande } from '../../../core/models/maintenance.model';
 
 @Component({
   selector: 'app-maintenance-list',
@@ -26,6 +23,13 @@ export class MaintenanceListComponent {
 
   mode = signal<'client' | 'responsable' | 'en-attente' | 'technicien'>('client');
   statutFiltre = signal<StatutDemande | undefined>(undefined);
+  typeFiltre = signal<string | undefined>(undefined);
+
+  typesDisponibles = [
+    'PANNE',
+    'BRUIT_ANORMAL',
+    'ENTRETIEN_PREVENTIF',
+  ];
 
   titre = computed(() => {
     const modes: Record<string, string> = {
@@ -41,21 +45,33 @@ export class MaintenanceListComponent {
 
   demandesFiltrees = computed(() => {
     const terme = this.recherche().trim().toLowerCase();
-    if (!terme) return this.demandes();
-    return this.demandes().filter(
-      (d) =>
+    const statut = this.statutFiltre();
+    const typeD = this.typeFiltre();
+
+    return this.demandes().filter((d) => {
+      const matchStatut = statut ? d.statut === statut : true;
+      const matchType = typeD ? d.typeDemande === typeD : true;
+
+      const matchTerme =
+        !terme ||
+        d.id.toString().includes(terme) ||
         d.ascenseurNom?.toLowerCase().includes(terme) ||
         d.clientNom?.toLowerCase().includes(terme) ||
         d.typeDemande?.toLowerCase().includes(terme) ||
-        d.description?.toLowerCase().includes(terme),
-    );
+        d.description?.toLowerCase().includes(terme);
+
+      return matchStatut && matchType && matchTerme;
+    });
   });
 
   constructor() {
-    effect(() => {
-      if (!this.authService.authReady()) return;
-      untracked(() => this.initialiserModeEtCharger());
-    }, { allowSignalWrites: true });
+    effect(
+      () => {
+        if (!this.authService.authReady()) return;
+        untracked(() => this.initialiserModeEtCharger());
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   private initialiserModeEtCharger(): void {
@@ -78,13 +94,25 @@ export class MaintenanceListComponent {
 
     if (mode === 'client') {
       this.maintenanceService.mesDemandes().subscribe({
-        next: (data) => { this.demandes.set(data); this.chargement.set(false); },
-        error: () => { this.erreur.set('Impossible de charger vos demandes.'); this.chargement.set(false); },
+        next: (data) => {
+          this.demandes.set(data);
+          this.chargement.set(false);
+        },
+        error: () => {
+          this.erreur.set('Impossible de charger vos demandes.');
+          this.chargement.set(false);
+        },
       });
     } else if (mode === 'en-attente') {
       this.maintenanceService.demandesEnAttente().subscribe({
-        next: (data) => { this.demandes.set(data); this.chargement.set(false); },
-        error: () => { this.erreur.set('Impossible de charger les demandes en attente.'); this.chargement.set(false); },
+        next: (data) => {
+          this.demandes.set(data);
+          this.chargement.set(false);
+        },
+        error: () => {
+          this.erreur.set('Impossible de charger les demandes en attente.');
+          this.chargement.set(false);
+        },
       });
     } else if (mode === 'responsable') {
       const statut = this.statutFiltre();
@@ -92,8 +120,15 @@ export class MaintenanceListComponent {
         ? this.maintenanceService.toutesDemandes(statut)
         : this.maintenanceService.toutesDemandes(null);
       obs.subscribe({
-        next: (data) => { this.demandes.set(data); this.chargement.set(false); },
-        error: () => { this.erreur.set('Impossible de charger les demandes.'); this.chargement.set(false); },
+        next: (data) => {
+          const demandesMaintenanceFiltrees = data.filter((d) => d.typeDemande !== 'EVALUATION');
+          this.demandes.set(demandesMaintenanceFiltrees);
+          this.chargement.set(false);
+        },
+        error: () => {
+          this.erreur.set('Impossible de charger les demandes.');
+          this.chargement.set(false);
+        },
       });
     } else if (mode === 'technicien') {
       this.chargement.set(false);
@@ -102,8 +137,16 @@ export class MaintenanceListComponent {
 
   changerFiltreStatut(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
-    this.statutFiltre.set(value === '' ? undefined : value as StatutDemande);
-    this.charger();
+    this.statutFiltre.set(value === '' ? undefined : (value as StatutDemande));
+    // Si on est responsable, on recharge depuis le serveur pour le filtre de statut serveur, sinon le computed gère le client
+    if (this.mode() === 'responsable') {
+      this.charger();
+    }
+  }
+
+  changerFiltreType(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.typeFiltre.set(value === '' ? undefined : value);
   }
 
   statutClass(statut: string): string {
@@ -138,7 +181,7 @@ export class MaintenanceListComponent {
     if (!confirm('Annuler cette demande ?')) return;
     this.maintenanceService.annuler(id).subscribe({
       next: () => this.charger(),
-      error: () => this.erreur.set('Impossible d\'annuler la demande.'),
+      error: () => this.erreur.set("Impossible d'annuler la demande."),
     });
   }
 }

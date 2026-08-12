@@ -303,3 +303,11 @@ button[type='submit'] {
   from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.form-card--incorpore {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  max-width: none;
+}

@@ -41,20 +41,6 @@
           }
         </div>
 
-        <div class="form-group">
-          <label for="priorite">Priorité *</label>
-          <div class="input-wrapper select-wrapper">
-            <select id="priorite" formControlName="priorite">
-              <option [ngValue]="null">-- Sélectionner une priorité --</option>
-              @for (p of priorites; track p) {
-                <option [ngValue]="p">{{ p }}</option>
-              }
-            </select>
-          </div>
-          @if (form.controls.priorite.touched && form.controls.priorite.invalid) {
-            <span class="champ-erreur">La priorité est obligatoire.</span>
-          }
-        </div>
       </div>
 
       <div class="form-group">

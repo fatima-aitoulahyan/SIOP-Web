@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
+  DemandeEvaluationCreateDTO,
   DemandeMaintenanceCreateDTO,
   DemandeMaintenanceDTO,
 } from '../../../core/models/demande-maintenance.model';
@@ -12,11 +13,12 @@ export class DemandeMaintenanceService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/demandes-maintenance`;
 
-  // NB : le DemandeMaintenanceController renvoie les DTO directement
-  // (pas d'enveloppe ApiResponse), contrairement à d'autres modules.
-
   creer(dto: DemandeMaintenanceCreateDTO): Observable<DemandeMaintenanceDTO> {
     return this.http.post<DemandeMaintenanceDTO>(this.baseUrl, dto);
+  }
+
+  creerEvaluation(dto: DemandeEvaluationCreateDTO): Observable<DemandeMaintenanceDTO> {
+    return this.http.post<DemandeMaintenanceDTO>(`${this.baseUrl}/evaluation`, dto);
   }
 
   listerMesDemandes(): Observable<DemandeMaintenanceDTO[]> {

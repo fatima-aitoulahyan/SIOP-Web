@@ -48,22 +48,22 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr>
-              <th>#</th>
-              <th>Ascenseur</th>
-              <th>Site / Parc</th>
-              <th>Technicien responsable</th>
-              <th>Date prévue</th>
-              <th>Priorité</th>
-              <th>Statut</th>
-              <th class="col-actions">Actions</th>
-            </tr>
+          <tr>
+            <th>#</th>
+            <th>Ascenseur</th>
+            <th>Site / Parc</th>
+            <th>Technicien responsable</th>
+            <th>Date prévue</th>
+            <th>Priorité</th>
+            <th>Statut</th>
+            <th class="col-actions">Actions</th>
+          </tr>
           </thead>
           <tbody>
             @for (b of bonsTravauxFiltres(); track b.id) {
               <tr>
                 <td>{{ b.id }}</td>
-                <td>{{ b.ascenseurNom }}</td>
+                <td>{{ b.ascenseurNom ?? '—'}}</td>
                 <td>
                   {{ b.siteAdresse ?? '—' }}
                   <span class="muted">@if (b.parcNom) {· {{ b.parcNom }}}</span>

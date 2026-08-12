@@ -39,7 +39,7 @@ export interface BonTravailDTO {
   dateInterventionPrevue: string;
   description: string | null;
   demandeMaintenanceId: number | null;
-  ascenseurId: number;
+  ascenseurId: number | null;
   ascenseurNom: string;
   siteAdresse: string | null;
   parcId: number | null;
@@ -73,6 +73,8 @@ export interface ClotureBonTravailDTO {
 export interface BonTravailCreateDTO {
   demandeMaintenanceId?: number | null;
   ascenseurId?: number | null;
+  parcId?: number | null;
+  siteId?: number | null;
   technicienResponsableId: number;
   technicienIdsRenfort?: number[];
   dateInterventionPrevue: string;
