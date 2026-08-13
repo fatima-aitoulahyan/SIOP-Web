@@ -1,0 +1,142 @@
+<div class="profil-page">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  @if (chargement()) {
+    <div class="etat">Chargement…</div>
+  } @else if (profil(); as p) {
+    <div class="glass-card">
+      <div class="avatar">
+        @if (p.photoUrl) {
+          <img [src]="p.photoUrl" [alt]="p.prenom + ' ' + p.nom" />
+        } @else {
+          <span class="initiales">{{ initiales() }}</span>
+        }
+      </div>
+
+      <h1>{{ p.prenom }} {{ p.nom }}</h1>
+      <p class="role">{{ roleLabel() }}</p>
+
+      <div class="photo-actions">
+        <label class="btn-photo" [class.desactive]="uploadEnCours()">
+          {{ uploadEnCours() ? 'Chargement…' : 'Changer la photo' }}
+          <input type="file" accept="image/*" (change)="onPhotoChoisie($event)" />
+        </label>
+        @if (photoErreur(); as e) {
+          <p class="erreur">{{ e }}</p>
+        }
+      </div>
+
+      <div class="header">
+        <div>
+          <h2>Informations personnelles</h2>
+          <p class="sous-titre">Gérez vos coordonnées et préférences</p>
+        </div>
+        @if (!modeEdition()) {
+          <button type="button" class="btn-modifier" (click)="activerEdition()">Modifier</button>
+        }
+      </div>
+
+      @if (messageSucces(); as m) {
+        <div class="succes">{{ m }}</div>
+      }
+
+      @if (!modeEdition()) {
+        <div class="grille">
+          <div class="item">
+            <span class="icone icone-email">
+              <span class="material-symbols-outlined">mail</span>
+            </span>
+            <div class="texte">
+              <span class="label">Email</span>
+              <span class="valeur">{{ p.email }}</span>
+            </div>
+          </div>
+          <div class="item">
+            <span class="icone icone-telephone">
+              <span class="material-symbols-outlined">phone</span>
+            </span>
+            <div class="texte">
+              <span class="label">Téléphone</span>
+              <span class="valeur">{{ p.telephone || '—' }}</span>
+            </div>
+          </div>
+          <div class="item">
+            <span class="icone icone-entreprise">
+              <span class="material-symbols-outlined">business</span>
+            </span>
+            <div class="texte">
+              <span class="label">Entreprise</span>
+              <span class="valeur">{{ p.nomEntreprise || '—' }}</span>
+            </div>
+          </div>
+          @if (estClient()) {
+            <div class="item">
+              <span class="icone icone-adresse">
+                <span class="material-symbols-outlined">location_on</span>
+              </span>
+              <div class="texte">
+                <span class="label">Adresse</span>
+                <span class="valeur">{{ p.adresse || '—' }}</span>
+              </div>
+            </div>
+          }
+          <div class="item">
+            <span class="icone icone-date">
+              <span class="material-symbols-outlined">event</span>
+            </span>
+            <div class="texte">
+              <span class="label">Membre depuis</span>
+              <span class="valeur">{{ dateMembre() || '—' }}</span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="enregistrer()" class="formulaire">
+          <div class="champ-form">
+            <label for="nom">Nom</label>
+            <input id="nom" type="text" formControlName="nom" />
+            @if (form.controls.nom.touched && form.controls.nom.invalid) {
+              <small class="erreur">Nom requis</small>
+            }
+          </div>
+          <div class="champ-form">
+            <label for="prenom">Prénom</label>
+            <input id="prenom" type="text" formControlName="prenom" />
+            @if (form.controls.prenom.touched && form.controls.prenom.invalid) {
+              <small class="erreur">Prénom requis</small>
+            }
+          </div>
+          <div class="champ-form">
+            <label for="telephone">Téléphone</label>
+            <input id="telephone" type="text" formControlName="telephone" />
+          </div>
+          <div class="champ-form">
+            <label for="nomEntreprise">Entreprise</label>
+            <input id="nomEntreprise" type="text" formControlName="nomEntreprise" />
+          </div>
+          @if (estClient()) {
+            <div class="champ-form plein">
+              <label for="adresse">Adresse</label>
+              <input id="adresse" type="text" formControlName="adresse" />
+            </div>
+          }
+
+          @if (erreur(); as e) {
+            <p class="erreur">{{ e }}</p>
+          }
+
+          <div class="actions">
+            <button type="button" class="btn-outline" (click)="annulerEdition()">Annuler</button>
+            <button type="submit" class="btn-principal" [disabled]="enregistrementEnCours()">
+              {{ enregistrementEnCours() ? 'Enregistrement…' : 'Enregistrer' }}
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  } @else {
+    <div class="etat erreur">{{ erreur() ?? 'Profil indisponible.' }}</div>
+  }
+</div>

@@ -50,4 +50,18 @@ export interface ProfilDTO {
   nom: string;
   prenom: string;
   role: string;
+  telephone?: string;
+  nomEntreprise?: string;
+  adresse?: string;
+  actif: boolean;
+  createdAt: string;
+  photoUrl?: string;
+}
+
+export interface ModifierProfilDTO {
+  nom: string;
+  prenom: string;
+  telephone?: string;
+  nomEntreprise?: string;
+  adresse?: string;
 }
