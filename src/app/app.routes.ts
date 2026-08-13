@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth-guard';
 import { roleGuard } from './core/auth/role-guard';
-import { ResponsableLayout } from './core/layout/responsable-layout/responsable-layout';
-import { ClientLayout } from './core/layout/client-layout/client-layout';
+import { AppLayout } from './core/layout/app-layout/app-layout';
 import {
   EvaluationsEnAttenteComponent
 } from './features/maintenance/evaluation-ascenseur/evaluations-en-attente/evaluations-en-attente';
@@ -46,8 +45,7 @@ export const routes: Routes = [
   // ---- Espace Admin ----
   {
     path: '',
-    loadComponent: () =>
-      import('./core/layout/admin-layout/admin-layout').then((m) => m.AdminLayoutComponent),
+    component: AppLayout,
     canActivate: [authGuard, roleGuard(['ADMINISTRATEUR'])],
     children: [
       {
@@ -64,13 +62,17 @@ export const routes: Routes = [
           import('./features/utilisateurs/utilisateurs.routes').then((m) => m.UTILISATEURS_ROUTES),
         canActivate: [roleGuard(['ADMINISTRATEUR'])],
       },
+      {
+        path: 'admin/profil',
+        loadComponent: () => import('./features/profil/profil/profil').then((m) => m.ProfilComponent),
+      },
     ],
   },
 
   // ---- Espace Responsable maintenance ----
   {
     path: '',
-    component: ResponsableLayout,
+    component: AppLayout,
     canActivate: [authGuard],
     children: [
       {
@@ -79,6 +81,11 @@ export const routes: Routes = [
           import('./features/dashboard/dashboard-responsable-maintenance/dashboard-responsable-maintenance').then(
             (m) => m.DashboardResponsableMaintenance,
           ),
+        canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
+      },
+      {
+        path: 'responsable/profil',
+        loadComponent: () => import('./features/profil/profil/profil').then((m) => m.ProfilComponent),
         canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
       },
       {
@@ -206,9 +213,28 @@ export const routes: Routes = [
   // ---- Espace Client ----
   {
     path: '',
-    component: ClientLayout,
+    component: AppLayout,
     canActivate: [authGuard, roleGuard(['CLIENT'])],
     children: [
+      {
+        path: 'client/dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard-client/dashboard-client').then(
+            (m) => m.DashboardClient,
+          ),
+        canActivate: [roleGuard(['CLIENT'])],
+      },
+      {
+        path: 'client/profil',
+        loadComponent: () =>
+          import('./features/profil/profil/profil').then((m) => m.ProfilComponent),
+        canActivate: [roleGuard(['CLIENT'])],
+      },
+      {
+        path: 'client',
+        redirectTo: '/client/dashboard',
+        pathMatch: 'full',
+      },
       {
         path: 'client',
         loadChildren: () =>
@@ -221,7 +247,7 @@ export const routes: Routes = [
   // ---- Espace Technicien ----
   {
     path: '',
-    component: ResponsableLayout,
+    component: AppLayout,
     canActivate: [authGuard, roleGuard(['TECHNICIEN'])],
     children: [
       {
@@ -245,6 +271,11 @@ export const routes: Routes = [
               import('./features/maintenance/evaluation-ascenseur/evaluation-ascenseur.routes').then(
                 (m) => m.EVALUATION_TECHNICIEN_ROUTES,
               ),
+          },
+          {
+            path: 'profil',
+            loadComponent: () =>
+              import('./features/profil/profil/profil').then((m) => m.ProfilComponent),
           },
         ],
       },
