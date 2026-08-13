@@ -2,8 +2,8 @@
   <div class="list-card">
     <div class="card-header">
       <div>
-        <h2>{{ titre() }}</h2>
-        <p class="subtitle">{{ demandesFiltrees().length }} demande(s)</p>
+        <h2 class="titre-page">{{ titre() }}</h2>
+        <p class="subtitle"><span class="nb">{{ demandesFiltrees().length }}</span> demande(s)</p>
       </div>
       @if (mode() === 'client') {
         <a routerLink="/client/demandes/nouveau" class="btn-primary">+ Nouvelle demande</a>
@@ -24,7 +24,7 @@
       <select (change)="changerFiltreType($event)" [value]="typeFiltre() ?? ''">
         <option value="">Tous les types</option>
         @for (t of typesDisponibles; track t) {
-          <option [value]="t">{{ t }}</option>
+          <option [value]="t">{{ typeLabel(t) }}</option>
         }
       </select>
 
@@ -86,12 +86,12 @@
           <tbody>
             @for (d of demandesFiltrees(); track d.id) {
               <tr>
-                <td><strong>{{ d.id }}</strong></td>
+                <td><strong class="nb">{{ d.id }}</strong></td>
                 @if (mode() !== 'client') {
                   <td>{{ d.clientNom }}</td>
                 }
                 <td>{{ d.ascenseurNom || '—' }}</td>
-                <td>{{ d.typeDemande }}</td>
+                <td>{{ typeLabel(d.typeDemande) }}</td>
                 @if (mode() !== 'client') {
                   <td>{{ d.priorite }}</td>
                 }
