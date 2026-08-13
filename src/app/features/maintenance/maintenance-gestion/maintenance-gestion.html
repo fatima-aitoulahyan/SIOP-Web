@@ -62,7 +62,7 @@
 
         <div class="detail-item">
           <span class="label">Type de demande</span>
-          <span class="value"><span class="type-pill">{{ d.typeDemande }}</span></span>
+          <span class="value"><span class="type-pill">{{ typeLabel(d.typeDemande) }}</span></span>
         </div>
 
         @if (d.typeDemande !== 'EVALUATION') {

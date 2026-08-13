@@ -3,9 +3,9 @@
 // =====================================================
 
 export enum TypeDemande {
-  PREVENTIVE = 'PREVENTIVE',
-  DEPANNAGE = 'PANNE',
+  PANNE = 'PANNE',
   TRAVAUX = 'TRAVAUX',
+  PREVENTIVE = 'PREVENTIVE',
   EVALUATION = 'EVALUATION',
 }
 
@@ -29,9 +29,9 @@ export enum StatutDemande {
 // =====================================================
 
 export const TYPE_DEMANDE_LABELS: Record<TypeDemande, string> = {
-  [TypeDemande.PREVENTIVE]: 'Maintenance préventive',
-  [TypeDemande.DEPANNAGE]: 'Dépannage',
+  [TypeDemande.PANNE]: 'Panne',
   [TypeDemande.TRAVAUX]: 'Travaux',
+  [TypeDemande.PREVENTIVE]: 'Maintenance préventive',
   [TypeDemande.EVALUATION]: "Évaluation d'un nouvel ascenseur",
 };
 

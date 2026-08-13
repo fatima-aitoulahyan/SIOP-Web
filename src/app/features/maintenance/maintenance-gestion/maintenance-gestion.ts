@@ -3,7 +3,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MaintenanceService } from '../services/maintenance.service';
-import { DemandeMaintenanceDTO } from '../../../core/models/maintenance.model';
+import { DemandeMaintenanceDTO, TypeDemande, TYPE_DEMANDE_LABELS } from '../../../core/models/maintenance.model';
 
 @Component({
   selector: 'app-maintenance-gestion',
@@ -28,6 +28,10 @@ export class MaintenanceGestionComponent implements OnInit {
   rejetForm = this.fb.nonNullable.group({
     motif: ['', [Validators.required, Validators.minLength(10)]],
   });
+
+  typeLabel(type: string): string {
+    return TYPE_DEMANDE_LABELS[type as TypeDemande] ?? type;
+  }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');

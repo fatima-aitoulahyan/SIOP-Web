@@ -32,8 +32,9 @@ export class DemandeDetailComponent implements OnInit {
   // Dictionnaires de libellés
   typeLabels: Record<string, string> = {
     PANNE: 'Panne',
-    MAINTENANCE: 'Maintenance préventive',
-    EVALUATION: 'Évaluation site',
+    TRAVAUX: 'Travaux',
+    PREVENTIVE: 'Maintenance préventive',
+    EVALUATION: "Évaluation d'un nouvel ascenseur",
   };
 
   statutLabels: Record<string, string> = {

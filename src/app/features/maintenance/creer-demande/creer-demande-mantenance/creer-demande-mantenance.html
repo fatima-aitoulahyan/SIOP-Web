@@ -32,7 +32,7 @@
             <select id="typeDemande" formControlName="typeDemande">
               <option [ngValue]="null">-- Sélectionner un type --</option>
               @for (t of types; track t) {
-                <option [ngValue]="t">{{ t }}</option>
+                <option [ngValue]="t">{{ TypeDemandeLabels[t] }}</option>
               }
             </select>
           </div>
