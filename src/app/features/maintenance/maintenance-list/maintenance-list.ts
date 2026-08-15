@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MaintenanceService } from '../services/maintenance.service';
 import { AuthService } from '../../../core/auth/auth';
-import { DemandeMaintenanceDTO, StatutDemande } from '../../../core/models/maintenance.model';
+import { DemandeMaintenanceDTO, StatutDemande, TypeDemande, TYPE_DEMANDE_LABELS } from '../../../core/models/maintenance.model';
 
 @Component({
   selector: 'app-maintenance-list',
@@ -143,6 +143,10 @@ export class MaintenanceListComponent {
   changerFiltreType(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     this.typeFiltre.set(value === '' ? undefined : value);
+  }
+
+  typeLabel(type: string): string {
+    return TYPE_DEMANDE_LABELS[type as TypeDemande] ?? type;
   }
 
   statutClass(statut: string): string {

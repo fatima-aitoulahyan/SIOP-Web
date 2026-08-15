@@ -1,0 +1,148 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="profil-card">
+      <div class="avatar">
+        @if (profil(); as p) {
+          @if (p.photoUrl) {
+            <img [src]="p.photoUrl" alt="Photo de profil" />
+          } @else {
+            <span class="initiales">{{ initiales() }}</span>
+          }
+        } @else {
+          <span class="initiales">…</span>
+        }
+      </div>
+      <div class="infos">
+        <span class="nom">{{ profil()?.prenom ?? '' }} {{ profil()?.nom ?? '' }}</span>
+        <span class="role">{{ roleLabel() }}</span>
+      </div>
+    </div>
+
+    @if (cta(); as c) {
+      <a [routerLink]="c.lien" class="btn-cta">
+        <span class="material-symbols-outlined">add</span>
+        {{ c.label }}
+      </a>
+    }
+
+    <nav class="menu">
+      @if (role() === 'CLIENT') {
+        <a routerLink="/client/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="menu-item">
+          <span class="material-symbols-outlined">dashboard</span>
+          Tableau de bord
+        </a>
+        <a routerLink="/client/demandes" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="menu-item">
+          <span class="material-symbols-outlined">receipt_long</span>
+          Mes demandes
+        </a>
+        <a routerLink="/client/demandes/nouvelle-evaluation" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">support_agent</span>
+          Demande d'évaluation
+        </a>
+        <a routerLink="/client/profil" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">person</span>
+          Mon profil
+        </a>
+      }
+
+      @if (role() === 'RESPONSABLE_MAINTENANCE') {
+        <a routerLink="/dashboard/responsable-maintenance" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="menu-item">
+          <span class="material-symbols-outlined">dashboard</span>
+          Tableau de bord
+        </a>
+        <a routerLink="/ascenseurs" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">elevator</span>
+          Ascenseurs
+        </a>
+        <a routerLink="/sites" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">location_city</span>
+          Sites
+        </a>
+
+        <div class="dropdown-menu-container">
+          <button type="button" class="menu-item dropdown-toggle" (click)="toggleDemandes()">
+            <span class="dropdown-libelle">
+              <span class="material-symbols-outlined">receipt_long</span>
+              Demandes
+            </span>
+            <span class="arrow" [class.open]="demandesOuvert()">▼</span>
+          </button>
+
+          <div class="dropdown-content" [class.show]="demandesOuvert()">
+            <a routerLink="/responsable/demandes" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" class="menu-item sub-item">
+              Maintenance
+            </a>
+            <a routerLink="/responsable/evaluations" routerLinkActive="active" class="menu-item sub-item">
+              Nouvelles installations
+            </a>
+            <a routerLink="/responsable/evaluations-en-attente" routerLinkActive="active" class="menu-item sub-item">
+              Rapports à valider
+            </a>
+          </div>
+        </div>
+
+        <a routerLink="/responsable/bons-travail" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="menu-item">
+          <span class="material-symbols-outlined">assignment</span>
+          Bons de travail
+        </a>
+        <a routerLink="/parcs" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">park</span>
+          Parcs
+        </a>
+        <a routerLink="/responsable/profil" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">person</span>
+          Mon profil
+        </a>
+      }
+
+      @if (role() === 'ADMINISTRATEUR') {
+        <a routerLink="/dashboard/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="menu-item">
+          <span class="material-symbols-outlined">dashboard</span>
+          Tableau de bord
+        </a>
+        <a routerLink="/utilisateurs" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">group</span>
+          Utilisateurs
+        </a>
+        <a routerLink="/parcs" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">park</span>
+          Parcs
+        </a>
+        <a routerLink="/admin/profil" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">person</span>
+          Mon profil
+        </a>
+      }
+
+      @if (role() === 'TECHNICIEN') {
+        <a routerLink="/technicien/bons-travail" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">engineering</span>
+          Mes interventions
+        </a>
+        <a routerLink="/technicien/demandes" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">list_alt</span>
+          Demandes
+        </a>
+        <a routerLink="/technicien/profil" routerLinkActive="active" class="menu-item">
+          <span class="material-symbols-outlined">person</span>
+          Mon profil
+        </a>
+      }
+    </nav>
+
+    <div class="footer">
+      <button type="button" class="footer-item" (click)="aider()">
+        <span class="material-symbols-outlined">help</span>
+        Aide
+      </button>
+      <button type="button" class="footer-item" (click)="deconnexion()">
+        <span class="material-symbols-outlined">logout</span>
+        Déconnexion
+      </button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

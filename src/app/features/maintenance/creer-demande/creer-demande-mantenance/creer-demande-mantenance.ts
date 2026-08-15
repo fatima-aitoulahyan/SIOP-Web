@@ -11,7 +11,7 @@ import {
   PrioriteDemande,
 } from '../../../../core/models/maintenance.model';
 import { AscenseurDTO } from '../../../../core/models/ascenseur.model';
-import { TypeDemande } from '../../../../core/models/demande-maintenance.model';
+import { TypeDemande, TYPE_DEMANDE_LABELS } from '../../../../core/models/demande-maintenance.model';
 import { CreerDemandeEvaluationComponent } from '../creer-demande-evaluation/creer-demande-evaluation';
 
 @Component({
@@ -46,6 +46,7 @@ export class CreerDemandeMantenanceComponent implements OnInit, OnDestroy {
   ascenseurs = signal<AscenseurDTO[]>([]);
   types = Object.values(TypeDemande).filter((t) => t !== TypeDemande.EVALUATION);
   priorites = Object.values(PrioriteDemande);
+  readonly TypeDemandeLabels = TYPE_DEMANDE_LABELS;
 
   private mediaRecorder: MediaRecorder | null = null;
   private timerInterval: ReturnType<typeof setInterval> | null = null;

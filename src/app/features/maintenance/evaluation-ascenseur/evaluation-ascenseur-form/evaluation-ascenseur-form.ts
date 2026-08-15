@@ -28,7 +28,7 @@ export class EvaluationAscenseurFormComponent implements OnInit {
 
   form = this.fb.nonNullable.group({
     fabricant: ['', [Validators.required]],
-    nom:[''],
+    nom: [''],
     marque: [''],
     modele: [''],
     numeroSerie: [''],
@@ -63,7 +63,7 @@ export class EvaluationAscenseurFormComponent implements OnInit {
         this.evaluationId.set(evalu.id);
         this.form.patchValue({
           fabricant: evalu.fabricant ?? '',
-          nom: (evalu.nom ?? '') as string,
+          nom: evalu.nom ?? '',
           marque: evalu.marque ?? '',
           modele: evalu.modele ?? '',
           numeroSerie: evalu.numeroSerie ?? '',

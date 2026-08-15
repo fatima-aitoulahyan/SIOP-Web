@@ -5,7 +5,7 @@ import { Observable, tap, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
 import { LoginRequest, LoginResponse } from '../models/auth.model';
-import { ActivationCompteRequest } from '../models/utilisateur.model';
+import { ActivationCompteRequest, ModifierProfilDTO } from '../models/utilisateur.model';
 import { ProfilDTO } from '../models/utilisateur.model';
 
 @Injectable({ providedIn: 'root' })
@@ -58,6 +58,20 @@ export class AuthService {
   // à ne pas confondre avec me() qui resynchronise la session au démarrage de l'app.
   monProfil(): Observable<ProfilDTO> {
     return this.http.get<ApiResponse<ProfilDTO>>(`${this.baseUrl}/me`).pipe(map((res) => res.data));
+  }
+
+  mettreAJourProfil(dto: ModifierProfilDTO): Observable<ProfilDTO> {
+    return this.http
+      .put<ApiResponse<ProfilDTO>>(`${this.baseUrl}/mon-profil`, dto)
+      .pipe(map((res) => res.data));
+  }
+
+  televerserPhotoProfil(file: File): Observable<ProfilDTO> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http
+      .post<ApiResponse<ProfilDTO>>(`${this.baseUrl}/photo-de-profil`, formData)
+      .pipe(map((res) => res.data));
   }
 
   activerCompte(dto: ActivationCompteRequest): Observable<ApiResponse<void>> {

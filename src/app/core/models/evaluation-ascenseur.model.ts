@@ -16,7 +16,7 @@ export interface EvaluationAscenseurDTO {
   technicienNom: string;
 
   dateVisite: string | null;
-  nom: String | null;
+  nom: string | null;
   fabricant: string | null;
   marque: string | null;
   modele: string | null;
@@ -44,7 +44,7 @@ export interface EvaluationAscenseurDTO {
 }
 
 export interface EvaluationAscenseurSoumissionDTO {
-  nom: String;
+  nom?: string | null;
   fabricant: string;
   marque?: string | null;
   modele?: string | null;
