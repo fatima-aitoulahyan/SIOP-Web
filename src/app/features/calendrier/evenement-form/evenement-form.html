@@ -1,0 +1,84 @@
+<div class="modal-overlay" (click)="onAnnuler()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="card-header">
+      <h2>{{ evenement ? "Modifier l'événement" : 'Nouvel événement' }}</h2>
+      <p class="subtitle">
+        {{ evenement ? "Modifiez les informations de l'événement" : "Renseignez les informations de l'événement" }}
+      </p>
+    </div>
+
+    @if (erreur()) {
+      <div class="error">{{ erreur() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label>Titre *</label>
+        <div class="input-wrapper">
+          <input type="text" formControlName="titre" placeholder="Ex: Réunion planning technicien" />
+        </div>
+        @if (form.controls.titre.invalid && form.controls.titre.touched) {
+          <span class="champ-erreur">Le titre est obligatoire.</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Type *</label>
+        <div class="input-wrapper select-wrapper">
+          <select formControlName="type">
+            @for (t of types; track t) {
+              <option [ngValue]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label>Début *</label>
+          <div class="input-wrapper">
+            <input type="datetime-local" formControlName="dateDebut" />
+          </div>
+          @if (form.controls.dateDebut.invalid && form.controls.dateDebut.touched) {
+            <span class="champ-erreur">La date de début est obligatoire.</span>
+          }
+        </div>
+        <div class="form-group">
+          <label>Fin *</label>
+          <div class="input-wrapper">
+            <input type="datetime-local" formControlName="dateFin" />
+          </div>
+          @if (form.controls.dateFin.invalid && form.controls.dateFin.touched) {
+            <span class="champ-erreur">La date de fin est obligatoire.</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Lieu</label>
+        <div class="input-wrapper">
+          <input type="text" formControlName="lieu" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <div class="input-wrapper textarea-wrapper">
+          <textarea formControlName="description" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        @if (evenement) {
+          <button type="button" class="btn-danger" (click)="onSupprimer()">
+            Supprimer
+          </button>
+        }
+        <button type="button" class="btn-secondary" (click)="onAnnuler()">Annuler</button>
+        <button type="submit" [disabled]="submitting()">
+          {{ submitting() ? 'Enregistrement...' : 'Enregistrer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

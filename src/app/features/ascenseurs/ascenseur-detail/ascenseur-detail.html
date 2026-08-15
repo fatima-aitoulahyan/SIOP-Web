@@ -1,203 +1,223 @@
-@if (ascenseur(); as a) {
-  <div class="ascenseur-detail">
-    <div class="header">
-      <div>
-        <h1>{{ a.nom }}</h1>
-        <p class="subtitle">{{ a.clientNomEntreprise }}</p>
-      </div>
-      <div class="header-actions">
-        <a routerLink="/ascenseurs" class="btn-secondary">← Retour</a>
-        <span class="badge" [class.badge-actif]="a.actif">
-          {{ a.actif ? 'Actif' : 'Inactif' }}
-        </span>
-        <a class="btn-secondary" [routerLink]="['/ascenseurs', a.id, 'modifier']">Modifier</a>
-      </div>
-    </div>
+<div class="page-wrapper">
+  <div class="form-card">
+    @if (ascenseur(); as a) {
 
-    <div class="tabs">
-      <button [class.active]="activeTab() === 'arborescence'" (click)="activeTab.set('arborescence')">
-        Arborescence
-      </button>
-      <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">Informations</button>
-    </div>
+      <!-- En-tête de l'ascenseur -->
+      <div class="card-header">
+        <div class="header-main">
+          <div class="header-top-row">
+            <h2>{{ a.nom }}</h2>
+            <span class="badge" [class.badge-actif]="a.actif" [class.badge-inactif]="!a.actif">
+                {{ a.actif ? 'Actif' : 'Inactif' }}
+              </span>
+          </div>
+          <p class="subtitle">
+            <span class="location-text">{{ a.clientNomEntreprise }}</span>
+          </p>
+        </div>
+        <div class="header-actions">
+          <a routerLink="/ascenseurs" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Retour
+          </a>
+          <a class="btn-primary" [routerLink]="['/ascenseurs', a.id, 'modifier']">Modifier</a>
+        </div>
+      </div>
 
-    @if (activeTab() === 'arborescence') {
-      <div class="arborescence-panel">
-        @if (chargementInitial()) {
-          <div class="loading">Chargement de l'arborescence...</div>
-        } @else if (arbre().length === 0) {
-          <div class="empty">
-            <p>Aucune zone définie.</p>
-            <span>Générez automatiquement l'arborescence standard selon le type d'ascenseur ({{ a.type }}), ou créez vos zones manuellement.</span>
-            <div class="empty-actions">
-              <button class="btn-primary" (click)="genererArborescence()" [disabled]="generationEnCours()">
-                {{ generationEnCours() ? 'Génération en cours...' : "Générer l'arborescence standard" }}
-              </button>
+      <!-- Onglets -->
+      <div class="tabs">
+        <button [class.active]="activeTab() === 'arborescence'" (click)="activeTab.set('arborescence')">
+          Arborescence
+        </button>
+        <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">
+          Informations
+        </button>
+      </div>
+
+      @if (activeTab() === 'arborescence') {
+        <div class="arborescence-panel">
+          @if (chargementInitial()) {
+            <div class="etat-loading">Chargement de l'arborescence...</div>
+          } @else if (arbre().length === 0) {
+            <div class="empty">
+              <p>Aucune zone définie.</p>
+              <span>Générez automatiquement l'arborescence standard selon le type d'ascenseur ({{ a.type }}), ou créez vos zones manuellement.</span>
+              <div class="empty-actions">
+                <button class="btn-primary" (click)="genererArborescence()" [disabled]="generationEnCours()">
+                  {{ generationEnCours() ? 'Génération en cours...' : "Générer l'arborescence standard" }}
+                </button>
+              </div>
+            </div>
+          } @else {
+            @if (rafraichissementEnCours()) {
+              <div class="refresh-indicator">Mise à jour...</div>
+            }
+            <app-assemblage-explorer
+              [nodes]="arbre()"
+              [ascenseurId]="ascenseurId"
+              (changed)="chargerArbre()" />
+          }
+        </div>
+      }
+
+      @if (activeTab() === 'info') {
+        <div class="info-panel-content">
+
+          <!-- Rattachement -->
+          <div class="info-section-title">Rattachement</div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Client</span>
+              <span class="value">{{ ((a.clientPrenom || '') + ' ' + (a.clientNom || '')) || '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Site</span>
+              <span class="value">{{ a.siteAdresse || '—' }}</span>
             </div>
           </div>
-        } @else {
-          @if (rafraichissementEnCours()) {
-            <div class="refresh-indicator">Mise à jour...</div>
+
+          <!-- Informations générales -->
+          <div class="info-section-title">Informations générales</div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Fabricant</span>
+              <span class="value">{{ a.fabricant || '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Marque</span>
+              <span class="value">{{ a.marque || '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Modèle</span>
+              <span class="value">{{ a.modele || '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Type</span>
+              <span class="value"><span class="type-pill">{{ a.type || '—' }}</span></span>
+            </div>
+          </div>
+
+          <!-- Identification -->
+          <div class="info-section-title">Identification</div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Numéro de série</span>
+              <span class="value">{{ a.numeroSerie || '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Code-barre</span>
+              <span class="value">{{ a.codeBarre || '—' }}</span>
+            </div>
+          </div>
+
+          <!-- Caractéristiques techniques -->
+          <div class="info-section-title">Caractéristiques techniques</div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Nombre d'étages</span>
+              <span class="value">{{ a.nombreEtages ?? '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Capacité (personnes)</span>
+              <span class="value">{{ a.capacitePersonnes ?? '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Charge max</span>
+              <span class="value">{{ a.chargeMaxKg ? (a.chargeMaxKg + ' kg') : '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Vitesse</span>
+              <span class="value">{{ a.vitesse ? (a.vitesse + ' m/s') : '—' }}</span>
+            </div>
+            <div class="detail-item" style="grid-column: span 2;">
+              <span class="label">Puissance</span>
+              <span class="value">{{ a.puissance || '—' }}</span>
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="info-section-title">Dates</div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Mise en service</span>
+              <span class="value date-highlight">{{ a.dateMiseEnService || '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Garantie jusqu'au</span>
+              <span class="value date-highlight">{{ a.dateExpirationGarantie || '—' }}</span>
+            </div>
+          </div>
+
+          @if (a.description) {
+            <div class="section-block">
+              <div class="info-section-title">Description</div>
+              <div class="readonly-text">{{ a.description }}</div>
+            </div>
           }
-          <app-assemblage-explorer
-            [nodes]="arbre()"
-            [ascenseurId]="ascenseurId"
-            (changed)="chargerArbre()" />
-        }
-      </div>
-    }
 
-    @if (activeTab() === 'info') {
-      <div class="info-panel">
-        <p class="section-title">Rattachement</p>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">Client</span>
-            <span class="value">
-  {{ ((a.clientPrenom || '') + ' ' + (a.clientNom || ''))}}
-</span>          </div>
-          <div class="info-item">
-            <span class="label">Site</span>
-            <span class="value">{{ a.siteAdresse || '—' }}</span>
-          </div>
-        </div>
+          @if (a.informationsSupplementaires) {
+            <div class="section-block">
+              <div class="info-section-title">Informations supplémentaires</div>
+              <div class="readonly-text">{{ a.informationsSupplementaires }}</div>
+            </div>
+          }
 
-        <p class="section-title">Informations générales</p>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">Fabricant</span>
-            <span class="value">{{ a.fabricant || '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Marque</span>
-            <span class="value">{{ a.marque || '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Modèle</span>
-            <span class="value">{{ a.modele || '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Type</span>
-            <span class="value">{{ a.type || '—' }}</span>
-          </div>
-        </div>
+          <!-- Pièces jointes -->
+          <div class="section-block">
+            <div class="info-section-title">Pièces jointes</div>
+            @if (chargementPiecesJointes()) {
+              <div class="etat-loading">Chargement des pièces jointes...</div>
+            } @else if (piecesJointes().length === 0) {
+              <p class="empty-text">Aucune pièce jointe.</p>
+            } @else {
+              <div class="pieces-jointes-liste">
+                @for (piece of piecesJointes(); track piece.id) {
+                  <div class="piece-jointe-item">
+                    <div class="piece-jointe-icone" [attr.data-type]="piece.typeFichier">
+                      @switch (piece.typeFichier) {
+                        @case ('IMAGE') {
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        }
+                        @case ('PDF') {
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                        }
+                        @case ('DOCUMENT') {
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+                        }
+                        @case ('AUDIO') {
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                        }
+                        @case ('VIDEO') {
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 9l6-4v14l-6-4"/></svg>
+                        }
+                        @default {
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                        }
+                      }
+                    </div>
 
-        <p class="section-title">Identification</p>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">Numéro de série</span>
-            <span class="value">{{ a.numeroSerie || '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Code-barre</span>
-            <span class="value">{{ a.codeBarre || '—' }}</span>
-          </div>
-        </div>
+                    <div class="piece-jointe-info">
+                      <span class="piece-jointe-nom">{{ piece.nomFichier }}</span>
+                      @if (piece.description) {
+                        <span class="piece-jointe-description">{{ piece.description }}</span>
+                      }
+                    </div>
 
-        <p class="section-title">Caractéristiques techniques</p>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">Nombre d'étages</span>
-            <span class="value">{{ a.nombreEtages ?? '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Capacité (personnes)</span>
-            <span class="value">{{ a.capacitePersonnes ?? '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Charge max</span>
-            <span class="value">{{ a.chargeMaxKg ? (a.chargeMaxKg + ' kg') : '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Vitesse</span>
-            <span class="value">{{ a.vitesse ? (a.vitesse + ' m/s') : '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Puissance</span>
-            <span class="value">{{ a.puissance || '—' }}</span>
-          </div>
-        </div>
-
-        <p class="section-title">Dates </p>
-        <div class="info-grid">
-
-          <div class="info-item">
-            <span class="label">Mise en service</span>
-            <span class="value">{{ a.dateMiseEnService || '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Garantie jusqu'au</span>
-            <span class="value">{{ a.dateExpirationGarantie || '—' }}</span>
-          </div>
-        </div>
-
-        @if (a.description) {
-          <div class="description-block">
-            <span class="label">Description</span>
-            <p>{{ a.description }}</p>
-          </div>
-        }
-
-        @if (a.informationsSupplementaires) {
-          <div class="description-block">
-            <span class="label">Informations supplémentaires</span>
-            <p>{{ a.informationsSupplementaires }}</p>
-          </div>
-        }
-        <p class="section-title">Pièces jointes</p>
-        @if (chargementPiecesJointes()) {
-          <div class="loading">Chargement des pièces jointes...</div>
-        } @else if (piecesJointes().length === 0) {
-          <p class="empty-text">Aucune pièce jointe.</p>
-        } @else {
-          <div class="pieces-jointes-liste">
-            @for (piece of piecesJointes(); track piece.id) {
-              <div class="piece-jointe-item">
-                <div class="piece-jointe-icone" [attr.data-type]="piece.typeFichier">
-                  @switch (piece.typeFichier) {
-                    @case ('IMAGE') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-                    }
-                    @case ('PDF') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-                    }
-                    @case ('DOCUMENT') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
-                    }
-                    @case ('AUDIO') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                    }
-                    @case ('VIDEO') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 9l6-4v14l-6-4"/></svg>
-                    }
-                    @default {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-                    }
-                  }
-                </div>
-
-                <div class="piece-jointe-info">
-                  <span class="piece-jointe-nom">{{ piece.nomFichier }}</span>
-                  @if (piece.description) {
-                    <span class="piece-jointe-description">{{ piece.description }}</span>
-                  }
-                </div>
-
-
-                <a class="piece-jointe-action"
-                [href]="piece.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Ouvrir {{ piece.nomFichier }}"
-                >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
-                </a>
+                    <a class="piece-jointe-action"
+                       [href]="piece.url"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       aria-label="Ouvrir {{ piece.nomFichier }}">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+                    </a>
+                  </div>
+                }
               </div>
             }
           </div>
-        }
 
-      </div>
+        </div>
+      }
     }
   </div>
-}
+</div>

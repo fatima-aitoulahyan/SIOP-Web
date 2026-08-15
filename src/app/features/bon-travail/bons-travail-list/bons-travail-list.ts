@@ -25,8 +25,11 @@ export class BonsTravailListComponent {
   statutFiltre = signal<StatutBonTravail | undefined>(undefined);
   annulationEnCours = signal<number | null>(null);
 
-  mode = computed<'responsable' | 'technicien'>(
-    () => (this.authService.currentRole() === 'RESPONSABLE_MAINTENANCE' ? 'responsable' : 'technicien'),
+  mode = computed<'responsable' | 'technicien'>(() =>
+    this.authService.currentRole() === 'RESPONSABLE_MAINTENANCE' ||
+    this.authService.currentRole() === 'ADMINISTRATEUR'
+      ? 'responsable'
+      : 'technicien',
   );
 
   titre = computed(() => (this.mode() === 'responsable' ? 'Bons de travail' : 'Mes interventions'));
@@ -50,10 +53,13 @@ export class BonsTravailListComponent {
   });
 
   constructor() {
-    effect(() => {
-      if (!this.authService.authReady()) return;
-      untracked(() => this.charger());
-    }, { allowSignalWrites: true });
+    effect(
+      () => {
+        if (!this.authService.authReady()) return;
+        untracked(() => this.charger());
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   charger(): void {
@@ -126,11 +132,7 @@ export class BonsTravailListComponent {
   }
 
   peutAnnuler(b: BonTravailResumeDTO): boolean {
-    return (
-      this.mode() === 'responsable' &&
-      b.statut !== 'TERMINE' &&
-      b.statut !== 'ANNULE'
-    );
+    return this.mode() === 'responsable' && b.statut !== 'TERMINE' && b.statut !== 'ANNULE';
   }
 
   annuler(b: BonTravailResumeDTO): void {

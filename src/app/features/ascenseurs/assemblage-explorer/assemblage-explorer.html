@@ -9,7 +9,7 @@
   <!-- Fil d'Ariane -->
   <div class="breadcrumb">
     <button class="crumb" [class.active]="path().length === 0" (click)="allerA(-1)">
-       Zones principales
+      Zones principales
     </button>
     @for (node of pathNodes(); track node.id; let i = $index) {
       <span class="separator">›</span>

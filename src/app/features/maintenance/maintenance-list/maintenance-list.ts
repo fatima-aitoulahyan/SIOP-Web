@@ -25,11 +25,7 @@ export class MaintenanceListComponent {
   statutFiltre = signal<StatutDemande | undefined>(undefined);
   typeFiltre = signal<string | undefined>(undefined);
 
-  typesDisponibles = [
-    'PANNE',
-    'BRUIT_ANORMAL',
-    'ENTRETIEN_PREVENTIF',
-  ];
+  typesDisponibles = ['PANNE', 'BRUIT_ANORMAL', 'ENTRETIEN_PREVENTIF'];
 
   titre = computed(() => {
     const modes: Record<string, string> = {
@@ -78,7 +74,7 @@ export class MaintenanceListComponent {
     const role = this.authService.currentRole();
     if (role === 'CLIENT') {
       this.mode.set('client');
-    } else if (role === 'RESPONSABLE_MAINTENANCE') {
+    } else if (role === 'RESPONSABLE_MAINTENANCE' || role === 'ADMINISTRATEUR') {
       this.mode.set('responsable');
     } else if (role === 'TECHNICIEN') {
       this.mode.set('technicien');

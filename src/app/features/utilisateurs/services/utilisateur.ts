@@ -52,4 +52,9 @@ export class UtilisateurService {
       .get<ApiResponse<UtilisateurResponseDTO[]>>(`${this.baseUrl}/clients`)
       .pipe(map((res) => res.data));
   }
+  getTechniciens(): Observable<UtilisateurResponseDTO[]> {
+    return this.http
+      .get<ApiResponse<UtilisateurResponseDTO[]>>(`${environment.apiUrl}/techniciens`)
+      .pipe(map((res) => res.data ?? []));
+  }
 }

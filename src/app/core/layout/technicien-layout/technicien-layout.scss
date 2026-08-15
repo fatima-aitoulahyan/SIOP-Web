@@ -49,14 +49,10 @@ $sidebar-width-collapsed: 80px;
         display: none !important;
       }
 
-      .menu-item, .dropdown-toggle, .btn-deconnexion {
+      .menu-item, .btn-deconnexion {
         justify-content: center;
         padding: 12px;
         gap: 0;
-      }
-
-      .dropdown-content {
-        display: none !important;
       }
     }
 
@@ -180,90 +176,6 @@ $sidebar-width-collapsed: 80px;
     .menu-icon {
       color: #ff9800;
     }
-  }
-}
-
-.dropdown-menu-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-
-  .dropdown-toggle {
-    width: 100%;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-align: left;
-    font: inherit;
-    color: rgba(255, 255, 255, 0.8);
-    padding: 12px 14px;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.15s ease;
-
-    .dropdown-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: #ffffff;
-
-      .menu-icon {
-        color: rgba(255, 255, 255, 0.95);
-      }
-    }
-
-    .arrow {
-      width: 14px;
-      height: 14px;
-      color: rgba(255, 255, 255, 0.4);
-      transition: transform 0.2s ease;
-
-      &.open {
-        transform: rotate(180deg);
-        color: #ff9800;
-      }
-    }
-  }
-
-  .dropdown-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding-left: 14px;
-    margin-top: 2px;
-
-    &.show {
-      max-height: 250px;
-    }
-  }
-}
-
-.sub-item {
-  padding: 10px 14px 10px 34px !important;
-  font-size: 0.88rem !important;
-  color: rgba(255, 255, 255, 0.65) !important;
-  border-radius: 10px !important;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.04);
-    color: #ffffff !important;
-  }
-
-  &.active {
-    background: rgba(255, 152, 0, 0.12) !important;
-    color: #ff9800 !important;
-    font-weight: 600 !important;
   }
 }
 

@@ -22,7 +22,6 @@ export class BonTravailService {
   private readonly baseUrl = `${environment.apiUrl}/bons-travail`;
   private readonly checklistUrl = `${environment.apiUrl}/checklists`;
 
-  // ── Responsable ──
   lister(): Observable<BonTravailResumeDTO[]> {
     return this.http
       .get<ApiResponse<BonTravailResumeDTO[]>>(this.baseUrl)

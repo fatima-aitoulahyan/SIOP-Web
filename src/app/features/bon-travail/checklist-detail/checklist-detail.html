@@ -582,18 +582,26 @@
         {{ bt.technicienResponsableNom ? bt.technicienResponsableNom.charAt(0) : '?' }}
         <span class="chat-avatar-dot"></span>
       </span>
-      <span class="chat-title">Messagerie interne</span>
+      <div class="chat-header-info">
+        <span class="chat-title">Messagerie interne</span>
+        <span class="chat-subtitle">Discussion d'intervention</span>
+      </div>
       @if (!afficherCommentaires() && commentaires().length > 0) {
         <span class="chat-badge">{{ commentaires().length }}</span>
       }
-      <span class="chat-chevron" [class.chat-chevron--open]="afficherCommentaires()">▼</span>
+      <span class="chat-chevron" [class.chat-chevron--open]="afficherCommentaires()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </span>
     </button>
 
     @if (afficherCommentaires()) {
       <div class="chat-body">
         <div class="chat-messages">
           @if (commentaires().length === 0) {
-            <p class="chat-empty">Aucun message pour l'instant. Discutez des détails de l'intervention ici.</p>
+            <div class="chat-empty">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <p>Aucun message pour l'instant.<br>Commencez la discussion sur l'intervention.</p>
+            </div>
           }
           @for (c of commentaires(); track c.id) {
             <div
@@ -602,24 +610,32 @@
               [class.chat-msg--selected]="commentaireSelectionne() === c.id"
               (click)="toggleSelectionCommentaire(c.id)"
             >
-              <div class="chat-msg-meta">
-                <span class="chat-msg-author">{{ c.auteurNom }}</span>
-                <span class="chat-msg-date">{{ c.createdAt | date: 'dd/MM HH:mm' }}</span>
+              <div class="chat-msg-avatar">
+                {{ c.auteurNom ? c.auteurNom.charAt(0).toUpperCase() : 'U' }}
               </div>
-              <p class="chat-msg-text">{{ c.contenu }}</p>
-
-              @if (commentaireSelectionne() === c.id && estMonCommentaire(c)) {
-                <div class="chat-msg-actions" (click)="$event.stopPropagation()">
-                  <button
-                    type="button"
-                    class="chat-msg-delete"
-                    [disabled]="suppressionCommentaireEnCours() === c.id"
-                    (click)="supprimerCommentaire(c)"
-                  >
-                    {{ suppressionCommentaireEnCours() === c.id ? 'Suppression…' : '🗑 Supprimer le message' }}
-                  </button>
+              <div class="chat-msg-content-wrapper">
+                <div class="chat-msg-meta">
+                  <span class="chat-msg-author">{{ c.auteurNom }}</span>
+                  <span class="chat-msg-date">{{ c.createdAt | date: 'dd MMM, HH:mm' }}</span>
                 </div>
-              }
+                <div class="chat-bubble">
+                  <p class="chat-msg-text">{{ c.contenu }}</p>
+                </div>
+
+                @if (commentaireSelectionne() === c.id && estMonCommentaire(c)) {
+                  <div class="chat-msg-actions" (click)="$event.stopPropagation()">
+                    <button
+                      type="button"
+                      class="chat-msg-delete"
+                      [disabled]="suppressionCommentaireEnCours() === c.id"
+                      (click)="supprimerCommentaire(c)"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      {{ suppressionCommentaireEnCours() === c.id ? 'Suppression…' : 'Supprimer' }}
+                    </button>
+                  </div>
+                }
+              </div>
             </div>
           }
         </div>
@@ -631,7 +647,7 @@
         <div class="chat-input-row">
           <textarea
             rows="1"
-            placeholder="Écrire un message…"
+            placeholder="Écrire un message professionnel..."
             [ngModel]="nouveauCommentaire()"
             (ngModelChange)="nouveauCommentaire.set($event)"
           ></textarea>
@@ -640,8 +656,13 @@
             class="chat-send-btn"
             [disabled]="!nouveauCommentaire().trim() || envoiCommentaireEnCours()"
             (click)="envoyerCommentaire()"
+            title="Envoyer le message"
           >
-            {{ envoiCommentaireEnCours() ? '…' : '➤' }}
+            @if (envoiCommentaireEnCours()) {
+              <span class="spinner"></span>
+            } @else {
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            }
           </button>
         </div>
       </div>

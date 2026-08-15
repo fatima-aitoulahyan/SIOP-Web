@@ -1,0 +1,84 @@
+.page-wrapper {
+  padding: 24px;
+}
+
+.calendrier-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .select-technicien {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background-color: #fff;
+    font-size: 0.875rem;
+    color: #334155;
+    outline: none;
+    cursor: pointer;
+
+    &:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+  }
+}
+
+// Styles pour la légende
+.calendrier-legende {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #f8fafc;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+
+  .legende-titre {
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .legende-groupe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .legende-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #334155;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+
+    &.planifie { background-color: #f59e0b; }
+    &.en-cours { background-color: #3b82f6; }
+    &.termine { background-color: #22c55e; }
+    &.annule { background-color: #9ca3af; }
+    &.reunion { background-color: #a855f7; }
+    &.conge { background-color: #ef4444; }
+    &.formation { background-color: #14b8a6; }
+  }
+}

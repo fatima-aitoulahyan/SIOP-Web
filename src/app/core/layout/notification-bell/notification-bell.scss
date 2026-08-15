@@ -1,0 +1,231 @@
+/* Variables globales de style (adaptables selon votre charte) */
+$primary-color: #4f46e5; // Indigo moderne
+$primary-hover: #4338ca;
+$bg-color: #ffffff;
+$border-color: #e5e7eb;
+$text-main: #1f2937;
+$text-muted: #6b7280;
+$unread-bg: #f5f7ff;
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+.notification-container {
+  position: relative;
+  display: inline-block;
+  font-family: inherit;
+}
+
+/* Bouton Cloche */
+.bell-btn {
+  position: relative;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  .bell-icon {
+    width: 22px;
+    height: 22px;
+    color: #4b5563;
+    transition: color 0.2s;
+  }
+
+  &:hover {
+    background-color: #f3f4f6;
+    .bell-icon {
+      color: $text-main;
+    }
+  }
+
+  &.active {
+    background-color: #eef2ff;
+    .bell-icon {
+      color: $primary-color;
+    }
+  }
+
+  /* Badge de notification (pastille rouge) */
+  .badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background-color: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 9999px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px white;
+  }
+}
+
+/* Panneau déroulant */
+.notification-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: 380px;
+  max-height: 480px;
+  background: $bg-color;
+  border-radius: 12px;
+  box-shadow: $shadow-xl;
+  border: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  animation: panelSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+
+  .panel-header {
+    padding: 16px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fafafa;
+
+    h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: $text-main;
+    }
+
+    .badge-count {
+      font-size: 11px;
+      background-color: #e0e7ff;
+      color: $primary-color;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+  }
+
+  .panel-body {
+    overflow-y: auto;
+    max-height: 400px;
+
+    /* Scrollbar discrète */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #d1d5db;
+      border-radius: 4px;
+    }
+  }
+}
+
+/* État vide */
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: $text-muted;
+
+  .empty-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+    stroke-width: 1.5;
+    color: #9ca3af;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+  }
+}
+
+/* Item de notification */
+.notif-item {
+  position: relative;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #f9fafb;
+  }
+
+  /* Style spécifique pour une notification non lue */
+  &.unread {
+    background-color: $unread-bg;
+
+    &:hover {
+      background-color: #edf2fc;
+    }
+
+    .notif-title-row strong {
+      color: $primary-color;
+    }
+  }
+
+  /* Petit point bleu/indigo sur le côté pour marquer le non-lu */
+  .notif-indicator {
+    position: absolute;
+    left: 8px;
+    top: 20px;
+    width: 6px;
+    height: 6px;
+    background-color: $primary-color;
+    border-radius: 50%;
+  }
+
+  .notif-content {
+    width: 100%;
+    padding-left: 8px;
+
+    .notif-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+
+      strong {
+        font-size: 13px;
+        color: $text-main;
+        font-weight: 500;
+      }
+
+      small {
+        font-size: 11px;
+        color: $text-muted;
+      }
+    }
+
+    p {
+      margin: 0;
+      font-size: 12px;
+      color: $text-muted;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Limite à 2 lignes max */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+}
+
+/* Animation d'apparition fluide */
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
