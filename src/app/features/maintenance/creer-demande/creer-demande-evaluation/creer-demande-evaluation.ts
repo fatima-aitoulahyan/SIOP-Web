@@ -53,24 +53,23 @@ export class CreerDemandeEvaluationComponent implements OnInit {
       })
       .subscribe({
         next: (res: any) => {
-          // Récupère l'ID en gérant les différents formats possibles (res.id ou res.data.id)
           const idDemande = res?.id ?? res?.data?.id;
 
           if (!idDemande) {
             console.error("L'ID de la demande est introuvable dans la réponse :", res);
             this.envoiEnCours.set(false);
-            this.router.navigate(['/maintenance']);
+            this.router.navigate(['/maintenance/demandes']);
             return;
           }
 
           this.uploaderEvaluation.uploaderFichiersEnAttente(idDemande).subscribe({
             next: () => {
               this.envoiEnCours.set(false);
-              this.router.navigate(['/maintenance']);
+              this.router.navigate(['/maintenance/demandes']);
             },
             error: () => {
               this.envoiEnCours.set(false);
-              this.router.navigate(['/maintenance']);
+              this.router.navigate(['/maintenance/demandes']);
             },
           });
         },

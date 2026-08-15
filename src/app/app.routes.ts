@@ -4,10 +4,6 @@ import { roleGuard } from './core/auth/role-guard';
 import { ClientLayout } from './core/layout/client-layout/client-layout';
 import { AdminLayoutComponent } from './core/layout/admin-layout/admin-layout';
 import { TechnicienLayoutComponent } from './core/layout/technicien-layout/technicien-layout';
-import { AppLayout } from './core/layout/app-layout/app-layout';
-import {
-  EvaluationsEnAttenteComponent
-} from './features/maintenance/evaluation-ascenseur/evaluations-en-attente/evaluations-en-attente';
 
 export const routes: Routes = [
   {
@@ -38,19 +34,14 @@ export const routes: Routes = [
         (m) => m.ActivationCompte,
       ),
   },
-  {
-    path: 'maintenance',
-    loadChildren: () =>
-      import('./features/maintenance/maintenance.routes').then((m) => m.MAINTENANCE_ROUTES),
-    canActivate: [roleGuard(['CLIENT'])],
-  },
 
-  // ---- Espace Admin ----
+  // ---- Espace Administrateur & Responsable de Maintenance (Layout Unique) ----
   {
     path: '',
     component: AdminLayoutComponent,
     canActivate: [authGuard, roleGuard(['ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE'])],
     children: [
+      // Dashboard Admin
       {
         path: 'dashboard/admin',
         loadComponent: () =>
@@ -59,25 +50,7 @@ export const routes: Routes = [
           ),
         canActivate: [roleGuard(['ADMINISTRATEUR'])],
       },
-      {
-        path: 'utilisateurs',
-        loadChildren: () =>
-          import('./features/utilisateurs/utilisateurs.routes').then((m) => m.UTILISATEURS_ROUTES),
-        canActivate: [roleGuard(['ADMINISTRATEUR'])],
-      },
-      {
-        path: 'admin/profil',
-        loadComponent: () => import('./features/profil/profil/profil').then((m) => m.ProfilComponent),
-      },
-    ],
-  },
-
-  // ---- Espace Responsable maintenance ----
-  {
-    path: '',
-    component: AppLayout,
-    canActivate: [authGuard],
-    children: [
+      // Dashboard Responsable
       {
         path: 'dashboard/responsable-maintenance',
         loadComponent: () =>
@@ -86,21 +59,27 @@ export const routes: Routes = [
           ),
         canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
       },
-
-      // Gestion des utilisateurs (Réservé Admin)
+      // Gestion des utilisateurs (Admin)
       {
         path: 'utilisateurs',
         loadChildren: () =>
           import('./features/utilisateurs/utilisateurs.routes').then((m) => m.UTILISATEURS_ROUTES),
         canActivate: [roleGuard(['ADMINISTRATEUR'])],
       },
-
-      // Fonctionnalités partagées (Ascenseurs, Sites, Parcs)
+      // Profils
+      {
+        path: 'admin/profil',
+        loadComponent: () =>
+          import('./features/profil/profil/profil').then((m) => m.ProfilComponent),
+        canActivate: [roleGuard(['ADMINISTRATEUR'])],
+      },
       {
         path: 'responsable/profil',
-        loadComponent: () => import('./features/profil/profil/profil').then((m) => m.ProfilComponent),
+        loadComponent: () =>
+          import('./features/profil/profil/profil').then((m) => m.ProfilComponent),
         canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
       },
+      // Fonctionnalités partagées
       {
         path: 'ascenseurs',
         loadChildren: () =>
@@ -135,7 +114,6 @@ export const routes: Routes = [
           },
         ],
       },
-
       // Espace Responsable (Demandes, Bons de travail, Calendrier, Évaluations)
       {
         path: 'responsable',
@@ -193,7 +171,7 @@ export const routes: Routes = [
   // ---- Espace Client ----
   {
     path: '',
-    component: AppLayout,
+    component: ClientLayout,
     canActivate: [authGuard, roleGuard(['CLIENT'])],
     children: [
       {
@@ -202,13 +180,11 @@ export const routes: Routes = [
           import('./features/dashboard/dashboard-client/dashboard-client').then(
             (m) => m.DashboardClient,
           ),
-        canActivate: [roleGuard(['CLIENT'])],
       },
       {
         path: 'client/profil',
         loadComponent: () =>
           import('./features/profil/profil/profil').then((m) => m.ProfilComponent),
-        canActivate: [roleGuard(['CLIENT'])],
       },
       {
         path: 'client',

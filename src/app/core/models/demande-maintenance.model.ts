@@ -1,12 +1,11 @@
-// =====================================================
-// Enums (miroir du backend : maintenance/enums/*)
-// =====================================================
+
 
 export enum TypeDemande {
   PANNE = 'PANNE',
-  TRAVAUX = 'TRAVAUX',
-  PREVENTIVE = 'PREVENTIVE',
+  ENTRETIEN_PREVENTIF = 'ENTRETIEN_PREVENTIF',
+  BRUIT_ANORMAL = 'BRUIT_ANORMAL',
   EVALUATION = 'EVALUATION',
+  AUTRE = 'AUTRE',
 }
 
 export enum PrioriteDemande {
@@ -24,15 +23,13 @@ export enum StatutDemande {
   REJETEE = 'REJETEE',
 }
 
-// =====================================================
-// Libellés d'affichage (français)
-// =====================================================
 
 export const TYPE_DEMANDE_LABELS: Record<TypeDemande, string> = {
   [TypeDemande.PANNE]: 'Panne',
-  [TypeDemande.TRAVAUX]: 'Travaux',
-  [TypeDemande.PREVENTIVE]: 'Maintenance préventive',
+  [TypeDemande.ENTRETIEN_PREVENTIF]: 'Maintenance préventive',
+  [TypeDemande.BRUIT_ANORMAL]: 'Bruit anormal',
   [TypeDemande.EVALUATION]: "Évaluation d'un nouvel ascenseur",
+  [TypeDemande.AUTRE]: 'Autre',
 };
 
 export const PRIORITE_DEMANDE_LABELS: Record<PrioriteDemande, string> = {
@@ -50,9 +47,7 @@ export const STATUT_DEMANDE_LABELS: Record<StatutDemande, string> = {
   [StatutDemande.REJETEE]: 'Rejetée',
 };
 
-// =====================================================
-// Sous-types
-// =====================================================
+
 
 export interface PieceJointeAvecUrlDTO {
   id: number;
@@ -62,9 +57,6 @@ export interface PieceJointeAvecUrlDTO {
   description: string | null;
 }
 
-// =====================================================
-// DTOs (miroir du backend : dto/DemandeMaintenance/*)
-// =====================================================
 
 export interface DemandeMaintenanceCreateDTO {
   ascenseurId: number;
@@ -74,8 +66,6 @@ export interface DemandeMaintenanceCreateDTO {
   dateSouhaitee?: string | null;
 }
 
-// DTO dédié pour la demande d'évaluation (pas d'ascenseurId ni de siteId :
-// ni l'un ni l'autre n'existent encore, le client tape ville/adresse en texte libre)
 export interface DemandeEvaluationCreateDTO {
   ville: string;
   adresse: string;

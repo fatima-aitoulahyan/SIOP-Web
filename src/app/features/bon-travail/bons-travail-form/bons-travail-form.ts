@@ -125,7 +125,7 @@ export class BonsTravailFormComponent {
         this.demandePrechargee.set(d);
         this.passerEnModeDemande();
         this.form.get('demandeMaintenanceId')!.setValue(d.id);
-        this.form.get('visitePreventive')!.setValue(d.typeDemande === 'PREVENTIVE');
+        this.form.get('visitePreventive')!.setValue(d.typeDemande === 'ENTRETIEN_PREVENTIF');
         this.demandes.update((liste) => (liste.some((x) => x.id === d.id) ? liste : [d, ...liste]));
 
         if (d.ascenseurId != null) {
