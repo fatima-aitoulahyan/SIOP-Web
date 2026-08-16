@@ -6,7 +6,7 @@ import { NotificationBellComponent } from '../notification-bell/notification-bel
 @Component({
   selector: 'app-client-layout',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, NotificationBellComponent], // ← ajout
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, NotificationBellComponent],
   templateUrl: './client-layout.html',
   styleUrls: ['./client-layout.scss'],
 })

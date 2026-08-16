@@ -41,6 +41,6 @@ export const MAINTENANCE_ROUTES: Routes = [
       import('./maintenance-gestion/maintenance-gestion').then(
         (m) => m.MaintenanceGestionComponent,
       ),
-    canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
+    canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR'])],
   },
 ];

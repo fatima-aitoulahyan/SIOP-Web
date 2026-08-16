@@ -56,11 +56,15 @@ export class MaintenanceGestionComponent implements OnInit {
   accepter(): void {
     const d = this.demande();
     if (!d) return;
-    this.router.navigate(['/responsable/bons-travail/nouveau'], {
+
+    // Détecte dynamiquement si on navigue depuis l'espace admin ou responsable
+    const currentUrl = this.router.url;
+    const prefix = currentUrl.startsWith('/admin') ? '/admin' : '/responsable';
+
+    this.router.navigate([`${prefix}/bons-travail/nouveau`], {
       queryParams: { demande: d.id },
     });
   }
-
   rejeter(): void {
     if (this.rejetForm.invalid) {
       this.rejetForm.markAllAsTouched();

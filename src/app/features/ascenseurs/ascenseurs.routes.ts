@@ -11,7 +11,7 @@ export const ASCENSEUR_ROUTES: Routes = [
   {
     path: 'nouveau',
     loadComponent: () => import('./creer-ascenseur/creer-ascenseur').then((m) => m.CreerAscenseur),
-    canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
+    canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR'])],
   },
   {
     path: ':id',
@@ -21,6 +21,6 @@ export const ASCENSEUR_ROUTES: Routes = [
   {
     path: ':id/modifier',
     loadComponent: () => import('./creer-ascenseur/creer-ascenseur').then((m) => m.CreerAscenseur),
-    canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
+    canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR'])],
   },
 ];

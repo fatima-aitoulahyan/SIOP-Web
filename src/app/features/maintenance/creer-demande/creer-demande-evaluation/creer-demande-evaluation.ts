@@ -58,18 +58,18 @@ export class CreerDemandeEvaluationComponent implements OnInit {
           if (!idDemande) {
             console.error("L'ID de la demande est introuvable dans la réponse :", res);
             this.envoiEnCours.set(false);
-            this.router.navigate(['/maintenance/demandes']);
+            this.router.navigate(['/client/demandes']);
             return;
           }
 
           this.uploaderEvaluation.uploaderFichiersEnAttente(idDemande).subscribe({
             next: () => {
               this.envoiEnCours.set(false);
-              this.router.navigate(['/maintenance/demandes']);
+              this.router.navigate(['/client/demandes']);
             },
             error: () => {
               this.envoiEnCours.set(false);
-              this.router.navigate(['/maintenance/demandes']);
+              this.router.navigate(['/client/demandes']);
             },
           });
         },

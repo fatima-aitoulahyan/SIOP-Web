@@ -372,7 +372,7 @@ export class CreerAscenseur implements OnInit {
             // Upload des pièces jointes sélectionnées avant la création
             this.uploaderAscenseur.uploaderFichiersEnAttente(res.data!.id);
             this.submitting.set(false);
-            this.router.navigate(['/fiches-ascenseur', res.data!.id]);
+            this.router.navigate(['/ascenseurs', res.data!.id]);
           },
           error: (err) => {
             this.submitting.set(false);

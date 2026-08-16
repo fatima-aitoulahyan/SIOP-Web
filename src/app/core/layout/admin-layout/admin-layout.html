@@ -102,7 +102,13 @@
 
   <main class="content">
     <header class="topbar">
-      <app-notification-bell></app-notification-bell>
+      <div class="topbar-actions">
+        <app-notification-bell></app-notification-bell>
+
+        <a [routerLink]="role() === 'ADMINISTRATEUR' ? '/admin/profil' : '/responsable/profil'" routerLinkActive="active" class="profile-icon-btn" title="Mon profil">
+          <span class="material-symbols-outlined">account_circle</span>
+        </a>
+      </div>
     </header>
     <router-outlet></router-outlet>
   </main>

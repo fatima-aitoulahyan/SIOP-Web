@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EvaluationAscenseurService } from '../../services/evaluation-ascenseur.service';
 import { EvaluationAscenseurDTO } from '../../../../core/models/evaluation-ascenseur.model';
 
-
 @Component({
   selector: 'app-evaluation-detail',
   standalone: true,

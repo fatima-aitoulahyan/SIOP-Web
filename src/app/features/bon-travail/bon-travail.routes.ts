@@ -11,7 +11,7 @@ export const BON_TRAVAIL_ROUTES: Routes = [
     path: 'nouveau',
     loadComponent: () =>
       import('./bons-travail-form/bons-travail-form').then((m) => m.BonsTravailFormComponent),
-    canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
+    canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR'])],
   },
   {
     path: ':id',
