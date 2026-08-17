@@ -1,3 +1,6 @@
+/* ==========================================================
+   1. VARIABLES & CONFIGURATION GLOBALE
+   ========================================================== */
 .page-wrapper {
   --color-primary: #0d2a63;
   --color-primary-soft: #eef2fb;
@@ -7,11 +10,13 @@
   --color-accent-soft: #fff3e0;
   --color-border: #e4e8f0;
   --color-bg-input: #f7f8fb;
+  --color-bg-subtle: #f7f8fa;
   --color-text: #131a2b;
   --color-text-muted: #64708a;
   --color-error: #d92d20;
   --color-error-hover: #b3271f;
   --color-error-soft: #fef2f1;
+  --color-success: #12805c;
   --radius-sm: 6px;
   --radius-md: 9px;
   --radius-lg: 16px;
@@ -20,7 +25,7 @@
   --shadow-modal: 0 20px 45px -10px rgba(13, 42, 99, 0.22), 0 6px 16px -4px rgba(13, 42, 99, 0.08);
 
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
   padding: 48px 20px;
@@ -29,6 +34,21 @@
   position: relative;
 }
 
+// ===== List Card (Vues listes) =====
+.list-card {
+  background: white;
+  padding: 2rem 2.25rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ==========================================================
+   2. CARTE DE FORMULAIRE & HEADER
+   ========================================================== */
 .form-card {
   background: white;
   padding: 2.5rem 2.75rem;
@@ -37,6 +57,7 @@
   border: 1px solid var(--color-border);
   width: 100%;
   max-width: 720px;
+  margin: 0 auto;
   height: fit-content;
   transition: all 0.3s ease;
 }
@@ -97,6 +118,41 @@
   }
 }
 
+// ===== Tabs =====
+.tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  margin-bottom: 24px;
+  width: fit-content;
+
+  button {
+    padding: 7px 16px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+
+    &:hover { color: var(--color-primary); }
+    &.active {
+      background: white;
+      color: var(--color-primary);
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+    }
+  }
+}
+
+/* ==========================================================
+   3. CHAMPS DE FORMULAIRE & GRILLES
+   ========================================================== */
 .form-group {
   margin-bottom: 1.25rem;
 
@@ -133,9 +189,7 @@
     }
   }
 
-  textarea {
-    resize: vertical;
-  }
+  textarea { resize: vertical; }
 }
 
 .grid-2 {
@@ -171,6 +225,9 @@
   }
 }
 
+/* ==========================================================
+   4. BOUTONS & ÉLÉMENTS INFORMATIFS
+   ========================================================== */
 .btn-ia {
   display: inline-flex;
   align-items: center;
@@ -191,34 +248,7 @@
     color: var(--color-accent-hover);
     transform: translateY(-1px);
   }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.info-rien {
-  display: block;
-  font-size: 0.76rem;
-  color: var(--color-accent-hover);
-  margin-bottom: 8px;
-}
-
-.info-texte {
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
-  margin-bottom: 6px;
-}
-
-.info-precharge {
-  background: var(--color-primary-soft);
-  border: 1px solid #c9d8f7;
-  color: var(--color-primary);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  font-size: 0.85rem;
-  margin-bottom: 16px;
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 .actions {
@@ -246,13 +276,7 @@
     transform: translateY(-1px);
     box-shadow: 0 6px 14px -4px rgba(255, 152, 0, 0.45);
   }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 }
 
 .btn-secondary {
@@ -295,26 +319,139 @@
   font-size: 0.9rem;
 }
 
-.champ-erreur {
-  display: block;
-  color: var(--color-error);
-  font-size: 0.76rem;
-  margin-top: 6px;
+/* ==========================================================
+   5. TABLEAUX & BADGES DE STATUT
+   ========================================================== */
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+thead th {
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  background: var(--color-bg-subtle);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+tbody {
+  td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    vertical-align: middle;
+  }
+  tr {
+    transition: background 0.12s ease;
+    &:hover { background: var(--color-bg-subtle); }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-actif { background: #ecfdf5; color: var(--color-success); }
+.badge-inactif { background: var(--color-error-soft); color: var(--color-error); }
+
+/* Statuts dynamiques */
+.statut-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statut-attente, .statut-planifie { background: #fff3cd; color: #856404; }
+.statut-assignee { background: #cce5ff; color: #004085; }
+.statut-cours { background: #d1ecf1; color: #0c5460; }
+.statut-resolue, .statut-termine { background: #d4edda; color: #155724; }
+.statut-annulee, .statut-annule { background: #e2e3e5; color: #383d41; }
+.statut-rejetee { background: #f8d7da; color: #721c24; }
+
+/* ==========================================================
+   6. EXPLORATEUR & GRILLES DE CARTES
+   ========================================================== */
+.explorer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: var(--color-text);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  background: var(--color-bg-input);
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  .crumb {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 500;
+
+    &:hover { background: #edf2f7; color: var(--color-primary); }
+    &.active { color: var(--color-primary); font-weight: 700; }
+  }
+  .separator { color: #cbd5e1; font-size: 0.85rem; }
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  position: relative;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    border-color: var(--color-accent);
+  }
 }
 
 /* ==========================================================
-   MODALE : SITE CLIENT REQUIS — v2, design professionnel
-   Cartes structurées (ville / adresse / parc) au lieu
-   de simples libellés plats
+   7. MODALE & ANIMATIONS
    ========================================================== */
-
-.form-disabled-shadow {
-  opacity: 0.25;
-  pointer-events: none;
-  filter: grayscale(60%);
-  user-select: none;
-}
-
 .overlay-creation-site {
   position: fixed;
   inset: 0;
@@ -342,217 +479,7 @@
     overflow-y: auto;
     box-sizing: border-box;
     animation: modal-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-
-    h3 {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--color-primary);
-      margin: 0 0 8px 0;
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: -0.01em;
-    }
-
-    .subtitle-site {
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: var(--color-text-muted);
-      margin: 0 0 22px 0;
-    }
   }
-}
-
-/* Icône titre de la modale (remplace la pastille ronde décorative) */
-.modal-site-icone {
-  flex: none;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: 1.05rem;
-}
-
-/* Liste des sites existants */
-.sites-liste {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0 0 18px;
-  max-height: 340px;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.site-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 13px 15px;
-  background: #fff;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
-  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
-
-  &:hover {
-    border-color: var(--color-primary);
-    background: var(--color-primary-soft);
-    box-shadow: 0 2px 8px -2px rgba(13, 42, 99, 0.12);
-  }
-
-  &:focus-visible {
-    outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px var(--color-accent-soft);
-  }
-}
-
-.site-card__icone {
-  flex: none;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: 0.95rem;
-}
-
-.site-card__contenu {
-  flex: 1;
-  min-width: 0;
-}
-
-.site-card__ville {
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--color-text);
-  margin: 0 0 2px;
-}
-
-.site-card__adresse {
-  font-size: 0.79rem;
-  color: var(--color-text-muted);
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.site-card__parc {
-  flex: none;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-  background: var(--color-primary-soft);
-  border: 1px solid #c9d8f7;
-  border-radius: 999px;
-  padding: 4px 10px;
-  white-space: nowrap;
-}
-
-.site-card__chevron {
-  flex: none;
-  color: var(--color-text-muted);
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-/* Séparateur avant le bouton de création */
-.sites-liste-separateur {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 4px 0 14px;
-  color: var(--color-text-muted);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--color-border);
-  }
-}
-
-.btn-creer-site {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 13px;
-  background: var(--color-accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 0.88rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
-
-  &:hover {
-    background: var(--color-accent-hover);
-    transform: translateY(-1px);
-  }
-}
-
-/* Étiquettes de section type "CLIENT" / "LOCALISATION" à l'intérieur
-   du formulaire de création de site (mode "créer un nouveau site") */
-.section-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 22px 0 14px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-
-  &::before {
-    counter-increment: section-count;
-    content: counter(section-count);
-    flex: none;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: #fff;
-    font-size: 0.68rem;
-    font-weight: 700;
-  }
-
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--color-border);
-  }
-}
-
-.modal-site-container form,
-.modal-site-container > div {
-  counter-reset: section-count;
 }
 
 @keyframes overlay-in {
@@ -566,177 +493,6 @@
 }
 
 @media (max-width: 600px) {
-  .grid-2 {
-    grid-template-columns: 1fr;
-  }
-  .form-card {
-    padding: 1.75rem 1.5rem;
-  }
-  .overlay-creation-site {
-    padding: 10px;
-    .modal-site-container {
-      padding: 1.5rem 1.25rem;
-    }
-  }
-}
-/* ==========================================================
-   MODALE : CHOIX D'UN SITE EXISTANT — cartes structurées
-   ========================================================== */
-
-.modal-site-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 22px;
-
-  h3 {
-    margin: 0 0 6px;
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: var(--color-primary);
-    letter-spacing: -0.01em;
-  }
-}
-
-.modal-site-icone {
-  flex: none;
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: 1.05rem;
-}
-
-.subtitle-site {
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
-.sites-liste {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 18px;
-  max-height: 340px;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.site-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 13px 15px;
-  background: #fff;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
-  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
-
-  &:hover {
-    border-color: var(--color-primary);
-    background: var(--color-primary-soft);
-    box-shadow: 0 2px 8px -2px rgba(13, 42, 99, 0.12);
-  }
-
-  &:focus-visible {
-    outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px var(--color-accent-soft);
-  }
-}
-
-.site-card__icone {
-  flex: none;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-input);
-  color: var(--color-primary);
-  font-size: 0.9rem;
-}
-
-.site-card__contenu {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.site-card__adresse {
-  font-weight: 700;
-  font-size: 0.88rem;
-  color: var(--color-text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.site-card__meta {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  width: fit-content;
-}
-
-.site-card__chevron {
-  flex: none;
-  color: var(--color-text-muted);
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.sites-liste-separateur {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 4px 0 14px;
-  color: var(--color-text-muted);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--color-border);
-  }
-}
-
-.btn-creer-site {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 13px;
-  background: var(--color-accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 0.88rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
-
-  &:hover {
-    background: var(--color-accent-hover);
-    transform: translateY(-1px);
-  }
+  .grid-2 { grid-template-columns: 1fr; }
+  .form-card, .list-card { padding: 1.75rem 1.5rem; }
 }

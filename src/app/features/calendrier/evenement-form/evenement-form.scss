@@ -1,7 +1,3 @@
-// Si tes classes .modal-overlay / .modal-card / .form-group / .champ-erreur / .btn-secondary
-// sont déjà globales (styles.scss) ou dans un fichier partagé, supprime ce fichier
-// et retire styleUrl du composant pour éviter les doublons.
-
 .modal-overlay {
   position: fixed;
   inset: 0;

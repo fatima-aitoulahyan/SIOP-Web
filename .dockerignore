@@ -1,0 +1,28 @@
+# Le plus important : node_modules est régénéré par npm ci dans le conteneur,
+# jamais besoin de l'envoyer (peut faire plusieurs centaines de Mo)
+node_modules/
+
+# Build artifacts Angular
+dist/
+.angular/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+
+# Logs npm
+npm-debug.log*
+
+# Tests
+coverage/
+
+# Documentation locale
+README.md

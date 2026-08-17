@@ -1,22 +1,6 @@
-:host {
-  --color-primary: #0f1f38;
-  --color-primary-light: #18315c;
-  --color-accent: #2563eb;
-  --color-accent-hover: #1d4ed8;
-  --color-success: #16a34a;
-  --color-warning: #d97706;
-  --color-danger: #dc2626;
-  --color-border: #e2e8f0;
-  --color-border-light: #f1f5f9;
-  --color-bg-subtle: #f8fafc;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
-  --shadow-modal: 0 20px 40px -10px rgba(15, 23, 42, 0.3);
-}
+/* ==========================================================
+   STYLES DU COMPOSANT (DÉCOUPÉ & LÉGER)
+   ========================================================== */
 
 .page-wrapper {
   display: flex;
@@ -616,7 +600,8 @@
   from { opacity: 0; transform: translateY(10px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
-/* --- Messagerie interne flottante (Style LinkedIn professionnel) --- */
+
+/* --- Messagerie interne flottante --- */
 .chat-widget {
   position: fixed;
   bottom: 24px;
@@ -630,7 +615,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   .chat-header-btn {
@@ -647,15 +632,13 @@
     font-family: inherit;
     transition: background-color 0.15s ease;
 
-    &:hover {
-      background-color: #f3f3f3;
-    }
+    &:hover { background-color: #f3f3f3; }
 
     .chat-avatar {
       position: relative;
       width: 36px;
       height: 36px;
-      background: #0a66c2; /* Bleu LinkedIn */
+      background: #0a66c2;
       color: #ffffff;
       border-radius: 50%;
       display: inline-flex;
@@ -671,7 +654,7 @@
         right: 1px;
         width: 9px;
         height: 9px;
-        background: #057642; /* Vert statut en ligne */
+        background: #057642;
         border: 2px solid #ffffff;
         border-radius: 50%;
       }
@@ -684,17 +667,8 @@
       align-items: flex-start;
       line-height: 1.3;
 
-      .chat-title {
-        font-size: 0.92rem;
-        font-weight: 600;
-        color: #191919;
-      }
-
-      .chat-subtitle {
-        font-size: 0.75rem;
-        color: #666666;
-        font-weight: 400;
-      }
+      .chat-title { font-size: 0.92rem; font-weight: 600; color: #191919; }
+      .chat-subtitle { font-size: 0.75rem; color: #666666; font-weight: 400; }
     }
 
     .chat-badge {
@@ -741,10 +715,7 @@
         margin: auto;
         gap: 8px;
 
-        .empty-icon {
-          color: #0a66c2;
-          opacity: 0.6;
-        }
+        .empty-icon { color: #0a66c2; opacity: 0.6; }
       }
 
       .chat-msg {
@@ -805,23 +776,18 @@
           }
         }
 
-        /* Message envoyé par l'utilisateur connecté (style message sortant) */
         &.chat-msg--self {
           align-self: flex-end;
           flex-direction: row-reverse;
 
-          .chat-msg-meta {
-            justify-content: flex-end;
-          }
+          .chat-msg-meta { justify-content: flex-end; }
 
           .chat-bubble {
             background: #0a66c2;
             border-color: #0a66c2;
             border-radius: 12px 0 12px 12px;
 
-            .chat-msg-text {
-              color: #ffffff;
-            }
+            .chat-msg-text { color: #ffffff; }
           }
         }
 
@@ -850,9 +816,7 @@
             border-radius: 4px;
             transition: background 0.15s;
 
-            &:hover {
-              background: rgba(209, 17, 36, 0.08);
-            }
+            &:hover { background: rgba(209, 17, 36, 0.08); }
           }
         }
       }
@@ -893,9 +857,7 @@
           box-shadow: 0 0 0 1px #0a66c2;
         }
 
-        &::placeholder {
-          color: #666666;
-        }
+        &::placeholder { color: #666666; }
       }
 
       .chat-send-btn {

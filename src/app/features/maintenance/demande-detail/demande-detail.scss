@@ -1,16 +1,8 @@
-.page-wrapper {
-  --color-primary: #0f172a;
-  --color-accent: #2563eb;
-  --color-border: #e2e8f0;
-  --color-bg-input: #f8fafc;
-  --color-text: #1e293b;
-  --color-text-muted: #64748b;
-  --color-error: #dc2626;
-  --color-error-hover: #b91c1c;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+/* ==========================================================
+   STYLES DU COMPOSANT FICHE / FORMULAIRE (DÉCOUPÉ & LÉGER)
+   ========================================================== */
 
+.page-wrapper {
   display: flex;
   justify-content: center;
   min-height: 100vh;
