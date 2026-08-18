@@ -1,0 +1,59 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    @if (chargement()) {
+      <p>Chargement…</p>
+    } @else if (erreur()) {
+      <div class="card-header">
+        <h2>Erreur</h2>
+        <a routerLink="/parcs" class="btn-secondary">← Retour</a>
+      </div>
+      <p class="error">{{ erreur() }}</p>
+    } @else if (parc(); as p) {
+      <div class="card-header">
+        <h2>{{ p.nom }}</h2>
+        <a routerLink="/parcs" class="btn-secondary">← Retour</a>
+      </div>
+
+      <p><strong>Sites :</strong> {{ p.sites?.length ?? 0 }}</p>
+      <p><strong>Techniciens :</strong> {{ p.techniciens?.length ?? 0 }}</p>
+
+      <h3>Sites</h3>
+      @if (p.sites?.length) {
+        <ul>
+          @for (site of p.sites; track site.id) {
+            <li>{{ site.villeNom }} — {{ site.adresse }}</li>
+          }
+        </ul>
+      } @else {
+        <p>Aucun site.</p>
+      }
+
+      <h3>Techniciens</h3>
+      @if (p.techniciens?.length) {
+        <ul>
+          @for (tech of p.techniciens; track tech.id) {
+            <li>
+              {{ tech.prenom }} {{ tech.nom }}
+              <button type="button" class="btn-danger" (click)="retirer(tech.id)">Retirer</button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>Aucun technicien.</p>
+      }
+
+      <h4>Ajouter un technicien</h4>
+      <select (change)="selectedTechnicienId.set(+$any($event.target).value)">
+        <option value="">Sélectionner...</option>
+        @for (tech of techniciensDisponibles(); track tech.id) {
+          <option [value]="tech.id">{{ tech.prenom }} {{ tech.nom }} ({{ tech.specialite }})</option>
+        }
+      </select>
+      <button type="button" class="btn-primary" (click)="affecter()" [disabled]="!selectedTechnicienId()">Affecter</button>
+
+      <div class="actions">
+        <a [routerLink]="['/parcs', p.id, 'modifier']" class="btn-primary">Modifier</a>
+      </div>
+    }
+  </div>
+</div>

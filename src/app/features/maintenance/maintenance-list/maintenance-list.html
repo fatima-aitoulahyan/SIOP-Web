@@ -1,0 +1,121 @@
+<div class="page-wrapper">
+  <div class="list-card">
+    <div class="card-header">
+      <div>
+        <h2 class="titre-page">{{ titre() }}</h2>
+        <p class="subtitle"><span class="nb">{{ demandesFiltrees().length }}</span> demande(s)</p>
+      </div>
+      @if (mode() === 'client') {
+        <a routerLink="/client/demandes/nouveau" class="btn-primary">+ Nouvelle demande</a>
+      }
+    </div>
+
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          placeholder="Rechercher par ascenseur, type..."
+          [ngModel]="recherche()"
+          (ngModelChange)="recherche.set($event)"
+        />
+      </div>
+
+      <!-- Filtre par type -->
+      <select (change)="changerFiltreType($event)" [value]="typeFiltre() ?? ''">
+        <option value="">Tous les types</option>
+        @for (t of typesDisponibles; track t) {
+          <option [value]="t">{{ typeLabel(t) }}</option>
+        }
+      </select>
+
+      <!-- Filtre par statut -->
+      @if (mode() === 'responsable' || mode() === 'client') {
+        <select (change)="changerFiltreStatut($event)" [value]="statutFiltre() ?? ''">
+          <option value="">Tous les statuts</option>
+          <option value="EN_ATTENTE">En attente</option>
+          <option value="ASSIGNEE">Assignée</option>
+          <option value="EN_COURS">En cours</option>
+          <option value="RESOLUE">Résolue</option>
+          <option value="ANNULEE">Annulée</option>
+          <option value="REJETEE">Rejetée</option>
+        </select>
+      }
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    @if (mode() === 'technicien') {
+      <div class="etat-vide">
+        <p>Retrouvez vos interventions sur la page Bons de travail.</p>
+        <a routerLink="/technicien/bons-travail" class="btn-primary">Voir mes interventions</a>
+      </div>
+    } @else if (chargement()) {
+      <p class="etat-vide">Chargement…</p>
+    } @else if (demandes().length === 0) {
+      <div class="etat-vide">
+        <p>Aucune demande pour le moment.</p>
+        @if (mode() === 'client') {
+          <a routerLink="/client/demandes/nouveau" class="btn-primary">Créer une demande</a>
+        }
+      </div>
+    } @else if (demandesFiltrees().length === 0) {
+      <div class="etat-vide">
+        <p>Aucune demande ne correspond à votre recherche.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>N° </th>
+            @if (mode() !== 'client') {
+              <th>Client</th>
+            }
+            <th>Ascenseur</th>
+            <th>Type</th>
+            @if (mode() !== 'client') {
+              <th>Priorité</th>
+            }
+            <th>Statut</th>
+            <th>Date</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (d of demandesFiltrees(); track d.id) {
+              <tr>
+                <td><strong class="nb">{{ d.id }}</strong></td>
+                @if (mode() !== 'client') {
+                  <td>{{ d.clientNom }}</td>
+                }
+                <td>{{ d.ascenseurNom || '—' }}</td>
+                <td>{{ typeLabel(d.typeDemande) }}</td>
+                @if (mode() !== 'client') {
+                  <td>{{ d.priorite }}</td>
+                }
+                <td><span class="statut-badge {{ statutClass(d.statut) }}">{{ statutLabel(d.statut) }}</span></td>
+                <td>{{ d.createdAt | date: 'dd/MM/yyyy' }}</td>
+                <td class="col-actions">
+                  @if (mode() === 'responsable' || mode() === 'en-attente') {
+                    <a [routerLink]="['/responsable', d.id]" class="lien-action">Voir</a>
+                  } @else {
+                    @if (mode() === 'client') {
+                      <a [routerLink]="['/client/demandes', d.id]" class="lien-action">Voir</a>
+                      @if (peutAnnuler(d.statut)) {
+                        <button type="button" class="lien-action lien-danger" (click)="annuler(d.id)">Annuler</button>
+                      }
+                    } @else {
+                      <a [routerLink]="['/technicien/demandes', d.id]" class="lien-action">Voir</a>
+                    }
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

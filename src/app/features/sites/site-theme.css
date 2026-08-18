@@ -1,0 +1,21 @@
+
+:root {
+  --siop-navy: #1b2a38;
+  --siop-navy-light: #24384a;
+  --siop-slate: #5b6b7d;
+  --siop-bg: #f3f5f7;
+  --siop-surface: #ffffff;
+  --siop-border: #dde2e8;
+  --siop-accent: #e8a33d;
+  --siop-accent-dark: #c1811f;
+  --siop-success: #2f9e63;
+  --siop-danger: #d64545;
+  --siop-danger-dark: #b53838;
+
+  --siop-font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --siop-font-body: 'Inter', 'Segoe UI', sans-serif;
+  --siop-font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+  --siop-radius: 6px;
+  --siop-shadow: 0 1px 2px rgba(27, 42, 56, 0.06), 0 4px 12px rgba(27, 42, 56, 0.05);
+}

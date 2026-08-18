@@ -1,0 +1,159 @@
+<div class="explorer">
+  <input
+    #fileInput
+    type="file"
+    accept="image/*"
+    hidden
+    (change)="onFichierChoisi($event)" />
+
+  <!-- Fil d'Ariane -->
+  <div class="breadcrumb">
+    <button class="crumb" [class.active]="path().length === 0" (click)="allerA(-1)">
+      Zones principales
+    </button>
+    @for (node of pathNodes(); track node.id; let i = $index) {
+      <span class="separator">›</span>
+      <button class="crumb" [class.active]="i === pathNodes().length - 1" (click)="allerA(i)">
+        {{ node.nom }}
+      </button>
+    }
+  </div>
+
+  @if (erreurSuppression()) {
+    <p class="error-message">{{ erreurSuppression() }}</p>
+  }
+  @if (erreurUpload()) {
+    <p class="error-message">{{ erreurUpload() }}</p>
+  }
+
+  <div class="level-actions">
+    @if (path().length > 0) {
+      <button class="btn-secondary" (click)="retour()">← Retour</button>
+    }
+    <button class="btn-primary" (click)="toggleSousZoneForm()">
+      + {{ path().length === 0 ? 'Zone principale' : 'Sous-zone' }}
+    </button>
+  </div>
+
+  @if (showSousZoneForm()) {
+    <app-assemblage-form
+      [ascenseurId]="ascenseurId"
+      [parentId]="noeudCourant()?.id ?? null"
+      (created)="onSousZoneAjoutee()"
+      (cancelled)="showSousZoneForm.set(false)" />
+  }
+
+  <!-- Grille des sous-assemblages -->
+  @if (sousAssemblagesCourants().length > 0) {
+    <div class="card-grid">
+      @for (node of sousAssemblagesCourants(); track node.id) {
+        <div class="card" (click)="entrerDans(node)">
+          <button
+            class="card-delete"
+            [disabled]="suppressionEnCours() === node.id"
+            (click)="supprimerAssemblage(node, $event)"
+            title="Supprimer">
+            ✕
+          </button>
+
+          <div class="card-image">
+            @if (node.imageUrl) {
+              <img [src]="node.imageUrl" [alt]="node.nom" />
+            } @else {
+              <div class="card-image-placeholder">🗂️</div>
+            }
+
+            <button
+              type="button"
+              class="card-upload-btn"
+              [disabled]="estEnUpload('assemblage', node.id)"
+              (click)="declencherUploadAssemblage(node, $event)"
+              title="Changer l'image">
+              {{ estEnUpload('assemblage', node.id) ? '…' : '📷' }}
+            </button>
+          </div>
+
+          <div class="card-body">
+            <span class="card-nom">{{ node.nom }}</span>
+            <span class="card-meta">
+              @if (node.sousAssemblages?.length) {
+                · {{ node.sousAssemblages.length }} sous-zone(s)
+              }
+              @if (node.composants?.length) {
+                · {{ node.composants.length }} composant(s)
+              }
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Grille des composants -->
+  @if (noeudCourant() && estFeuille()) {
+    <div class="section-header">
+      <p class="section-subtitle">Composants de "{{ noeudCourant()!.nom }}"</p>
+      <button class="btn-primary" (click)="toggleComposantForm()">
+        + Ajouter un composant
+      </button>
+    </div>
+
+    @if (showComposantForm()) {
+      <app-composant-form
+        [assemblageId]="noeudCourant()!.id"
+        (created)="onComposantAjoute()"
+        (cancelled)="showComposantForm.set(false)" />
+    }
+
+    @if (composantsCourants().length === 0) {
+      <div class="empty-inline">
+        <p>Aucun composant enregistré pour cette zone.</p>
+      </div>
+    } @else {
+      <div class="card-grid">
+        @for (composant of composantsCourants(); track composant.id) {
+          <div class="card composant-card">
+            <button
+              class="card-delete"
+              [disabled]="suppressionEnCours() === composant.id"
+              (click)="supprimerComposant(composant, $event)"
+              title="Supprimer">
+              ✕
+            </button>
+
+            <div class="card-image">
+              @if (composant.imageUrl) {
+                <img [src]="composant.imageUrl" [alt]="composant.nom" />
+              } @else {
+                <div class="card-image-placeholder">🔧</div>
+              }
+
+              <button
+                type="button"
+                class="card-upload-btn"
+                [disabled]="estEnUpload('composant', composant.id)"
+                (click)="declencherUploadComposant(composant, $event)"
+                title="Changer l'image">
+                {{ estEnUpload('composant', composant.id) ? '…' : '📷' }}
+              </button>
+            </div>
+
+            <div class="card-body">
+              <span class="card-nom">{{ composant.nom }}</span>
+              <span class="card-meta">{{ composant.type }}</span>
+              @if (!composant.actif) {
+                <span class="badge-inactif">Inactif</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  @if (!noeudCourant() && sousAssemblagesCourants().length === 0) {
+    <div class="empty-inline">
+      <p>Aucune zone principale définie.</p>
+    </div>
+  }
+</div>

@@ -1,0 +1,49 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="assemblage-form">
+  @if (errorMessage()) {
+    <p class="error-message">{{ errorMessage() }}</p>
+  }
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Nom *</label>
+      <input type="text" formControlName="nom" placeholder="Ex: Tête de gaine" />
+    </div>
+    <div class="form-group">
+      <label>Référence *</label>
+      <input type="text" formControlName="reference" placeholder="Ex: ASM-2024-001" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Type *</label>
+      <select formControlName="type">
+        @for (t of types; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Fabricant</label>
+      <input type="text" formControlName="fabricant" placeholder="Ex: Otis" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Date d'installation</label>
+      <input type="date" formControlName="dateInstallation" />
+    </div>
+    <div class="form-group">
+      <label>Durée de vie estimée (mois)</label>
+      <input type="number" formControlName="dureeVieEstimeeMois" placeholder="Ex: 120" />
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button type="button" class="btn-secondary" (click)="cancelled.emit()">Annuler</button>
+    <button type="submit" class="btn-primary" [disabled]="form.invalid || loading()">
+      {{ loading() ? 'Enregistrement...' : 'Ajouter' }}
+    </button>
+  </div>
+</form>

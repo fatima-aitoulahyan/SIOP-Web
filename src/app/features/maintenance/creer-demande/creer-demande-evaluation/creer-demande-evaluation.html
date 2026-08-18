@@ -1,0 +1,108 @@
+<div class="page-wrapper">
+  <div class="form-card">
+
+    <!-- En-tête -->
+    <div class="card-header">
+
+      <div>
+        <h2>Demande d'évaluation d'un nouvel ascenseur</h2>
+        <p class="subtitle">
+          Renseignez les informations du site. Un responsable technique planifiera une visite sur place.
+        </p>
+      </div>
+    </div>
+
+    @if (erreur()) {
+      <div class="error-banner">{{ erreur() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="soumettre()">
+
+      <!-- Section Localisation -->
+      <div class="form-section">
+        <h3 class="section-title">Localisation du nouvel ascenseur</h3>
+
+        <div class="row">
+          <div class="form-group">
+            <label for="ville">Ville <span class="required">*</span></label>
+            <div class="input-wrapper" [class.error-border]="form.controls.ville.touched && form.controls.ville.invalid">
+              <input
+                id="ville"
+                type="text"
+                formControlName="ville"
+                placeholder="Ex : Casablanca, Mohammedia..."
+              />
+            </div>
+            @if (form.controls.ville.touched && form.controls.ville.invalid) {
+              <span class="champ-erreur">La ville est obligatoire.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="adresse">Adresse exacte <span class="required">*</span></label>
+            <div class="input-wrapper" [class.error-border]="form.controls.adresse.touched && form.controls.adresse.invalid">
+              <input
+                id="adresse"
+                type="text"
+                formControlName="adresse"
+                placeholder="Ex : 12 Boulevard Mohammed V"
+              />
+            </div>
+            @if (form.controls.adresse.touched && form.controls.adresse.invalid) {
+              <span class="champ-erreur">L'adresse est obligatoire.</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Détails -->
+      <div class="form-section">
+        <h3 class="section-title">Détails de la demande</h3>
+
+        <div class="form-group">
+          <label for="description">Description du contexte <span class="required">*</span></label>
+          <div class="input-wrapper textarea-wrapper" [class.error-border]="form.controls.description.touched && form.controls.description.invalid">
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="4"
+              placeholder="Précisez s'il s'agit d'une nouvelle installation, d'une mise aux normes ou d'un remplacement..."
+            ></textarea>
+          </div>
+          @if (form.controls.description.touched && form.controls.description.invalid) {
+            <span class="champ-erreur">Une description d'au moins 10 caractères est requise.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="dateSouhaitee">
+            Date de visite souhaitée <span class="optionnel">(facultatif)</span>
+          </label>
+          <div class="input-wrapper">
+            <input id="dateSouhaitee" type="date" formControlName="dateSouhaitee" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Pièces jointes -->
+      <div class="form-section">
+        <h3 class="section-title">Pièces jointes & Documents</h3>
+        <div class="uploader-box">
+          <app-piece-jointe-uploader
+            #uploaderEvaluation
+            [entiteType]="TypeEntiteJointe.DEMANDE_MAINTENANCE"
+            [entiteId]="null"
+          />
+        </div>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="actions">
+        <a routerLink="/maintenance" class="btn-secondary">Annuler</a>
+        <button type="submit" class="btn-primary" [disabled]="envoiEnCours()">
+          {{ envoiEnCours() ? 'Envoi en cours...' : "Soumettre la demande" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

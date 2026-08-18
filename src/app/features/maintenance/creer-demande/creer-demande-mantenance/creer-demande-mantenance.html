@@ -1,0 +1,135 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    <div class="card-header">
+      <h2>Nouvelle demande de maintenance</h2>
+      <p class="subtitle">Renseignez les détails de votre demande.</p>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="soumettre()">
+      <div class="form-group">
+        <label for="ascenseurId">Ascenseur *</label>
+        <div class="input-wrapper select-wrapper">
+          <select id="ascenseurId" formControlName="ascenseurId">
+            <option [ngValue]="null">-- Sélectionner un ascenseur --</option>
+            @for (a of ascenseurs(); track a.id) {
+              <option [ngValue]="a.id">{{ a.nom }} ({{ a.codeBarre || a.numeroSerie || 'N/A' }})</option>
+            }
+          </select>
+        </div>
+        @if (form.controls.ascenseurId.touched && form.controls.ascenseurId.invalid) {
+          <span class="champ-erreur">L'ascenseur est obligatoire.</span>
+        }
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="typeDemande">Type *</label>
+          <div class="input-wrapper select-wrapper">
+            <select id="typeDemande" formControlName="typeDemande">
+              <option [ngValue]="null">-- Sélectionner un type --</option>
+              @for (t of types; track t) {
+                <option [ngValue]="t">{{ TypeDemandeLabels[t] }}</option>
+              }
+            </select>
+          </div>
+          @if (form.controls.typeDemande.touched && form.controls.typeDemande.invalid) {
+            <span class="champ-erreur">Le type est obligatoire.</span>
+          }
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label for="dateSouhaitee">Date souhaitée</label>
+        <div class="input-wrapper">
+          <input id="dateSouhaitee" type="date" formControlName="dateSouhaitee" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description *</label>
+        <div class="input-wrapper textarea-wrapper">
+          <textarea id="description" formControlName="description" rows="4" placeholder="Décrivez le problème..."></textarea>
+        </div>
+        @if (form.controls.description.touched && form.controls.description.invalid) {
+          <span class="champ-erreur">La description est obligatoire (min. 10 caractères).</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="photos">Photos (optionnel, max 5)</label>
+        <input
+          #photosInput
+          id="photos"
+          type="file"
+          accept="image/*"
+          multiple
+          hidden
+          (change)="onFilesSelected($event)"
+        />
+        <button type="button" class="btn-upload" (click)="photosInput.click()">
+          📎 Choisir des photos
+        </button>
+        @if (photosErreur()) {
+          <span class="champ-erreur">{{ photosErreur() }}</span>
+        }
+        @if (photosSelectionnees().length) {
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+            @for (photo of photosSelectionnees(); track $index; let i = $index) {
+              <div style="text-align: center; max-width: 100px;">
+                <img
+                  [src]="photoUrls().get(i)"
+                  [alt]="photo.name"
+                  style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e5eb;"
+                />
+                <span style="font-size: 0.72rem; color: #6b7280; display: block; overflow: hidden; text-overflow: ellipsis;">
+                  {{ photo.name }}
+                </span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Enregistrement vocal (optionnel)</label>
+        <div class="audio-recorder">
+          @if (!enregistrementEnCours() && !audioBlob()) {
+            <button type="button" class="btn-record" (click)="startRecording()">
+              🎙️ Enregistrer un message vocal
+            </button>
+          }
+          @if (enregistrementEnCours()) {
+            <div class="recording-indicator">
+              <div class="sound-wave">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span class="recording-timer">{{ formatDuree(dureeEnregistrement()) }}</span>
+              <button type="button" class="btn-stop" (click)="stopRecording()">⏹️ Arrêter</button>
+            </div>
+          }
+          @if (audioBlob(); as blob) {
+            <div class="audio-preview">
+              <audio controls [src]="audioUrlSignal()"></audio>
+              <button type="button" class="btn-remove" (click)="retirerAudio()">Supprimer</button>
+            </div>
+          }
+          @if (audioErreur()) {
+            <p class="champ-erreur">{{ audioErreur() }}</p>
+          }
+        </div>
+      </div>
+
+      <div class="actions">
+        <a routerLink="/client/demandes" class="btn-secondary">Annuler</a>
+        <button type="submit" [disabled]="envoiEnCours() || envoiPhotos() || traitementAudio()">
+          {{ envoiEnCours() ? 'Création...' : (envoiPhotos() ? 'Upload des fichiers...' : (traitementAudio() ? 'Traitement de l\'audio...' : 'Créer la demande')) }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

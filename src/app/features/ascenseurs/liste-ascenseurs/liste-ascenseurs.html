@@ -1,0 +1,98 @@
+<div class="page-wrapper">
+  <div class="list-card">
+    <div class="card-header">
+      <div>
+        <h2>Ascenseurs</h2>
+        <p class="subtitle">{{ ascenseursFiltres().length }} / {{ ascenseurs().length }} ascenseur(s)</p>
+      </div>
+      <a routerLink="/ascenseurs/nouveau" class="btn-primary">+ Nouvel ascenseur</a>
+    </div>
+
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Rechercher par nom, fabricant, client, site..."
+          [ngModel]="recherche()"
+          (ngModelChange)="recherche.set($event)"
+        />
+      </div>
+
+      <select [ngModel]="filtreStatut()" (ngModelChange)="filtreStatut.set($event)">
+        <option value="TOUS">Tous les statuts</option>
+        <option value="ACTIF">Actif</option>
+        <option value="INACTIF">Inactif</option>
+      </select>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement des ascenseurs…</p>
+    } @else if (ascenseurs().length === 0) {
+      <div class="etat-vide">
+        <p>Aucun ascenseur enregistré pour le moment.</p>
+        <a routerLink="/ascenseurs/nouveau" class="btn-primary">Créer le premier ascenseur</a>
+      </div>
+    } @else if (ascenseursFiltres().length === 0) {
+      <div class="etat-vide">
+        <p>Aucun ascenseur ne correspond à votre recherche.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Fabricant</th>
+            <th>Client</th>
+            <th>Site</th>
+            <th>Statut</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (ascenseur of ascenseursFiltres(); track ascenseur.id) {
+              <tr>
+                <td>{{ ascenseur.nom }}</td>
+                <td>{{ ascenseur.fabricant }}</td>
+                <td>{{ ascenseur.clientPrenom || '—' }}</td>
+                <td>{{ ascenseur.siteAdresse || '—' }}</td>
+                <td>
+                  <span class="badge" [class.badge-actif]="ascenseur.actif">
+                    {{ ascenseur.actif ? 'Actif' : 'Inactif' }}
+                  </span>
+                </td>
+                <td class="col-actions">
+                  <a [routerLink]="['/ascenseurs', ascenseur.id]" class="lien-action">Voir la fiche</a>
+                  <button
+                    type="button"
+                    class="btn-secondary"
+                    [disabled]="statutEnCours() === ascenseur.id"
+                    (click)="basculerStatut(ascenseur)">
+                    {{ statutEnCours() === ascenseur.id
+                    ? 'Mise à jour...'
+                    : (ascenseur.actif ? 'Désactiver' : 'Activer') }}
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-supprimer"
+                    [disabled]="suppressionEnCours() === ascenseur.id"
+                    (click)="supprimer(ascenseur)">
+                    {{ suppressionEnCours() === ascenseur.id ? 'Suppression…' : 'Supprimer' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

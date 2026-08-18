@@ -1,0 +1,116 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    <div class="card-header">
+      <h2>Créer un utilisateur</h2>
+      <p class="subtitle">Ajoutez un nouveau compte à la plateforme SIOP</p>
+    </div>
+
+    <form [formGroup]="utilisateurForm" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="form-group">
+          <label for="nom">Nom</label>
+          <div class="input-wrapper">
+            <input id="nom" type="text" formControlName="nom" placeholder="Nom" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prenom">Prénom</label>
+          <div class="input-wrapper">
+            <input id="prenom" type="text" formControlName="prenom" placeholder="Prénom" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Adresse email</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m22 6-10 7L2 6"/>
+          </svg>
+          <input id="email" type="email" formControlName="email" placeholder="nom@spelev.com" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="telephone">Téléphone</label>
+          <div class="input-wrapper">
+            <input id="telephone" type="tel" formControlName="telephone" placeholder="06 00 00 00 00" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="type">Type d'utilisateur</label>
+          <div class="input-wrapper select-wrapper">
+            <select id="type" formControlName="type">
+              <option [ngValue]="null" disabled>Sélectionner un type</option>
+              @for (t of typesUtilisateur; track t) {
+                <option [ngValue]="t">{{ labels[t] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="motDePasse">Mot de passe temporaire</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="motDePasse"
+            formControlName="motDePasse"
+          />
+          <button type="button" class="toggle-visibility" (click)="togglePassword()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="nomEntreprise">Entreprise (optionnel)</label>
+          <div class="input-wrapper">
+            <input id="nomEntreprise" type="text" formControlName="nomEntreprise" placeholder="Nom de l'entreprise" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="specialite">Spécialité (optionnel)</label>
+          <div class="input-wrapper">
+            <input id="specialite" type="text" formControlName="specialite" placeholder="Spécialité" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="adresse">Adresse (optionnel)</label>
+        <div class="input-wrapper">
+          <input id="adresse" type="text" formControlName="adresse" placeholder="Adresse complète" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-secondary" (click)="allerVersListe()">Annuler</button>
+        <button type="submit" [disabled]="loading()">
+          {{ loading() ? 'Création...' : "Créer l'utilisateur" }}
+        </button>
+      </div>
+
+      @if (errorMessage()) {
+        <p class="error">{{ errorMessage() }}</p>
+      }
+      @if (successMessage()) {
+        <p class="success">{{ successMessage() }}</p>
+      }
+    </form>
+  </div>
+</div>

@@ -1,0 +1,171 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    @if (chargement()) {
+      <div class="etat-loading">
+        <div class="spinner"></div>
+        <p>Chargement des détails de la demande...</p>
+      </div>
+    } @else if (erreur()) {
+      <div class="card-header">
+        <h2>Une erreur est survenue</h2>
+        <a routerLink="/responsable/demandes" class="btn-secondary">← Retour</a>
+      </div>
+      <div class="error-banner">{{ erreur() }}</div>
+    } @else if (demande(); as d) {
+
+      <!-- En-tête de la demande -->
+      <div class="card-header">
+        <div class="header-main">
+          <div class="header-top-row">
+            <h2>Demande N° {{ d.id }}</h2>
+            <span class="badge-status" [ngClass]="d.statut.toLowerCase()">
+              {{ d.statut.replace('_', ' ') }}
+            </span>
+          </div>
+          <p class="subtitle">
+            <span class="location-text">
+              {{ d.typeDemande === 'EVALUATION' ? (d.villeSaisie + ' — ' + d.adresseSaisie) : d.ascenseurNom }}
+            </span>
+            <span class="dot">•</span>
+            <span class="client-name">Client : <strong>{{ d.clientNom }}</strong></span>
+          </p>
+        </div>
+        <a routerLink="/responsable/demandes" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Retour
+        </a>
+      </div>
+
+      <!-- Grille des informations clés (Style Fiche Technique) -->
+      <div class="info-section-title">Informations générales</div>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span class="label">Client</span>
+          <span class="value">{{ d.clientNom }}</span>
+        </div>
+
+        @if (d.typeDemande === 'EVALUATION') {
+          <div class="detail-item">
+            <span class="label">Ville</span>
+            <span class="value">{{ d.villeSaisie }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Adresse de visite</span>
+            <span class="value">{{ d.adresseSaisie }}</span>
+          </div>
+        } @else {
+          <div class="detail-item">
+            <span class="label">Ascenseur</span>
+            <span class="value">{{ d.ascenseurNom }}</span>
+          </div>
+        }
+
+        <div class="detail-item">
+          <span class="label">Type de demande</span>
+          <span class="value"><span class="type-pill">{{ typeLabel(d.typeDemande) }}</span></span>
+        </div>
+
+        @if (d.typeDemande !== 'EVALUATION') {
+          <div class="detail-item">
+            <span class="label">Priorité</span>
+            <span class="value priority-text" [ngClass]="d.priorite.toLowerCase()">{{ d.priorite }}</span>
+          </div>
+        }
+
+        <div class="detail-item">
+          <span class="label">Date de création</span>
+          <span class="value">{{ d.createdAt | date: 'dd/MM/yyyy à HH:mm' }}</span>
+        </div>
+
+        @if (d.dateSouhaitee) {
+          <div class="detail-item">
+            <span class="label">{{ d.typeDemande === 'EVALUATION' ? 'Visite souhaitée' : 'Date souhaitée' }}</span>
+            <span class="value date-highlight">{{ d.dateSouhaitee | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        }
+      </div>
+
+      @if (d.motifRejet) {
+        <div class="motif-rejet-box">
+          <strong>Motif du rejet :</strong> {{ d.motifRejet }}
+        </div>
+      }
+
+      <!-- Section Description -->
+      <div class="section-block">
+        <div class="info-section-title">Description du besoin</div>
+        <div class="readonly-text">{{ d.description }}</div>
+      </div>
+
+      <!-- Section Médias / Photos -->
+      @if (d.photos?.length) {
+        <div class="section-block">
+          <div class="info-section-title">Pièces jointes</div>
+
+          <div class="photos-grid">
+            @for (pj of d.photos; track pj.id) {
+              @if (pj.typeFichier === 'IMAGE') {
+                <div class="photo-card" (click)="openPhoto(pj.url)">
+                  <img [src]="pj.url" [alt]="pj.nomFichier" />
+                  <div class="photo-footer">
+                    <span class="file-name">{{ pj.nomFichier }}</span>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+
+          @for (pj of d.photos; track pj.id) {
+            @if (pj.typeFichier === 'AUDIO') {
+              <div class="audio-container">
+                <span class="audio-label">🎙️ Enregistrement audio</span>
+                <audio controls [src]="pj.url"></audio>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- Actions de validation (Seulement si EN_ATTENTE) -->
+      @if (d.statut === 'EN_ATTENTE') {
+        <div class="actions-container">
+          @if (!showRejetForm()) {
+            <div class="actions-main">
+              <button type="button" class="btn-success" (click)="accepter()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Accepter la demande
+              </button>
+              <button type="button" class="btn-reject" (click)="showRejetForm.set(true)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Rejeter
+              </button>
+            </div>
+          }
+
+          @if (showRejetForm()) {
+            <form [formGroup]="rejetForm" (ngSubmit)="rejeter()" class="rejet-form">
+              <div class="rejet-form-header">
+                <h4>Motif du refus</h4>
+                <p>Précisez la raison pour informer le client correctement.</p>
+              </div>
+
+              <div class="form-group">
+                <textarea id="motif" formControlName="motif" rows="3" placeholder="Saisissez le motif du rejet (minimum 10 caractères)..."></textarea>
+                @if (rejetForm.controls.motif.touched && rejetForm.controls.motif.invalid) {
+                  <span class="champ-erreur">Le motif est obligatoire (min. 10 caractères).</span>
+                }
+              </div>
+
+              <div class="rejet-actions">
+                <button type="button" class="btn-secondary" (click)="showRejetForm.set(false)">Annuler</button>
+                <button type="submit" class="btn-danger-solid" [disabled]="envoiEnCours()">
+                  {{ envoiEnCours() ? 'Traitement...' : 'Confirmer le rejet' }}
+                </button>
+              </div>
+            </form>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>

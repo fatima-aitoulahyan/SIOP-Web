@@ -1,0 +1,316 @@
+// ===== Form Card & Layout =====
+.form-card {
+  background: white;
+  padding: 2.5rem 2.75rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+  width: 100%;
+  max-width: 760px;
+  height: fit-content;
+  margin: 0 auto;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+// ===== Tabs =====
+.tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  margin-bottom: 24px;
+  width: fit-content;
+
+  button {
+    padding: 7px 16px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--color-primary);
+    }
+
+    &.active {
+      background: white;
+      color: var(--color-primary);
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+    }
+  }
+}
+
+.info-section-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+  margin-top: 1.5rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.section-block {
+  margin-top: 1.5rem;
+}
+
+// ===== Grille de détails =====
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  margin-bottom: 1.25rem;
+  background: var(--color-bg-subtle);
+  padding: 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.9rem;
+  color: var(--color-text);
+
+  .label {
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .value {
+    font-weight: 500;
+  }
+
+  .date-highlight {
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+}
+
+.type-pill {
+  background: #eef2ff;
+  color: var(--color-accent);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.readonly-text {
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+// ===== Arborescence panel =====
+.arborescence-panel {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+
+  .loading, .etat-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .empty {
+    background: var(--color-bg-subtle);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 32px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+
+    p {
+      margin: 0;
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    span {
+      font-size: 0.82rem;
+      color: var(--color-text-muted);
+      max-width: 400px;
+    }
+
+    .empty-actions {
+      margin-top: 12px;
+    }
+  }
+
+  .refresh-indicator {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+  }
+}
+
+// ===== Boutons secondaires =====
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: white;
+  color: var(--color-text);
+  text-decoration: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--color-bg-subtle);
+  }
+}
+
+// ===== Badges spécifiques formulaire =====
+.badge-inactif {
+  background: #fef2f2;
+  color: var(--color-error);
+}
+
+// ===== Pièces jointes =====
+.pieces-jointes-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.piece-jointe-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--color-accent);
+    background: white;
+  }
+}
+
+.piece-jointe-icone {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef1f6;
+  color: #5b6470;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &[data-type='IMAGE']  { background: #eaf3ff; color: #2f6fce; }
+  &[data-type='PDF']    { background: #fdecec; color: #c93b3b; }
+  &[data-type='AUDIO']  { background: #f1eafd; color: #7c4fd6; }
+  &[data-type='VIDEO']  { background: #eafbf1; color: #2f9e5c; }
+}
+
+.piece-jointe-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.piece-jointe-nom {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.piece-jointe-description {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.piece-jointe-action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  transition: background 0.15s ease, color 0.15s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: var(--color-border);
+    color: var(--color-primary);
+  }
+}
+
+.empty-text {
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+// ===== Responsive additionnel =====
+@media (max-width: 640px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .tabs {
+    width: 100%;
+    overflow-x: auto;
+  }
+}

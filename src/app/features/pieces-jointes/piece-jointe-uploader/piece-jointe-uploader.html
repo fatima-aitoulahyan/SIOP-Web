@@ -1,0 +1,61 @@
+<div class="pj-uploader">
+  @if (erreur()) {
+    <p class="pj-error">{{ erreur() }}</p>
+  }
+
+  <label class="pj-drop-zone">
+    <input type="file" [accept]="accept" multiple (change)="onFichiersSelectionnes($event)" hidden />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" y1="3" x2="12" y2="15" />
+    </svg>
+    <span>Ajouter des images ou fichiers audio</span>
+  </label>
+
+  @if (uploadEnCours()) {
+    <p class="pj-status">Envoi en cours...</p>
+  }
+
+  @if (fichiersEnAttente().length > 0) {
+    <div class="pj-grid">
+      @for (f of fichiersEnAttente(); track $index) {
+        <div class="pj-item pj-item--attente">
+          @if (f.previewUrl) {
+            <img [src]="f.previewUrl" [alt]="f.file.name" />
+          } @else if (f.type === TypeFichier.AUDIO) {
+            <div class="pj-icon">🎵</div>
+          } @else {
+            <div class="pj-icon">📄</div>
+          }
+          <span class="pj-filename">{{ f.file.name }}</span>
+          <button type="button" class="pj-remove" (click)="retirerFichierEnAttente($index)">×</button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (pieces().length > 0) {
+    <div class="pj-grid">
+      @for (p of pieces(); track p.id) {
+        <div class="pj-item">
+          @if (p.typeFichier === TypeFichier.IMAGE) {
+            <img [src]="p.url" [alt]="p.nomFichier" />
+          } @else if (p.typeFichier === TypeFichier.AUDIO) {
+            <audio [src]="p.url" controls></audio>
+          } @else {
+            <a [href]="p.url" target="_blank" class="pj-icon">📄</a>
+          }
+          <span class="pj-filename">{{ p.nomFichier }}</span>
+          <button
+            type="button"
+            class="pj-remove"
+            [disabled]="suppressionEnCours() === p.id"
+            (click)="supprimerPieceExistante(p)">
+            {{ suppressionEnCours() === p.id ? '...' : '×' }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,33 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    <div class="card-header">
+      <h2>{{ modeEdition() ? 'Modifier le parc' : 'Nouveau parc' }}</h2>
+      <p class="subtitle">
+        {{ modeEdition() ? 'Modifiez le nom du parc.' : 'Renseignez le nom du nouveau parc.' }}
+      </p>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="soumettre()">
+      <div class="form-group">
+        <label for="nom">Nom du parc *</label>
+        <div class="input-wrapper">
+          <input id="nom" type="text" formControlName="nom" placeholder="Ex. Parc Nord" />
+        </div>
+        @if (form.controls.nom.touched && form.controls.nom.invalid) {
+          <span class="champ-erreur">Le nom est obligatoire (max 100 caractères).</span>
+        }
+      </div>
+
+      <div class="actions">
+        <a routerLink="/parcs" class="btn-secondary">Annuler</a>
+        <button type="submit" [disabled]="envoiEnCours()">
+          {{ envoiEnCours() ? 'Enregistrement…' : (modeEdition() ? 'Enregistrer' : 'Créer le parc') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

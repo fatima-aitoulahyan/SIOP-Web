@@ -1,0 +1,143 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    @if (chargement()) {
+      <div class="etat-loading">
+        <div class="spinner"></div>
+        <p>Chargement des détails de la demande…</p>
+      </div>
+    } @else if (erreur()) {
+      <div class="card-header">
+        <h2>Une erreur est survenue</h2>
+        <a [routerLink]="retourLink()" class="btn-secondary">← Retour</a>
+      </div>
+      <div class="error-banner">{{ erreur() }}</div>
+    } @else if (demande(); as d) {
+
+      <!-- En-tête de la demande -->
+      <div class="card-header">
+        <div class="header-main">
+          <div class="header-top-row">
+            <h2>Demande N° {{ d.id }}</h2>
+            <span [class]="classeStatut(d.statut)">
+              {{ statutLabels[d.statut] || d.statut }}
+            </span>
+          </div>
+          <p class="subtitle">
+            <span class="location-text">
+              {{ d.typeDemande === 'EVALUATION' ? (d.villeSaisie + ' — ' + d.adresseSaisie) : d.ascenseurNom }}
+            </span>
+          </p>
+        </div>
+        <a [routerLink]="retourLink()" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Retour
+        </a>
+      </div>
+
+      <!-- Grille des informations clés (Style Fiche Technique) -->
+      <div class="info-section-title">Informations générales</div>
+      <div class="detail-grid">
+        @if (d.typeDemande === 'EVALUATION') {
+          <div class="detail-item">
+            <span class="label">Ville</span>
+            <span class="value">{{ d.villeSaisie }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Adresse de visite</span>
+            <span class="value">{{ d.adresseSaisie }}</span>
+          </div>
+        } @else {
+          <div class="detail-item">
+            <span class="label">Ascenseur</span>
+            <span class="value">{{ d.ascenseurNom }}</span>
+          </div>
+        }
+
+        <div class="detail-item">
+          <span class="label">Type de demande</span>
+          <span class="value"><span class="type-pill">{{ typeLabels[d.typeDemande] || d.typeDemande }}</span></span>
+        </div>
+
+        @if (d.typeDemande !== 'EVALUATION') {
+          <div class="detail-item">
+            <span class="label">Priorité</span>
+            <span class="value">
+              <span [class]="classePriorite(d.priorite)">
+                {{ prioriteLabels[d.priorite] || d.priorite }}
+              </span>
+            </span>
+          </div>
+        }
+
+        <div class="detail-item">
+          <span class="label">Statut</span>
+          <span class="value">
+            <span [class]="classeStatut(d.statut)">
+              {{ statutLabels[d.statut] || d.statut }}
+            </span>
+          </span>
+        </div>
+
+        <div class="detail-item">
+          <span class="label">Date de création</span>
+          <span class="value">{{ d.createdAt | date: 'dd/MM/yyyy à HH:mm' }}</span>
+        </div>
+
+        @if (d.dateSouhaitee) {
+          <div class="detail-item">
+            <span class="label">{{ d.typeDemande === 'EVALUATION' ? 'Visite souhaitée' : 'Date souhaitée' }}</span>
+            <span class="value date-highlight">{{ d.dateSouhaitee | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        }
+      </div>
+
+      @if (d.motifRejet) {
+        <div class="motif-rejet-box">
+          <strong>Motif du rejet :</strong> {{ d.motifRejet }}
+        </div>
+      }
+
+      <!-- Section Description -->
+      <div class="section-block">
+        <div class="info-section-title">Description du besoin</div>
+        <div class="readonly-text">{{ d.description }}</div>
+      </div>
+
+      <!-- Section Médias / Photos -->
+      @if (d.photos?.length) {
+        <div class="section-block">
+          <div class="info-section-title">Pièces jointes</div>
+
+          <div class="photos-grid">
+            @for (pj of d.photos; track pj.id) {
+              @if (pj.typeFichier === 'IMAGE') {
+                <div class="photo-card" (click)="openPhoto(pj.url)">
+                  <img [src]="pj.url" [alt]="pj.nomFichier" />
+                  <div class="photo-footer">
+                    <span class="file-name">{{ pj.nomFichier }}</span>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+
+          @for (pj of d.photos; track pj.id) {
+            @if (pj.typeFichier === 'AUDIO') {
+              <div class="audio-container">
+                <span class="audio-label">🎙️ Enregistrement audio</span>
+                <audio controls [src]="pj.url"></audio>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- Actions (Exemple si EN_ATTENTE) -->
+      @if (d.statut === 'EN_ATTENTE') {
+        <div class="actions">
+          <button type="button" class="btn-danger" (click)="annuler()">Annuler la demande</button>
+        </div>
+      }
+    }
+  </div>
+</div>

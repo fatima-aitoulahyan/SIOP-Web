@@ -1,0 +1,249 @@
+<div class="page-wrapper">
+
+  @if (necessiteChoixSite()) {
+    <div class="overlay-creation-site">
+      <div class="modal-site-container">
+        <div class="modal-site-header">
+          <div>
+            <h3>Site existant trouvé</h3>
+            <p class="subtitle-site">
+              Ce client possède déjà {{ sitesClientExistants().length }} site(s).
+              Sélectionnez celui concerné par cette évaluation, ou créez-en un nouveau.
+            </p>
+          </div>
+        </div>
+
+        <div class="sites-liste">
+          @for (s of sitesClientExistants(); track s.id) {
+            <button type="button" class="site-card" (click)="choisirSiteExistant(s)">
+              <span class="site-card__icone">🏢</span>
+              <span class="site-card__contenu">
+        <span class="site-card__adresse">{{ s.adresse }}</span>
+                @if (s.parcNom) {
+                  <span class="site-card__meta">{{ s.parcNom }}</span>
+                }
+      </span>
+              <span class="site-card__chevron">›</span>
+            </button>
+          }
+        </div>
+        <div class="sites-liste-separateur">ou</div>
+
+        <button type="button" class="btn-creer-site" (click)="ouvrirCreationNouveauSite()">
+          + Aucun de ces sites, créer un nouveau
+        </button>
+      </div>
+    </div>
+  }
+  @if (necessiteCreationSite()) {
+    <div class="overlay-creation-site">
+      <div class="modal-site-container">
+        <h3>⚠️ Site client requis</h3>
+        <p class="subtitle-site">
+          Cette demande d'évaluation ne possède pas de site rattaché. Veuillez enregistrer le site pour continuer :
+        </p>
+
+        <app-site-form
+          [clientIdPredefini]="demandePrechargee()?.clientId"
+          [modeIncorpore]="true"
+          (siteCree)="surSiteCree($event)">
+        </app-site-form>
+      </div>
+    </div>
+  }
+
+  <div class="form-card" [class.form-disabled-shadow]="necessiteCreationSite() || necessiteChoixSite()">
+    <div class="card-header">
+      <div>
+        <h2>Nouveau bon de travail</h2>
+        <p class="subtitle">Planifier une intervention de maintenance</p>
+      </div>
+      <a routerLink="/responsable/bons-travail" class="btn-secondary">← Retour</a>
+    </div>
+
+    @if (chargementListes()) {
+      <p class="etat-vide">Chargement…</p>
+    } @else {
+      @if (erreurListes()) {
+        <p class="error">{{ erreurListes() }}</p>
+      }
+      @if (erreur()) {
+        <p class="error">{{ erreur() }}</p>
+      }
+
+      @if (demandePrechargee(); as d) {
+        <div class="info-precharge">
+          Demande <strong>#{{ d.id }}</strong> pré-sélectionnée — {{ d.ascenseurNom || 'Sans ascenseur' }}
+          ({{ d.typeDemande }} — {{ d.priorite }})
+        </div>
+      }
+
+      @if (!demandePrechargee()) {
+        <div class="origin-toggle">
+          <button
+            type="button"
+            [class.actif]="origine() === 'demande'"
+            (click)="changerOrigine('demande')"
+          >
+            À partir d'une demande
+          </button>
+          <button
+            type="button"
+            [class.actif]="origine() === 'ascenseur'"
+            (click)="changerOrigine('ascenseur')"
+          >
+            Planification directe (ascenseur)
+          </button>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="soumettre()">
+        @if (origine() === 'demande') {
+          <div class="form-group">
+            <label for="demande">Demande en attente *</label>
+            @if (demandes().length === 0) {
+              <div class="info-texte">Aucune demande en attente pour le moment.</div>
+            }
+            <select id="demande" formControlName="demandeMaintenanceId">
+              <option [ngValue]="null">— Sélectionner une demande —</option>
+              @for (d of demandes(); track d.id) {
+                <option [ngValue]="d.id">
+                  #{{ d.id }} — {{ d.ascenseurNom || 'Évaluation' }} ({{ d.typeDemande }})
+                </option>
+              }
+            </select>
+            @if (form.controls.demandeMaintenanceId.touched && form.controls.demandeMaintenanceId.invalid) {
+              <span class="champ-erreur">Sélectionnez une demande.</span>
+            }
+          </div>
+        } @else {
+          <div class="form-group">
+            <label for="ascenseur">Ascenseur *</label>
+            <select id="ascenseur" formControlName="ascenseurId">
+              <option [ngValue]="null">— Sélectionner un ascenseur —</option>
+              @for (a of ascenseurs(); track a.id) {
+                <option [ngValue]="a.id">
+                  {{ a.nom }} — {{ a.siteAdresse || 'sans site' }}
+                </option>
+              }
+            </select>
+            @if (form.controls.ascenseurId.touched && form.controls.ascenseurId.invalid) {
+              <span class="champ-erreur">Sélectionnez un ascenseur.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="priorite">Priorité *</label>
+            <select id="priorite" formControlName="priorite">
+              @for (p of priorites; track p) {
+                <option [value]="p">{{ prioriteLabel(p) }}</option>
+              }
+            </select>
+          </div>
+        }
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          @if (origine() === 'demande' && demandeSelectionnee) {
+            <button
+              type="button"
+              class="btn-ia"
+              [disabled]="iaEnCours()"
+              (click)="genererDescriptionIa()"
+            >
+              {{ iaEnCours() ? 'Génération…' : '✨ Générer la description par IA' }}
+            </button>
+            @if (iaGeneree()) {
+              <span class="info-rien">Description inspirée de la demande sélectionnée.</span>
+            }
+          }
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="4"
+            placeholder="Décrivez l'intervention prévue..."
+          ></textarea>
+        </div>
+        @if (iaErreur()) {
+          <p class="error">{{ iaErreur() }}</p>
+        }
+
+        <div class="form-group">
+          <label for="technicien">Technicien responsable *</label>
+          @if (erreurTechniciens()) {
+            <span class="champ-erreur">{{ erreurTechniciens() }}</span>
+          }
+          <select id="technicien" formControlName="technicienResponsableId" (change)="onChangerResponsable($event)">
+            <option [ngValue]="null">— Sélectionner —</option>
+            @for (t of techniciensParc(); track t.id) {
+              <option [ngValue]="t.id">{{ t.prenom }} {{ t.nom }} ({{ t.specialite }})</option>
+            }
+          </select>
+          @if (techniciensParc().length === 0) {
+            <div class="info-texte">Aucun technicien ne couvre ce parc.</div>
+          }
+          @if (form.controls.technicienResponsableId.touched && form.controls.technicienResponsableId.invalid) {
+            <span class="champ-erreur">Le technicien responsable est obligatoire.</span>
+          }
+        </div>
+
+        @if (techniciensRenfortDisponibles().length > 0) {
+          <div class="form-group">
+            <label>Techniciens en renfort</label>
+            <div class="check-list">
+              @for (t of techniciensRenfortDisponibles(); track t.id) {
+                <label class="check-item">
+                  <input
+                    type="checkbox"
+                    [checked]="estRenfort(t.id)"
+                    (change)="toggleRenfort(t.id, $any($event.target).checked)"
+                  />
+                  {{ t.prenom }} {{ t.nom }}
+                </label>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="date">Date et heure prévues *</label>
+            <input
+              type="datetime-local"
+              id="date"
+              formControlName="dateInterventionPrevue"
+            />
+            @if (form.controls.dateInterventionPrevue.touched && form.controls.dateInterventionPrevue.invalid) {
+              <span class="champ-erreur">La date d'intervention est obligatoire.</span>
+            }
+          </div>
+          <div class="form-group">
+            <label for="duree">Durée estimée (minutes) *</label>
+            <input
+              type="number"
+              id="duree"
+              formControlName="dureeEstimeeMinutes"
+              min="1"
+            />
+          </div>
+        </div>
+
+        @if (!demandePrechargee()) {
+          <div class="form-group">
+            <label class="check-item">
+              <input type="checkbox" formControlName="visitePreventive" />
+              Visite préventive (une checklist sera générée automatiquement)
+            </label>
+          </div>
+        }
+
+        <div class="actions">
+          <a routerLink="/responsable/bons-travail" class="btn-secondary">Annuler</a>
+          <button type="submit" class="btn-primary" [disabled]="envoiEnCours()">
+            {{ envoiEnCours() ? 'Création…' : 'Créer le bon de travail' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

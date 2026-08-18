@@ -1,0 +1,341 @@
+$navy: #0f172a;
+$navy-light: #1e293b;
+$accent: #f59e0b;
+$accent-hover: #d97706;
+$bg-color: #f8fafc;
+$border-color: #e2e8f0;
+
+.dashboard {
+  min-height: 100vh;
+  padding: 32px 24px;
+  position: relative;
+  font-family: 'Hanken Grotesk', 'Segoe UI', Roboto, sans-serif;
+  background-color: $bg-color;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1350px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  @media (min-width: 1024px) {
+    padding: 40px 32px;
+  }
+}
+
+// Nettoyage des blobs pour un design plus pro et épuré (suppression du flou excessif)
+.blob {
+  display: none;
+}
+
+.glass {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 24px 32px;
+  background: #ffffff;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+
+  h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $navy;
+    letter-spacing: -0.025em;
+  }
+
+  .sous-titre {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 0.92rem;
+    font-weight: 400;
+  }
+}
+
+.btn-principal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  background: $accent;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+
+  &:hover {
+    background: $accent-hover;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+  }
+
+  .material-symbols-outlined {
+    font-size: 20px;
+  }
+}
+
+.etat {
+  position: relative;
+  z-index: 1;
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid $border-color;
+
+  &.erreur {
+    color: #dc2626;
+    background: #fef2f2;
+    border-color: #fecaca;
+  }
+}
+
+.stats {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+  }
+
+  .icone {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    .material-symbols-outlined {
+      font-size: 24px;
+    }
+
+    &.icone-ascenseur {
+      background: rgba(15, 23, 42, 0.08);
+      color: $navy;
+    }
+    &.icone-demandes {
+      background: rgba(37, 99, 235, 0.08);
+      color: #2563eb;
+    }
+    &.icone-attente {
+      background: rgba(245, 158, 11, 0.1);
+      color: #d97706;
+    }
+    &.icone-cours {
+      background: rgba(124, 58, 237, 0.08);
+      color: #7c3aed;
+    }
+    &.icone-resolues {
+      background: rgba(16, 185, 129, 0.08);
+      color: #059669;
+    }
+    &.icone-evaluations {
+      background: rgba(219, 39, 119, 0.08);
+      color: #db2777;
+    }
+  }
+
+  .texte {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    .valeur {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: $navy;
+      line-height: 1.2;
+    }
+
+    .libelle {
+      color: #64748b;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+  }
+}
+
+.tableau-card {
+  padding: 24px 32px;
+  background: #ffffff;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.tableau-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid $border-color;
+
+  h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: $navy;
+  }
+
+  .lien-tout {
+    color: $accent;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: $accent-hover;
+      text-decoration: underline;
+    }
+  }
+}
+
+.vide {
+  color: #64748b;
+  text-align: center;
+  padding: 32px;
+  font-size: 0.95rem;
+}
+
+.tableau-wrapper {
+  overflow-x: auto;
+}
+
+.tableau {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  white-space: nowrap;
+
+  th,
+  td {
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  th {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #f8fafc;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: #f8fafc;
+    }
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .ref {
+    color: $navy;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      color: $accent;
+      text-decoration: underline;
+    }
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  &.statut-attente {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  &.statut-assignee {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  &.statut-cours {
+    background: #f5f3ff;
+    color: #6d28d9;
+  }
+
+  &.statut-resolue {
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  &.statut-annulee,
+  &.statut-rejetee {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px 12px;
+  }
+
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .tableau-card {
+    padding: 16px;
+  }
+}

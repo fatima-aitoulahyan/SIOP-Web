@@ -1,0 +1,21 @@
+# Build artifacts Maven
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Documentation locale
+README.md

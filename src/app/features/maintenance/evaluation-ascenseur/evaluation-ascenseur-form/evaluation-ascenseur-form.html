@@ -1,0 +1,118 @@
+<div class="page-wrapper">
+  <div class="form-card">
+    <div class="card-header">
+      <div>
+        <h2>Évaluation de l'ascenseur</h2>
+        <p class="subtitle">Renseignez les informations constatées sur place.</p>
+      </div>
+      <a routerLink="/technicien/bons-travail" class="btn-secondary">← Retour</a>
+    </div>
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement…</p>
+    } @else {
+      @if (erreur()) {
+        <p class="error">{{ erreur() }}</p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="soumettre()">
+        <p class="section-title">Identification</p>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="fabricant">Fabricant *</label>
+            <input id="fabricant" type="text" formControlName="fabricant" placeholder="Ex. Otis" />
+            @if (form.controls.fabricant.touched && form.controls.fabricant.invalid) {
+              <span class="champ-erreur">Le fabricant est obligatoire.</span>
+            }
+          </div>
+          <div class="form-group">
+            <label for="nom">Nom</label>
+            <input id="nom" type="text" formControlName="nom" placeholder="Ex. Ascenseur Bâtiment A" />
+          </div>
+          <div class="form-group">
+            <label for="marque">Marque</label>
+            <input id="marque" type="text" formControlName="marque" />
+          </div>
+          <div class="form-group">
+            <label for="modele">Modèle</label>
+            <input id="modele" type="text" formControlName="modele" />
+          </div>
+          <div class="form-group">
+            <label for="type">Type</label>
+            <select id="type" formControlName="type">
+              <option [ngValue]="null">— Non renseigné —</option>
+              @for (t of types; track t) {
+                <option [ngValue]="t">{{ t }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="numeroSerie">Numéro de série</label>
+            <input id="numeroSerie" type="text" formControlName="numeroSerie" />
+          </div>
+          <div class="form-group">
+            <label for="codeBarre">Code-barre</label>
+            <input id="codeBarre" type="text" formControlName="codeBarre" />
+          </div>
+        </div>
+
+        <p class="section-title">Caractéristiques techniques</p>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="nombreEtages">Nombre d'étages</label>
+            <input id="nombreEtages" type="number" formControlName="nombreEtages" min="1" />
+          </div>
+          <div class="form-group">
+            <label for="capacitePersonnes">Capacité (personnes)</label>
+            <input id="capacitePersonnes" type="number" formControlName="capacitePersonnes" min="1" />
+          </div>
+          <div class="form-group">
+            <label for="chargeMaxKg">Charge max (kg)</label>
+            <input id="chargeMaxKg" type="number" formControlName="chargeMaxKg" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="vitesse">Vitesse (m/s)</label>
+            <input id="vitesse" type="number" formControlName="vitesse" step="0.01" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="puissance">Puissance</label>
+            <input id="puissance" type="text" formControlName="puissance" placeholder="Ex. 5.5 kW" />
+          </div>
+          <div class="form-group">
+            <label for="dateMiseEnService">Date de mise en service</label>
+            <input id="dateMiseEnService" type="date" formControlName="dateMiseEnService" />
+          </div>
+        </div>
+
+        <p class="section-title">Bilan terrain</p>
+        <div class="form-group">
+          <label for="etatPortes">État des portes</label>
+          <input id="etatPortes" type="text" formControlName="etatPortes" placeholder="Ex. Bon état, léger jeu" />
+        </div>
+        <div class="form-group">
+          <label for="positionCabine">Position de la cabine</label>
+          <input id="positionCabine" type="text" formControlName="positionCabine" placeholder="Ex. Rez-de-chaussée" />
+        </div>
+        <div class="form-group">
+          <label for="anomalies">Anomalies constatées</label>
+          <textarea id="anomalies" formControlName="anomalies" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="causeExterieure">Cause extérieure éventuelle</label>
+          <textarea id="causeExterieure" formControlName="causeExterieure" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="observations">Observations générales</label>
+          <textarea id="observations" formControlName="observations" rows="3"></textarea>
+        </div>
+
+        <div class="actions">
+          <a routerLink="/technicien/bons-travail" class="btn-secondary">Annuler</a>
+          <button type="submit" class="btn-primary" [disabled]="envoiEnCours()">
+            {{ envoiEnCours() ? 'Envoi…' : "Soumettre l'évaluation" }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

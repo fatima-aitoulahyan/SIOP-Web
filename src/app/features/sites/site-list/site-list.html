@@ -1,0 +1,103 @@
+<div class="page-wrapper">
+  <div class="list-card">
+    <div class="card-header">
+      <div>
+        <h2>Sites clients</h2>
+        <p class="subtitle">{{ sitesFiltres().length }} / {{ sites().length }} site(s)</p>
+      </div>
+      <a routerLink="/sites/nouveau" class="btn-primary">+ Nouveau site</a>
+    </div>
+
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Rechercher par adresse, ville, client..."
+          [ngModel]="recherche()"
+          (ngModelChange)="recherche.set($event)"
+        />
+      </div>
+
+      <select [ngModel]="filtreVille()" (ngModelChange)="filtreVille.set($event)">
+        <option value="TOUTES">Toutes les villes</option>
+        @for (ville of villesDisponibles(); track ville) {
+          <option [value]="ville">{{ ville }}</option>
+        }
+      </select>
+    </div>
+
+    @if (erreur()) {
+      <p class="error">{{ erreur() }}</p>
+    }
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement des sites…</p>
+    } @else if (sites().length === 0) {
+      <div class="etat-vide">
+        <p>Aucun site enregistré pour le moment.</p>
+        <a routerLink="/sites/nouveau" class="btn-primary">Créer le premier site</a>
+      </div>
+    } @else if (sitesFiltres().length === 0) {
+      <div class="etat-vide">
+        <p>Aucun site ne correspond à votre recherche.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Adresse</th>
+            <th>Ville</th>
+            <th>Parc</th>
+            <th>Client</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (site of sitesFiltres(); track site.id) {
+              <tr>
+                <td>{{ site.adresse }}</td>
+                <td>{{ site.villeNom }}</td>
+                <td>{{ site.parcNom || '—' }}</td>
+                <td>{{ site.clientNom }}</td>
+                <td class="col-actions">
+                  <a [routerLink]="['/sites', site.id, 'modifier']" class="lien-action">Modifier</a>
+                  <button type="button" class="lien-action lien-danger" (click)="demanderSuppression(site)">
+                    Supprimer
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  @if (siteASupprimer(); as site) {
+    <div class="modale-overlay" (click)="annulerSuppression()">
+      <div class="modale" (click)="$event.stopPropagation()">
+        <h2>Supprimer ce site ?</h2>
+        <p>
+          <strong>{{ site.adresse }}, {{ site.villeNom }}</strong> sera définitivement supprimé.
+          Cette action est impossible si le site contient encore des ascenseurs.
+        </p>
+        <div class="actions">
+          <button type="button" class="btn-secondary" (click)="annulerSuppression()">Annuler</button>
+          <button
+            type="button"
+            class="btn-danger"
+            (click)="confirmerSuppression()"
+            [disabled]="suppressionEnCours()"
+          >
+            {{ suppressionEnCours() ? 'Suppression…' : 'Supprimer définitivement' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

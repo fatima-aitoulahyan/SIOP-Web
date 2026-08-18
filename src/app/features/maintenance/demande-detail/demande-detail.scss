@@ -1,0 +1,280 @@
+/* ==========================================================
+   STYLES DU COMPOSANT FICHE / FORMULAIRE (DÉCOUPÉ & LÉGER)
+   ========================================================== */
+
+.page-wrapper {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  padding: 48px 20px;
+  box-sizing: border-box;
+  background: #f1f5f9;
+}
+
+.form-card {
+  background: white;
+  padding: 2.5rem 2.75rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+  width: 100%;
+  max-width: 760px;
+  height: fit-content;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+
+  .header-main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .header-top-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+}
+
+.info-section-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+.section-block {
+  margin-top: 1.5rem;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  margin-bottom: 1.75rem;
+  background: var(--color-bg-input);
+  padding: 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.9rem;
+  color: var(--color-text);
+
+  .label {
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .value {
+    font-weight: 500;
+  }
+
+  .date-highlight {
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+}
+
+.type-pill {
+  background: #eef2ff;
+  color: var(--color-accent);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.motif-rejet-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--color-error);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.readonly-text {
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Gestion des miniatures de photos */
+.photos-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.photo-card {
+  text-align: center;
+  max-width: 130px;
+  background: var(--color-bg-input);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  img {
+    width: 120px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .photo-footer {
+    margin-top: 4px;
+  }
+
+  .file-name {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.audio-container {
+  margin-top: 12px;
+  background: var(--color-bg-input);
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .audio-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  audio {
+    width: 100%;
+    height: 36px;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: white;
+  color: var(--color-text);
+  text-decoration: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s ease;
+  &:hover { background: var(--color-bg-input); }
+}
+
+.btn-danger {
+  padding: 9px 16px;
+  background-color: var(--color-error);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  &:hover { background-color: var(--color-error-hover); }
+}
+
+.error-banner {
+  color: var(--color-error);
+  font-size: 0.85rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 20px;
+}
+
+.etat-loading {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 56px 24px;
+  background: var(--color-bg-input);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .detail-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Badges de Statut / Priorité --- */
+.badge-statut-en-attente { background: #fef3c7; color: #b45309; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.badge-statut-assignee { background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.badge-statut-en-cours { background: #ede9fe; color: #6d28d9; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.badge-statut-resolue { background: #ecfdf5; color: #059669; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.badge-statut-annulee { background: #f1f5f9; color: var(--color-text-muted); padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+
+.badge-priorite-basse { color: #059669; font-weight: 600; font-size: 0.85rem; }
+.badge-priorite-normale { color: #d97706; font-weight: 600; font-size: 0.85rem; }
+.badge-priorite-urgente { color: var(--color-error); font-weight: 600; font-size: 0.85rem; }
