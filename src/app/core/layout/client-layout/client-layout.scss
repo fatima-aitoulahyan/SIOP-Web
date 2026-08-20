@@ -5,6 +5,8 @@ $sidebar-width-collapsed: 80px;
   min-height: 100vh;
   display: flex;
   background-color: #f4f5f7;
+  position: relative;
+  overflow-x: hidden;
 
   .sidebar {
     position: fixed;
@@ -19,22 +21,24 @@ $sidebar-width-collapsed: 80px;
     box-sizing: border-box;
     z-index: 100;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease;
   }
 
   .content {
     margin-left: $sidebar-width-expanded;
     flex: 1;
     min-height: 100vh;
+    width: 100%;
     box-sizing: border-box;
     transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  // --- MODE RÉDUIT (COLLAPSED) ---
+  // --- MODE RÉDUIT (COLLAPSED) sur grand écran ---
   &.sidebar-collapsed {
     .sidebar {
       width: $sidebar-width-collapsed;
       padding: 24px 10px;
+      overflow: visible !important;
 
       .sidebar-header {
         justify-content: center;
@@ -54,10 +58,6 @@ $sidebar-width-collapsed: 80px;
         padding: 12px;
         gap: 0;
       }
-
-      .dropdown-content {
-        display: none !important;
-      }
     }
 
     .content {
@@ -70,12 +70,42 @@ $sidebar-width-collapsed: 80px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 12px 24px;
+  padding: 14px 24px;
   background-color: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid #e2e8f0;
   position: sticky;
   top: 0;
   z-index: 50;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .profile-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #f1f5f9;
+      color: #334155;
+      text-decoration: none;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #e2e8f0;
+        color: #0f172a;
+        transform: translateY(-1px);
+      }
+
+      .material-symbols-outlined {
+        font-size: 24px;
+      }
+    }
+  }
 }
 
 .sidebar-header {
@@ -183,90 +213,6 @@ $sidebar-width-collapsed: 80px;
   }
 }
 
-.dropdown-menu-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-
-  .dropdown-toggle {
-    width: 100%;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-align: left;
-    font: inherit;
-    color: rgba(255, 255, 255, 0.8);
-    padding: 12px 14px;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.15s ease;
-
-    .dropdown-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: #ffffff;
-
-      .menu-icon {
-        color: rgba(255, 255, 255, 0.95);
-      }
-    }
-
-    .arrow {
-      width: 14px;
-      height: 14px;
-      color: rgba(255, 255, 255, 0.4);
-      transition: transform 0.2s ease;
-
-      &.open {
-        transform: rotate(180deg);
-        color: #ff9800;
-      }
-    }
-  }
-
-  .dropdown-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding-left: 14px;
-    margin-top: 2px;
-
-    &.show {
-      max-height: 250px;
-    }
-  }
-}
-
-.sub-item {
-  padding: 10px 14px 10px 34px !important;
-  font-size: 0.88rem !important;
-  color: rgba(255, 255, 255, 0.65) !important;
-  border-radius: 10px !important;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.04);
-    color: #ffffff !important;
-  }
-
-  &.active {
-    background: rgba(255, 152, 0, 0.12) !important;
-    color: #ff9800 !important;
-    font-weight: 600 !important;
-  }
-}
-
 .sidebar-footer {
   padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -303,60 +249,56 @@ $sidebar-width-collapsed: 80px;
   }
 }
 
-@media (max-width: 900px) {
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 768px) {
   .layout {
-    flex-direction: column;
-
-    &.sidebar-collapsed .content {
-      margin-left: 0;
+    .sidebar {
+      width: $sidebar-width-expanded;
+      transform: translateX(-100%);
+      box-shadow: none;
     }
-  }
-  .sidebar {
-    width: 100% !important;
-    height: auto;
-    position: static;
-  }
-  .content {
-    margin-left: 0 !important;
-  }
-}
-.topbar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 14px 32px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 
-  .topbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px; // Espace entre la cloche de notification et l'icône de profil
+    .content {
+      margin-left: 0 !important;
+      width: 100% !important;
+    }
 
-    .profile-icon-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #f1f5f9;
-      color: #334155;
-      text-decoration: none;
-      transition: all 0.2s ease;
+    &:not(.sidebar-collapsed) {
+      .sidebar {
+        transform: translateX(0);
+        box-shadow: 15px 0 30px rgba(0, 0, 0, 0.3);
+      }
+    }
 
-      &:hover {
-        background-color: #e2e8f0;
-        color: #0f172a;
-        transform: translateY(-1px);
+    &.sidebar-collapsed {
+      .sidebar {
+        width: $sidebar-width-collapsed !important;
+        transform: translateX(0);
+        padding: 24px 10px !important;
+
+        .sidebar-header {
+          justify-content: center;
+          padding-bottom: 16px;
+
+          .logo-container, .btn-collapse {
+            display: none !important;
+          }
+        }
+
+        .menu-text {
+          display: none !important;
+        }
+
+        .menu-item, .btn-deconnexion {
+          justify-content: center;
+          padding: 12px;
+          gap: 0;
+        }
       }
 
-      .material-symbols-outlined {
-        font-size: 24px;
+      .content {
+        margin-left: $sidebar-width-collapsed !important;
+        width: calc(100% - $sidebar-width-collapsed) !important;
       }
     }
   }

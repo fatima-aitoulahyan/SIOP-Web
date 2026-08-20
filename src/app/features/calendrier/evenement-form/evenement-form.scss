@@ -1,35 +1,45 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.6); // Fond sombre plus moderne et doux
+  backdrop-filter: blur(2px); // Léger flou d'arrière-plan
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .modal-card {
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 24px;
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
 }
 
 .card-header {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
 
   h2 {
     margin: 0 0 4px;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0d2a63; // Reprise de votre couleur principale bleue
   }
 
   .subtitle {
     margin: 0;
-    color: #6b7280;
-    font-size: 0.875rem;
+    color: #64748b;
+    font-size: 0.85rem;
   }
 }
 
@@ -43,13 +53,14 @@
 }
 
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 
   label {
     display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 4px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
   }
 }
 
@@ -57,30 +68,94 @@
 .input-wrapper select,
 .input-wrapper textarea {
   width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
   font-size: 0.9rem;
+  color: #1e293b;
+  background-color: #f8fafc;
   box-sizing: border-box;
+  outline: none;
+  transition: all 0.15s ease;
+
+  &:focus {
+    border-color: #ff9800; // Accent orange cohérent avec vos boutons
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.15);
+  }
 }
 
 .champ-erreur {
+  display: block;
   color: #ef4444;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  margin-top: 4px;
 }
 
 .error {
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  font-size: 0.875rem;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
 }
 
+// ===== Boutons d'actions homogènes =====
 .actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+
+  // Style commun pour les boutons de la modale
+  button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s ease;
+  }
+
+  // Bouton Annuler (Secondaire)
+  .btn-secondary {
+    background-color: #f1f5f9;
+    color: #475569;
+
+    &:hover {
+      background-color: #e2e8f0;
+    }
+  }
+
+  // Bouton Supprimer (Danger)
+  .btn-danger {
+    background-color: #fee2e2;
+    color: #dc2626;
+    margin-right: auto; // Aligne le bouton supprimer tout à gauche de la zone d'actions
+
+    &:hover {
+      background-color: #fecaca;
+    }
+  }
+
+  // Bouton Enregistrer / Valider (Primaire orange)
+  button[type="submit"] {
+    background-color: #ff9800;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: #e88900;
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
 }

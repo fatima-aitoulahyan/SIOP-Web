@@ -44,38 +44,41 @@
       <p class="error">{{ errorMessage() }}</p>
     }
 
+    <!-- ENTOURAGE DU TABLEAU AJOUTÉ ICI -->
     @if (!loading() && utilisateurs().length > 0 && utilisateursFiltres().length > 0) {
-      <table>
-        <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Email</th>
-          <th>Type</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-          @for (u of utilisateursFiltres(); track u.id) {
-            <tr>
-              <td>{{ u.prenom }} {{ u.nom }}</td>
-              <td>{{ u.email }}</td>
-              <td>{{ labels[u.type] }}</td>
-              <td>
-                <span class="badge" [class.badge-actif]="u.actif" [class.badge-inactif]="!u.actif">
-                  {{ u.actif ? 'Actif' : 'Inactif' }}
-                </span>
-              </td>
-              <td class="actions-cell">
-                @if (u.actif) {
-                  <button class="btn-link" (click)="desactiver(u.id)">Désactiver</button>
-                }
-                <button class="btn-link btn-danger" (click)="supprimer(u.id)">Supprimer</button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Type</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (u of utilisateursFiltres(); track u.id) {
+              <tr>
+                <td>{{ u.prenom }} {{ u.nom }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ labels[u.type] }}</td>
+                <td>
+                  <span class="badge" [class.badge-actif]="u.actif" [class.badge-inactif]="!u.actif">
+                    {{ u.actif ? 'Actif' : 'Inactif' }}
+                  </span>
+                </td>
+                <td class="actions-cell">
+                  @if (u.actif) {
+                    <button class="btn-link" (click)="desactiver(u.id)">Désactiver</button>
+                  }
+                  <button class="btn-link btn-danger" (click)="supprimer(u.id)">Supprimer</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
 
     @if (!loading() && utilisateurs().length > 0 && utilisateursFiltres().length === 0) {

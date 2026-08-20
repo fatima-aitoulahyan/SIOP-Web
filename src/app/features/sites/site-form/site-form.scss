@@ -30,6 +30,16 @@
   width: 100%;
   max-width: 720px;
   height: fit-content;
+  box-sizing: border-box;
+
+  &.form-card--incorpore {
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    max-width: none;
+    background: transparent;
+  }
 }
 
 .card-header {
@@ -104,7 +114,9 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: 0 12px;
+    height: 42px; // Hauteur fixe pour uniformiser inputs et selects
     transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    box-sizing: border-box;
 
     &:focus-within {
       border-color: var(--color-primary);
@@ -115,6 +127,7 @@
     svg {
       flex-shrink: 0;
       color: #9aa0a8;
+      margin-right: 8px;
     }
 
     input,
@@ -123,7 +136,7 @@
       flex: 1;
       border: none;
       background: transparent;
-      padding: 10px 10px;
+      padding: 0;
       font-size: 0.9rem;
       color: var(--color-text);
       outline: none;
@@ -140,8 +153,13 @@
       }
     }
 
+    textarea {
+      height: auto;
+      padding: 10px 0;
+    }
+
     &.select-wrapper {
-      padding: 0 8px;
+      padding: 0 10px;
     }
   }
 
@@ -156,7 +174,7 @@
 // ===== Ville select + add button =====
 .site-select-row {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 8px;
 
   .input-wrapper {
@@ -167,16 +185,20 @@
 
 .btn-add-inline {
   flex-shrink: 0;
-  width: 40px;
+  width: 42px;
+  height: 42px; // Aligné parfaitement sur la hauteur de l'input-wrapper
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   background: var(--color-bg-input);
   color: var(--color-primary);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  box-sizing: border-box;
 
   &:hover {
     background: #fff;
@@ -192,14 +214,14 @@
 .actions {
   display: flex;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--color-border);
 }
 
 .btn-secondary {
   flex: 1;
-  padding: 12px;
+  padding: 11px 16px;
   background: #fff;
   color: var(--color-text);
   border: 1px solid var(--color-border);
@@ -219,7 +241,7 @@
 
 button[type='submit'] {
   flex: 2;
-  padding: 12px;
+  padding: 11px 16px;
   background-color: var(--color-accent);
   color: white;
   border: none;
@@ -249,11 +271,24 @@ button[type='submit'] {
   margin-bottom: 20px;
   text-align: left;
 }
+// ===== Correction Responsive Mobile =====
+@media (max-width: 768px) {
+  .page-wrapper {
+    padding: 16px 10px;
+  }
 
-@media (max-width: 600px) {
+  .form-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  // Force les champs (Ville / Parc) à passer l'un sous l'autre sur mobile
   .row {
-    flex-direction: column;
-    gap: 0;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+
+    .form-group {
+      width: 100% !important;
+    }
   }
 }
 
@@ -265,11 +300,11 @@ button[type='submit'] {
   backdrop-filter: blur(2px);
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: 8vh;
-  overflow-y: auto;
+  align-items: center;
+  padding: 16px;
   z-index: 1000;
   animation: fadeIn 0.15s ease-out;
+  box-sizing: border-box;
 }
 
 .modal-card {
@@ -277,12 +312,12 @@ button[type='submit'] {
   max-width: 420px;
   max-height: 85vh;
   overflow-y: auto;
-  margin-bottom: 5vh;
   background: #fff;
   border-radius: var(--radius-lg);
   padding: 2rem 2.25rem;
   box-shadow: var(--shadow-modal);
   animation: slideDown 0.18s ease-out;
+  box-sizing: border-box;
 
   .card-header {
     margin-bottom: 22px;
@@ -302,12 +337,4 @@ button[type='submit'] {
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-.form-card--incorpore {
-  padding: 0;
-  border: none;
-  box-shadow: none;
-  border-radius: 0;
-  max-width: none;
 }

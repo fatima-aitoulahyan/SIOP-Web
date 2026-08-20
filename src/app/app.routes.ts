@@ -59,7 +59,12 @@ export const routes: Routes = [
           ),
         canActivate: [roleGuard(['RESPONSABLE_MAINTENANCE'])],
       },
-      // Gestion des utilisateurs (Admin)
+      {
+        path: 'chatbot',
+        loadComponent: () =>
+          import('./features/chatbot/chatbot').then((m) => m.ChatbotComponent),
+        canActivate: [roleGuard(['ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE'])],
+      },
       {
         path: 'utilisateurs',
         loadChildren: () =>

@@ -1,57 +1,112 @@
-$navy: #1e3a5f;
-$border: #e2e8f0;
-
 .composant-form {
-  background: #f8fafc;
-  border: 1px solid $border;
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
+  background: var(--color-bg-input, #f7f8fa);
+  border: 1px solid var(--color-border, #e2e5eb);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 
   label {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    color: $navy;
+    color: var(--color-text, #1a1f2b);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   input,
   select {
-    padding: 0.5rem 0.6rem;
-    border: 1px solid $border;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--color-border, #e2e5eb);
+    border-radius: var(--radius-md, 8px);
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    color: var(--color-text, #1a1f2b);
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+    &::placeholder {
+      color: #a3a9b3;
+    }
 
     &:focus {
-      outline: none;
-      border-color: #f28c28;
+      border-color: var(--color-primary, #0d2a63);
+      box-shadow: 0 0 0 3px rgba(13, 42, 99, 0.08);
     }
+
+    &:disabled {
+      color: var(--color-text-muted, #6b7280);
+      cursor: not-allowed;
+      background: var(--color-bg-input, #f7f8fa);
+    }
+  }
+
+  select {
+    cursor: pointer;
   }
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.6rem;
-  margin-top: 0.25rem;
+  gap: 10px;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border, #e2e5eb);
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: 480px) {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
 }
 
 .error-message {
-  color: #dc2626;
+  color: var(--color-error, #d92d20);
   font-size: 0.85rem;
-  margin: 0;
+  background: #fef2f1;
+  border: 1px solid #fbd5d1;
+  border-radius: var(--radius-md, 8px);
+  padding: 10px 14px;
+  margin: 0 0 0.5rem 0;
+  text-align: left;
+  box-sizing: border-box;
 }
