@@ -3,17 +3,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../../../core/models/api-response.model';
 import { PieceJointeDTO, TypeEntiteJointe } from '../../../core/models/piece-jointe.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PieceJointeService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:8080/api/pieces-jointes';
+  private baseUrl = `${environment.apiUrl}/pieces-jointes`;
 
-  /**
-   * ⚠️ Suppose un endpoint GET /api/pieces-jointes?entiteType=...&entiteId=...
-   * côté backend. Adapte l'URL/les query params si ton contrôleur Spring
-   * expose ça différemment (ex: /api/pieces-jointes/ascenseur/{id}).
-   */
+
   lister(
     entiteType: TypeEntiteJointe,
     entiteId: number,
