@@ -11,7 +11,7 @@ export class VilleService {
 
   listerTous(): Observable<VilleDTO[]> {
     return this.http
-      .get<ApiResponse<VilleDTO[]>>(`${this.baseUrl}/referentiel/villes` )
+      .get<ApiResponse<VilleDTO[]>>(`${this.baseUrl}/villes` )
       .pipe(map((res) => res.data!));
   }
 
