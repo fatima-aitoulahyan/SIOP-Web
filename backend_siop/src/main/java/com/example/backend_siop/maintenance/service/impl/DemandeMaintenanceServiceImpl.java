@@ -65,6 +65,20 @@ public class DemandeMaintenanceServiceImpl implements DemandeMaintenanceService 
 
     @Override
     @Transactional
+    public DemandeMaintenanceDTO accepter(Long id) {
+        DemandeMaintenance demande = demandeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande introuvable"));
+
+        if (demande.getStatut() != StatutDemande.EN_ATTENTE) {
+            throw new BusinessRuleException("Seules les demandes en attente peuvent être acceptées.");
+        }
+        demande.setStatut(StatutDemande.ASSIGNEE);
+
+        return mapper.toDTO(demandeRepository.save(demande));
+    }
+
+    @Override
+    @Transactional
     public DemandeMaintenanceDTO creerEvaluation(DemandeEvaluationCreateDTO dto, Client client) {
         DemandeMaintenance demande = new DemandeMaintenance();
         demande.setClient(client);

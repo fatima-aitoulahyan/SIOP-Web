@@ -14,6 +14,7 @@ import com.example.backend_siop.common.util.FileStorageUtil;
 import com.example.backend_siop.maintenance.dto.BonTravailCreateDTO;
 import com.example.backend_siop.maintenance.dto.BonTravailDTO;
 import com.example.backend_siop.maintenance.dto.BonTravailResumeDTO;
+import com.example.backend_siop.maintenance.dto.ClotureBonTravailDTO;
 import com.example.backend_siop.maintenance.dto.ConflitTechnicienDTO;
 import com.example.backend_siop.maintenance.dto.mapper.BonTravailMapper;
 import com.example.backend_siop.maintenance.entity.BonTravail;
@@ -35,13 +36,12 @@ import com.example.backend_siop.maintenance.service.BonTravailService;
 import com.example.backend_siop.notification.enums.TypeNotification;
 import com.example.backend_siop.notification.service.NotificationService;
 import com.example.backend_siop.parc.entity.Parc;
-import com.example.backend_siop.parc.repository.ParcRepository;
 import com.example.backend_siop.utilisateur.dto.TechnicienResumeDTO;
 import com.example.backend_siop.utilisateur.dto.mapper.TechnicienMapper;
-import com.example.backend_siop.maintenance.dto.ClotureBonTravailDTO;
 import com.example.backend_siop.utilisateur.entity.Technicien;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
 import com.example.backend_siop.utilisateur.repository.TechnicienRepository;
+import com.example.backend_siop.parc.repository.ParcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,11 +70,11 @@ public class BonTravailServiceImpl implements BonTravailService {
     private final ItemCheckListRepository itemCheckListRepository;
     private final ParcRepository parcRepository;
     private final SiteRepository siteRepository;
-    private final NotificationService notificationService ;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
-    public BonTravailDTO creer(BonTravailCreateDTO dto , Utilisateur creePar) {
+    public BonTravailDTO creer(BonTravailCreateDTO dto, Utilisateur creePar) {
         DemandeMaintenance demande = null;
         Ascenseur ascenseur = null;
         Parc parcAscenseur = null;
@@ -85,8 +85,8 @@ public class BonTravailServiceImpl implements BonTravailService {
             demande = demandeRepository.findById(dto.getDemandeMaintenanceId())
                     .orElseThrow(() -> new ResourceNotFoundException("Demande introuvable"));
 
-            if (demande.getStatut() != StatutDemande.EN_ATTENTE) {
-                throw new BusinessRuleException("Cette demande a déjà été traitée.");
+            if (demande.getStatut() != StatutDemande.EN_ATTENTE && demande.getStatut() != StatutDemande.ASSIGNEE) {
+                throw new BusinessRuleException("Cette demande a déjà été traitée (résolue, rejetée ou annulée).");
             }
 
             ascenseur = demande.getAscenseur();
@@ -99,8 +99,7 @@ public class BonTravailServiceImpl implements BonTravailService {
                     .orElseThrow(() -> new ResourceNotFoundException("Ascenseur introuvable"));
 
             if (priorite == null) {
-                throw new BusinessRuleException(
-                        "La priorité est obligatoire pour une planification directe.");
+                throw new BusinessRuleException("La priorité est obligatoire pour une planification directe.");
             }
         } else {
             throw new BusinessRuleException("Une demande ou un ascenseur doit être précisé.");
@@ -172,6 +171,7 @@ public class BonTravailServiceImpl implements BonTravailService {
         bonTravail.setCreePar(creePar);
 
         BonTravail saved = bonTravailRepository.save(bonTravail);
+
         for (Technicien t : equipeComplete) {
             notificationService.creer(
                     t,
@@ -189,20 +189,6 @@ public class BonTravailServiceImpl implements BonTravailService {
                 demande.setSite(siteSelectionne);
             }
             demandeRepository.save(demande);
-        }
-
-        boolean estPreventif = dto.isVisitePreventive()
-                || (demande != null && demande.getTypeDemande() == TypeDemande.ENTRETIEN_PREVENTIF);
-
-        if (estPreventif && ascenseur != null) {
-            genererChecklist(saved, ascenseur, debut);
-        }
-        if (demande != null) {
-            demande.setStatut(StatutDemande.ASSIGNEE);
-            if (siteSelectionne != null && demande.getSite() == null) {
-                demande.setSite(siteSelectionne);
-            }
-            demandeRepository.save(demande);
 
             notificationService.creer(
                     demande.getClient(),
@@ -214,15 +200,22 @@ public class BonTravailServiceImpl implements BonTravailService {
             );
         }
 
+        boolean estPreventif = dto.isVisitePreventive()
+                || (demande != null && demande.getTypeDemande() == TypeDemande.ENTRETIEN_PREVENTIF);
+
+        if (estPreventif && ascenseur != null) {
+            genererChecklist(saved, ascenseur, debut);
+        }
+
         return toDTOAvecPhotos(saved);
     }
+
     private void genererChecklist(BonTravail bonTravail, Ascenseur ascenseur, LocalDateTime dateIntervention) {
         int mois = dateIntervention.getMonthValue();
         int annee = dateIntervention.getYear();
 
         if (checklistRepository.existsByAscenseurIdAndMoisAndAnnee(ascenseur.getId(), mois, annee)) {
-            throw new BusinessRuleException(
-                    "Une checklist existe déjà pour cet ascenseur ce mois-ci.");
+            throw new BusinessRuleException("Une checklist existe déjà pour cet ascenseur ce mois-ci.");
         }
 
         ChecklistMaintenance checklist = new ChecklistMaintenance();
@@ -331,7 +324,7 @@ public class BonTravailServiceImpl implements BonTravailService {
                         technicien.getId(),
                         technicien.getNom(),
                         b.getId(),
-                        b.getAscenseur().getNom(),
+                        b.getAscenseur() != null ? b.getAscenseur().getNom() : "Inconnu",
                         b.getDateInterventionPrevue().toString()
                 ));
             }
@@ -379,6 +372,7 @@ public class BonTravailServiceImpl implements BonTravailService {
         LocalDateTime finExistant = debutExistant.plusMinutes(existant.getDureeEstimeeMinutes());
         return debutExistant.isBefore(finProposee) && debutPropose.isBefore(finExistant);
     }
+
     private String nomOuFallback(BonTravail bonTravail) {
         if (bonTravail.getAscenseur() != null) {
             return bonTravail.getAscenseur().getNom();
@@ -413,6 +407,7 @@ public class BonTravailServiceImpl implements BonTravailService {
                 ))
                 .toList();
     }
+
     @Override
     @Transactional
     public BonTravailDTO demarrer(Long id, Technicien technicien) {
@@ -426,8 +421,7 @@ public class BonTravailServiceImpl implements BonTravailService {
         }
 
         if (checklistRepository.findByBonTravailId(id).isPresent()) {
-            throw new BusinessRuleException(
-                    "Ce bon possède une checklist : démarrez-la via /api/checklists/{id}/demarrer.");
+            throw new BusinessRuleException("Ce bon possède une checklist : démarrez-la via /api/checklists/{id}/demarrer.");
         }
 
         if (bonTravail.getStatut() != StatutBonTravail.PLANIFIE) {
@@ -459,7 +453,6 @@ public class BonTravailServiceImpl implements BonTravailService {
         return toDTOAvecPhotos(bonTravailRepository.save(bonTravail));
     }
 
-
     @Override
     @Transactional
     public BonTravailDTO terminer(Long id, ClotureBonTravailDTO dto) {
@@ -467,8 +460,7 @@ public class BonTravailServiceImpl implements BonTravailService {
                 .orElseThrow(() -> new ResourceNotFoundException("Bon de travail introuvable"));
 
         if (checklistRepository.findByBonTravailId(id).isPresent()) {
-            throw new BusinessRuleException(
-                    "Ce bon possède une checklist : clôturez-la via /api/checklists/{id}/cloturer.");
+            throw new BusinessRuleException("Ce bon possède une checklist : clôturez-la via /api/checklists/{id}/cloturer.");
         }
 
         if (bonTravail.getStatut() != StatutBonTravail.EN_COURS) {
@@ -513,5 +505,16 @@ public class BonTravailServiceImpl implements BonTravailService {
         }
 
         return toDTOAvecPhotos(bonTravailRepository.save(bonTravail));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TechnicienResumeDTO> listerTechniciensDisponiblesParSite(
+            Long siteId, LocalDateTime debut, int dureeMinutes) {
+
+        return technicienRepository.findAll()
+                .stream()
+                .map(technicienMapper::toResumeDTO)
+                .toList();
     }
 }

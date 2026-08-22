@@ -34,4 +34,6 @@ public interface DemandeMaintenanceService {
     DemandeMaintenanceDTO rejeter(Long id, RejetDemandeDTO dto);
 
     DemandeMaintenance getEntitePourResponsable(Long id);
+
+    DemandeMaintenanceDTO accepter(Long id);
 }

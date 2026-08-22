@@ -6,6 +6,8 @@ import com.example.backend_siop.utilisateur.entity.Technicien;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class UtilisateurMapper {
 
@@ -25,6 +27,14 @@ public class UtilisateurMapper {
             builder.adresse(client.getAdresse());
         } else if (u instanceof Technicien technicien) {
             builder.specialite(technicien.getSpecialite());
+
+            if (technicien.getParcs() != null) {
+                List<Long> parcIds = technicien.getParcs()
+                        .stream()
+                        .map(parc -> parc.getId())
+                        .toList();
+                builder.parcIds(parcIds);
+            }
         }
 
         return builder.build();

@@ -53,7 +53,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <-- AJOUTE CETTE LIGNE
                         .requestMatchers(
                                   "/api/auth/login",
-                                  "/api/auth/activer-compte"
+                                  "/api/auth/activer-compte",
+                                "/api/auth/mot-de-passe-oublie",
+                                "/api/auth/reinitialiser-mot-de-passe"
                           ).permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())

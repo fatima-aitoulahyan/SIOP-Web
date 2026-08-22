@@ -20,4 +20,5 @@ public interface UtilisateurService {
     ProfilDTO getProfil(Utilisateur utilisateur);
     ProfilDTO modifierMonProfil(Utilisateur utilisateur, ModifierProfilDTO dto);
     ProfilDTO modifierPhotoProfil(Utilisateur utilisateur, MultipartFile fichier);
+    org.springframework.core.io.Resource getPhotoProfil(Utilisateur utilisateur);
 }

@@ -59,7 +59,16 @@ public class IaDescriptionServiceImpl implements IaDescriptionService {
                     baseUrl, new HttpEntity<>(body, headers), String.class);
 
             JsonNode racine = objectMapper.readTree(response.getBody());
+
+            if (racine.has("error")) {
+                String errorMsg = racine.path("error").path("message").asText("Erreur inconnue de l'API IA");
+                throw new BusinessRuleException("Erreur API Groq : " + errorMsg);
+            }
+
             return racine.path("choices").get(0).path("message").path("content").asText();
+
+        } catch (BusinessRuleException e) {
+            throw e;
         } catch (Exception e) {
             throw new BusinessRuleException("Erreur lors de la génération IA : " + e.getMessage());
         }
@@ -88,4 +97,5 @@ public class IaDescriptionServiceImpl implements IaDescriptionService {
                 adresse,
                 demande.getDescription()
         );
-    }}
+    }
+}

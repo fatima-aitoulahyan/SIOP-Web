@@ -30,6 +30,9 @@ public class Ascenseur extends Auditable {
     @Column(nullable = false)
     private String nom;
 
+    @Column(nullable=false)
+    private String marque;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -38,9 +41,6 @@ public class Ascenseur extends Auditable {
 
     @Column(nullable = false)
     private String fabricant;
-
-    @Column(nullable = true)
-    private String marque;
 
     @Column(name = "nombre_etages")
     private Integer nombreEtages;

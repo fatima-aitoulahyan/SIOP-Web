@@ -5,6 +5,7 @@ import com.example.backend_siop.common.entity.PieceJointe;
 import com.example.backend_siop.common.enums.TypeEntiteJointe;
 import com.example.backend_siop.common.service.PieceJointeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,7 @@ public class PieceJointeController {
     private final PieceJointeService pieceJointeService;
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ApiResponse<PieceJointe> ajouter(
             @RequestParam("fichier") MultipartFile fichier,
             @RequestParam TypeEntiteJointe entiteType,
@@ -27,6 +29,7 @@ public class PieceJointeController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ApiResponse<List<PieceJointe>> lister(
             @RequestParam TypeEntiteJointe entiteType,
             @RequestParam Long entiteId) {
@@ -34,6 +37,7 @@ public class PieceJointeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ApiResponse<Void> supprimer(@PathVariable Long id) {
         pieceJointeService.supprimer(id);
         return ApiResponse.success(null);

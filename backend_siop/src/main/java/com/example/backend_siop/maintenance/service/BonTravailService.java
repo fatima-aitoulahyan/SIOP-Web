@@ -36,4 +36,10 @@ public interface BonTravailService {
     BonTravailDTO demarrer(Long id, Technicien technicien);
     
     BonTravailDTO terminer(Long id, ClotureBonTravailDTO dto);
+
+    List<TechnicienResumeDTO> listerTechniciensDisponiblesParSite(
+            Long siteId,
+            LocalDateTime debut,
+            int dureeMinutes
+    );
 }

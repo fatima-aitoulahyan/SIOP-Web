@@ -1,8 +1,8 @@
- 
 package com.example.backend_siop;
 
 import com.example.backend_siop.utilisateur.entity.Administrateur;
-import com.example.backend_siop.utilisateur.repository.UtilisateurRepository;
+import com.example.backend_siop.utilisateur.entity.ResponsableMaintenance;
+import com.example.backend_siop.utilisateur.entity.Utilisateur;
 import com.example.backend_siop.utilisateur.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -18,22 +18,54 @@ public class FixAdminPasswordRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        utilisateurRepository.findByEmail("aitoulahyanfatima310@gmail.com").ifPresentOrElse(
+        // 1. Administrateur
+        creerOuMettreAJour(
+                "aitoulahyanfatima310@gmail.com",
+                "fatima",
+                "aitoulahyan",
+                "fatima",
+                new Administrateur()
+        );
+
+        // 2. Responsable de maintenance (toi !)
+        creerOuMettreAJour(
+                "fatimazahraazzabi24@gmail.com",
+                "resp123",
+                "azzabi",
+                "fatima zahra",
+                new ResponsableMaintenance()
+        );
+
+        System.out.println("══════════════════════════════════════");
+        System.out.println("  Comptes initialisés avec succès !");
+        System.out.println("══════════════════════════════════════");
+    }
+
+    /**
+     * Crée l'utilisateur s'il n'existe pas, sinon met à jour le mot de passe.
+     */
+    private void creerOuMettreAJour(
+            String email,
+            String motDePasse,
+            String nom,
+            String prenom,
+            Utilisateur template
+    ) {
+        utilisateurRepository.findByEmail(email).ifPresentOrElse(
                 user -> {
-                    user.setMotDePasse(passwordEncoder.encode("fatima"));
+                    user.setMotDePasse(passwordEncoder.encode(motDePasse));
                     user.setActif(true);
                     utilisateurRepository.save(user);
-                    System.out.println("--> Mot de passe administrateur mis à jour avec succès !");
+                    System.out.println("[" + user.getType() + "] Mot de passe mis à jour : " + email);
                 },
                 () -> {
-                    Administrateur admin = new Administrateur();
-                    admin.setEmail("aitoulahyanfatima310@gmail.com");
-                    admin.setMotDePasse(passwordEncoder.encode("fatima"));
-                    admin.setNom("aitoulahyan");
-                    admin.setPrenom("fatima");
-                    admin.setActif(true);
-                    utilisateurRepository.save(admin);
-                    System.out.println("--> Administrateur créé avec succès !");
+                    template.setEmail(email);
+                    template.setMotDePasse(passwordEncoder.encode(motDePasse));
+                    template.setNom(nom);
+                    template.setPrenom(prenom);
+                    template.setActif(true);
+                    utilisateurRepository.save(template);
+                    System.out.println("[" + template.getType() + "] Compte créé : " + email);
                 }
         );
     }

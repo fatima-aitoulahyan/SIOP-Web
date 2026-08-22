@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.backend_siop.tache.repository.TacheRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,6 +34,7 @@ public class AscenseurServiceImpl implements AscenseurService {
 
     private final AscenseurRepository ascenseurRepository;
     private final SiteRepository siteRepository;
+    private final TacheRepository  tacheRepository;
     private final PieceJointeRepository pieceJointeRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final FileStorageUtil fileStorageUtil;
@@ -178,13 +180,27 @@ public class AscenseurServiceImpl implements AscenseurService {
     @Transactional
     public void supprimer(Long id) {
         Ascenseur ascenseur = ascenseurRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ascenseur introuvable"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Ascenseur introuvable"));
 
-        List<PieceJointe> pieces = pieceJointeRepository.findByEntiteTypeAndEntiteId(
-                TypeEntiteJointe.ASCENSEUR, id);
-        pieces.forEach(p -> fileStorageUtil.delete(p.getCheminFichier()));
-        pieceJointeRepository.deleteByEntiteTypeAndEntiteId(TypeEntiteJointe.ASCENSEUR, id);
+        boolean hasTaches = tacheRepository.existsByAscenseurId(id);
 
+        if (hasTaches) {
+            throw new IllegalStateException(
+                    "Impossible de supprimer cet ascenseur car il est encore utilisé dans le système."
+            );
+        }
+
+        List<PieceJointe> pieces =
+                pieceJointeRepository.findByEntiteTypeAndEntiteId(
+                        TypeEntiteJointe.ASCENSEUR, id);
+
+        pieces.forEach(p ->
+                fileStorageUtil.delete(p.getCheminFichier())
+        );
+        pieceJointeRepository.deleteByEntiteTypeAndEntiteId(
+                TypeEntiteJointe.ASCENSEUR, id
+        );
         ascenseurRepository.delete(ascenseur);
     }
 

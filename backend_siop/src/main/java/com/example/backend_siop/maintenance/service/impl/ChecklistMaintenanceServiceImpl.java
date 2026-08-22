@@ -26,6 +26,9 @@ import com.example.backend_siop.utilisateur.entity.Technicien;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.backend_siop.maintenance.dto.ItemCheckListDTO;
+import org.springframework.web.multipart.MultipartFile;
+
 
 import java.time.LocalTime;
 import java.util.List;
@@ -65,6 +68,16 @@ public class ChecklistMaintenanceServiceImpl implements ChecklistMaintenanceServ
         }
 
         return toDTOAvecItems(checklistRepository.save(checklist));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ChecklistMaintenanceDTO> getRapportsAValider() {
+        List<ChecklistMaintenance> checklists = checklistRepository.findByHeureDepartIsNotNullOrderByHeureDepartDesc();
+
+        return checklists.stream()
+                .map(this::toDTOAvecItems)
+                .toList();
     }
 
     @Override
@@ -136,6 +149,43 @@ public class ChecklistMaintenanceServiceImpl implements ChecklistMaintenanceServ
 
         dto.setItems(itemsDTO);
         return dto;
+    }
+
+    @Override
+    @Transactional
+    public ItemCheckListDTO ajouterPhotoItem(Long itemId, MultipartFile file) {
+        ItemCheckList item = itemCheckListRepository.findById(itemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Item introuvable"));
+
+        try {
+            String chemin = fileStorageUtil.store(file, "item_checklist/" + itemId);
+
+            com.example.backend_siop.common.enums.TypeFichier typeFichier = com.example.backend_siop.common.enums.TypeFichier.DOCUMENT; // Valeur par défaut
+
+            String contentType = file.getContentType();
+            if (contentType != null) {
+                if (contentType.startsWith("image/")) {
+                    typeFichier = com.example.backend_siop.common.enums.TypeFichier.IMAGE;
+                } else if (contentType.startsWith("audio/")) {
+                } else if (contentType.startsWith("video/")) {
+                }
+            }
+
+            PieceJointe pj = new PieceJointe();
+            pj.setEntiteType(TypeEntiteJointe.ITEM_CHECKLIST);
+            pj.setEntiteId(itemId);
+            pj.setNomFichier(file.getOriginalFilename());
+            pj.setCheminFichier(chemin);
+            pj.setTypeFichier(typeFichier);
+            pj.setTailleOctets(file.getSize());
+
+            pieceJointeRepository.save(pj);
+
+            return mapper.toItemDTO(item);
+
+        } catch (Exception e) {
+            throw new BusinessRuleException("Erreur lors de l'upload de la photo : " + e.getMessage());
+        }
     }
 
     private List<PieceJointeAvecUrlDTO> recupererPieces(Long itemId) {

@@ -13,6 +13,9 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring", uses = TechnicienMapper.class)
 public abstract class BonTravailMapper {
 
+    // =========================================================
+    // Mapping pour le DTO complet (Détail)
+    // =========================================================
     @Mapping(target = "demandeMaintenanceId", source = "demandeMaintenance.id")
     @Mapping(target = "ascenseurId", source = "ascenseur.id")
     @Mapping(target = "ascenseurNom", source = "ascenseur.nom")
@@ -21,24 +24,46 @@ public abstract class BonTravailMapper {
     @Mapping(target = "parcNom", source = "ascenseur.siteEntity.parc.nom")
     @Mapping(target = "technicienResponsableId", source = "technicienResponsable.id")
     @Mapping(target = "technicienResponsableNom", source = "technicienResponsable.nom")
+
+    @Mapping(target = "dureeEstimeeMinutes", source = "dureeEstimeeMinutes")
+    @Mapping(target = "description", source = "description")
+    @Mapping(target = "priorite", source = "priorite")
+    @Mapping(target = "statut", source = "statut")
+    @Mapping(target = "dateInterventionPrevue", source = "dateInterventionPrevue")
+    @Mapping(target = "dateDebutReelle", source = "dateDebutReelle")
+    @Mapping(target = "dateFinReelle", source = "dateFinReelle")
+    @Mapping(target = "diagnostic", source = "diagnostic")
+    @Mapping(target = "causeIdentifiee", source = "causeIdentifiee")
+    @Mapping(target = "actionRealisee", source = "actionRealisee")
+    @Mapping(target = "piecesRemplacees", source = "piecesRemplacees")
+    @Mapping(target = "essaiConcluant", source = "essaiConcluant")
+    @Mapping(target = "recommandations", source = "recommandations")
+    @Mapping(target = "createdAt", source = "createdAt")
+
     @Mapping(target = "photosDemande", ignore = true)
     @Mapping(target = "piecesJointesBonTravail", ignore = true)
     public abstract BonTravailDTO toDTO(BonTravail entity);
 
+    // =========================================================
+    // Mapping pour le DTO Résumé (Liste)
+    // =========================================================
     @Mapping(target = "ascenseurNom", source = "ascenseur.nom")
     @Mapping(target = "siteAdresse", source = "ascenseur.siteEntity.adresse")
     @Mapping(target = "parcNom", source = "ascenseur.siteEntity.parc.nom")
     @Mapping(target = "technicienResponsableNom", source = "technicienResponsable.nom")
+
+    @Mapping(target = "priorite", source = "priorite")
+    @Mapping(target = "statut", source = "statut")
+    @Mapping(target = "dateInterventionPrevue", source = "dateInterventionPrevue")
+
     public abstract BonTravailResumeDTO toResumeDTO(BonTravail entity);
 
-    /**
-     * Cas d'une évaluation : bonTravail.ascenseur est null, donc siteAdresse/parcId/parcNom
-     * restent vides via le mapping ci-dessus. On les récupère alors via le site
-     * rattaché à la demande de maintenance (renseigné lors de l'acceptation).
-     */
+    // =========================================================
+    // AfterMapping pour gérer le cas des évaluations (sans ascenseur)
+    // =========================================================
     @AfterMapping
     protected void enrichirSiteParcDTO(BonTravail entity, @MappingTarget BonTravailDTO dto) {
-        if (entity.getAscenseur() != null) return; // déjà rempli via l'ascenseur
+        if (entity.getAscenseur() != null) return;
 
         Site site = entity.getDemandeMaintenance() != null
                 ? entity.getDemandeMaintenance().getSite()

@@ -17,6 +17,7 @@ public class ProfilDTO {
     private String nomEntreprise;
     private String adresse;
     private boolean actif;
+    private String specialite;
     private LocalDateTime createdAt;
     private String photoUrl;
 }

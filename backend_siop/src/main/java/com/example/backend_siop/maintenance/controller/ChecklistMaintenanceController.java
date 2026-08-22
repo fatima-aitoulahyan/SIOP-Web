@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import com.example.backend_siop.maintenance.dto.ItemCheckListDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/checklists")
@@ -25,12 +28,26 @@ public class ChecklistMaintenanceController {
         return ApiResponse.success(checklistService.getDetail(id));
     }
 
+    @GetMapping("/rapports-a-valider")
+    @PreAuthorize("hasAnyRole('RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR')")
+    public ApiResponse<List<ChecklistMaintenanceDTO>> getRapportsAValider() {
+        return ApiResponse.success(checklistService.getRapportsAValider());
+    }
+
     @PatchMapping("/{id}/demarrer")
     @PreAuthorize("hasRole('TECHNICIEN')")
     public ApiResponse<ChecklistMaintenanceDTO> demarrer(
             @PathVariable Long id,
             @AuthenticationPrincipal Technicien technicien) {
         return ApiResponse.success(checklistService.demarrer(id, technicien));
+    }
+
+    @PostMapping("/items/{itemId}/photos")
+    @PreAuthorize("hasRole('TECHNICIEN')")
+    public ApiResponse<ItemCheckListDTO> ajouterPhotoItem(
+            @PathVariable Long itemId,
+            @RequestParam("file") MultipartFile file) {
+        return ApiResponse.success(checklistService.ajouterPhotoItem(itemId, file));
     }
 
     @PatchMapping("/items/{itemId}")

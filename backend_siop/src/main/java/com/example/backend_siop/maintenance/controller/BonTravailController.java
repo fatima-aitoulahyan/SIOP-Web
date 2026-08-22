@@ -84,11 +84,34 @@ public class BonTravailController {
     @GetMapping("/techniciens-disponibles")
     @PreAuthorize("hasAnyRole('RESPONSABLE_MAINTENANCE','ADMINISTRATEUR')")
     public ApiResponse<List<TechnicienResumeDTO>> techniciensDisponibles(
-            @RequestParam Long ascenseurId,
+            @RequestParam(required = false) Long ascenseurId,
+            @RequestParam(required = false) Long siteId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime debut,
             @RequestParam int dureeMinutes) {
-        return ApiResponse.success(
-                bonTravailService.listerTechniciensDisponibles(ascenseurId, debut, dureeMinutes));
+
+        if (ascenseurId != null) {
+            return ApiResponse.success(
+                    bonTravailService.listerTechniciensDisponibles(
+                            ascenseurId,
+                            debut,
+                            dureeMinutes
+                    )
+            );
+        }
+
+        if (siteId != null) {
+            return ApiResponse.success(
+                    bonTravailService.listerTechniciensDisponiblesParSite(
+                            siteId,
+                            debut,
+                            dureeMinutes
+                    )
+            );
+        }
+
+        throw new IllegalArgumentException(
+                "ascenseurId ou siteId doit être fourni"
+        );
     }
     
    

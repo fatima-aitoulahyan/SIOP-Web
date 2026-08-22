@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @Setter
 public class DemandeMaintenanceCreateDTO {
 
-    @NotNull(message = "L'ascenseur est obligatoire")
     private Long ascenseurId;
 
     @NotNull(message = "Le type de demande est obligatoire")
@@ -26,4 +25,8 @@ public class DemandeMaintenanceCreateDTO {
     private String description;
 
     private LocalDate dateSouhaitee;
+
+
+    private String villeSaisie;
+    private String adresseSaisie;
 }

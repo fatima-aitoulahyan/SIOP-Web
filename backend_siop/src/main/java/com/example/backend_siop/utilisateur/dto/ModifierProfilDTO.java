@@ -19,4 +19,6 @@ public class ModifierProfilDTO {
     private String nomEntreprise;
 
     private String adresse;
+
+    private String specialite;
 }
