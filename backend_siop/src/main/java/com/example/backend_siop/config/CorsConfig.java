@@ -17,7 +17,8 @@ public class CorsConfig {
         config.setAllowCredentials(true);
         config.setAllowedOriginPatterns(List.of(
             "http://localhost:*",
-            "https://siop.stage.enset.top"
+            "https://siop.stage.enset.top",
+          "https://*.stage.enset.top"
         ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
