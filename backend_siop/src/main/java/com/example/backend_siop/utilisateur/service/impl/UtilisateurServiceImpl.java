@@ -2,6 +2,7 @@ package com.example.backend_siop.utilisateur.service.impl;
 
 import com.example.backend_siop.common.exception.BusinessRuleException;
 import com.example.backend_siop.common.exception.ResourceNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import com.example.backend_siop.common.util.FileStorageUtil;
 import com.example.backend_siop.parc.repository.ParcRepository;
 import com.example.backend_siop.utilisateur.dto.ActivationCompteDTO;
