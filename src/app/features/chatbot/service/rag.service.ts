@@ -13,7 +13,7 @@ export interface ChatMessage {
 })
 export class RagService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://rag.stage.enset.top';
+  private apiUrl = 'http://rag.stage.enset.top:8000';
 
   sendMessage(question: string): Observable<any> {
     const headers = new HttpHeaders({
