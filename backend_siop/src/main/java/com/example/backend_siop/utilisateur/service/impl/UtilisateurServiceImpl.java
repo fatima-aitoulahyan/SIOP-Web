@@ -264,9 +264,18 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
-    public void supprimer(Long id) {
-        utilisateurRepository.delete(findOrThrow(id));
+public void supprimer(Long id) {
+    Utilisateur utilisateur = findOrThrow(id);
+    try {
+        utilisateurRepository.delete(utilisateur);
+        utilisateurRepository.flush();
+    } catch (DataIntegrityViolationException e) {
+        throw new BusinessRuleException(
+            "Impossible de supprimer cet utilisateur : il est lié à des données existantes " +
+            "(bons de travail, ascenseurs, etc.). Désactivez-le plutôt que de le supprimer."
+        );
     }
+}
 
     @Override
     public void desactiver(Long id) {
