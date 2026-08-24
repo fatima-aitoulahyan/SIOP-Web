@@ -26,10 +26,9 @@ import com.example.backend_siop.utilisateur.entity.Technicien;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.backend_siop.maintenance.dto.ItemCheckListDTO;
 import org.springframework.web.multipart.MultipartFile;
 
-
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -126,6 +125,7 @@ public class ChecklistMaintenanceServiceImpl implements ChecklistMaintenanceServ
             bonTravail.setStatut(StatutBonTravail.TERMINE);
             if (bonTravail.getDemandeMaintenance() != null) {
                 bonTravail.getDemandeMaintenance().setStatut(StatutDemande.RESOLUE);
+                bonTravail.getDemandeMaintenance().setDateResolution(LocalDateTime.now());
             }
             bonTravailRepository.save(bonTravail);
         }

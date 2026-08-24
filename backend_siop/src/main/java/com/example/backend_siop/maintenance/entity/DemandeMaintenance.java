@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -44,6 +45,9 @@ public class DemandeMaintenance extends Auditable {
 
     @Column(name = "date_souhaitee")
     private LocalDate dateSouhaitee;
+
+    @Column(name = "date_resolution")
+    private LocalDateTime dateResolution;
 
     @Column(name = "motif_rejet", columnDefinition = "TEXT")
     private String motifRejet;

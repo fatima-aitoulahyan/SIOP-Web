@@ -46,7 +46,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -268,6 +270,12 @@ public class BonTravailServiceImpl implements BonTravailService {
         }
 
         bonTravail.setStatut(StatutBonTravail.ANNULE);
+        DemandeMaintenance demande = bonTravail.getDemandeMaintenance();
+        if (demande != null && (demande.getStatut() == StatutDemande.ASSIGNEE
+             || demande.getStatut() == StatutDemande.EN_COURS)) {
+           demande.setStatut(StatutDemande.EN_ATTENTE);
+           demandeRepository.save(demande);
+       }
         return toDTOAvecPhotos(bonTravailRepository.save(bonTravail));
     }
 
@@ -492,6 +500,7 @@ public class BonTravailServiceImpl implements BonTravailService {
         DemandeMaintenance demande = bonTravail.getDemandeMaintenance();
         if (demande != null) {
             demande.setStatut(StatutDemande.RESOLUE);
+            demande.setDateResolution(LocalDateTime.now());
             demandeRepository.save(demande);
 
             notificationService.creer(
@@ -516,5 +525,19 @@ public class BonTravailServiceImpl implements BonTravailService {
                 .stream()
                 .map(technicienMapper::toResumeDTO)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BonTravailResumeDTO> listerInterventionsAujourdhui() {
+        LocalDateTime debutJour = LocalDate.now().atStartOfDay();
+        LocalDateTime finJour = LocalDate.now().atTime(LocalTime.MAX);
+
+        return bonTravailRepository
+            .findByDateInterventionPrevueBetweenOrderByDateInterventionPrevueAsc(debutJour, finJour)
+            .stream()
+             .filter(b -> b.getStatut() != StatutBonTravail.ANNULE) 
+            .map(mapper::toResumeDTO)
+            .toList();
     }
 }

@@ -34,5 +34,6 @@ public class DemandeMaintenanceDTO {
     private String clientNom;
 
     private LocalDateTime createdAt;
+    private LocalDateTime dateResolution;
     private List<PieceJointeAvecUrlDTO> photos;
 }

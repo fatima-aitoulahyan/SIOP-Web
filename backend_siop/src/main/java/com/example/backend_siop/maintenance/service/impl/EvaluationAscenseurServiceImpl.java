@@ -146,6 +146,7 @@ public class EvaluationAscenseurServiceImpl implements EvaluationAscenseurServic
             DemandeMaintenance demande = bonTravail.getDemandeMaintenance();
             if (demande != null) {
                 demande.setStatut(StatutDemande.REJETEE);
+                demande.setDateResolution(LocalDateTime.now());
             }
         }
     }
@@ -192,6 +193,7 @@ public class EvaluationAscenseurServiceImpl implements EvaluationAscenseurServic
         bonTravail.setAscenseur(saved);
         bonTravail.setStatut(StatutBonTravail.TERMINE);
         demande.setStatut(StatutDemande.RESOLUE);
+        demande.setDateResolution(LocalDateTime.now());
         bonTravail.setDateFinReelle(LocalDateTime.now());
         bonTravailRepository.save(bonTravail);
     }

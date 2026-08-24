@@ -1,9 +1,7 @@
 package com.example.backend_siop.maintenance.service.impl;
 
 import com.example.backend_siop.ascenseur.entity.Ascenseur;
-import com.example.backend_siop.ascenseur.entity.Site;
 import com.example.backend_siop.ascenseur.repository.AscenseurRepository;
-import com.example.backend_siop.ascenseur.repository.SiteRepository;
 import com.example.backend_siop.common.dto.PieceJointeAvecUrlDTO;
 import com.example.backend_siop.common.entity.PieceJointe;
 import com.example.backend_siop.common.enums.TypeEntiteJointe;
@@ -29,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,7 +38,6 @@ public class DemandeMaintenanceServiceImpl implements DemandeMaintenanceService 
 
     private final DemandeMaintenanceRepository demandeRepository;
     private final AscenseurRepository ascenseurRepository;
-    private final SiteRepository siteRepository;
     private final PieceJointeRepository pieceJointeRepository;
     private final FileStorageUtil fileStorageUtil;
     private final DemandeMaintenanceMapper mapper;
@@ -124,6 +122,7 @@ public class DemandeMaintenanceServiceImpl implements DemandeMaintenanceService 
         }
 
         demande.setStatut(StatutDemande.ANNULEE);
+        demande.setDateResolution(LocalDateTime.now());
         return mapper.toDTO(demandeRepository.save(demande));
     }
 
@@ -183,6 +182,7 @@ public class DemandeMaintenanceServiceImpl implements DemandeMaintenanceService 
         }
 
         demande.setStatut(StatutDemande.REJETEE);
+        demande.setDateResolution(LocalDateTime.now());
         demande.setMotifRejet(dto.getMotif());
         DemandeMaintenance saved = demandeRepository.save(demande);
 
@@ -224,5 +224,16 @@ public class DemandeMaintenanceServiceImpl implements DemandeMaintenanceService 
 
         dto.setPhotos(photosAvecUrl);
         return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DemandeMaintenanceDTO> listerDemandesAtraiter() {
+        return demandeRepository
+                .findByStatutOrderByPrioriteDescCreatedAtAsc(StatutDemande.EN_ATTENTE)
+                .stream()
+                .limit(5)
+                .map(this::toDTOAvecPhotos)
+                .toList();
     }
 }
