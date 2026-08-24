@@ -215,6 +215,13 @@ export const routes: Routes = [
         path: 'technicien',
         children: [
           {
+            path: 'dashboard',
+            loadComponent: () =>
+              import('./features/dashboard/dashboard-technicien/dashboard-technicien').then(
+                (m) => m.DashboardTechnicien,
+              ),
+          },
+          {
             path: 'demandes',
             loadChildren: () =>
               import('./features/maintenance/maintenance.routes').then(

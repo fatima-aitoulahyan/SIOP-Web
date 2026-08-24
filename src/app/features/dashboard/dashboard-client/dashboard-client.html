@@ -1,15 +1,21 @@
 <div class="dashboard">
 
-  <!-- En-tête du Dashboard -->
+  <!-- ══ En-tête ══ -->
   <header class="hero">
     <div>
-      <h1>Tableau de bord</h1>
-      <p class="sous-titre">Bienvenue dans votre espace {{ bienvenue() }}</p>
+      <h1>{{ bonjour() }}</h1>
+      <p class="sous-titre">Vos installations · {{ dateDuJour() }}</p>
     </div>
-    <a routerLink="/client/demandes/nouveau" class="btn-principal">
-      <span class="material-symbols-outlined">add</span>
-      Nouvelle demande
-    </a>
+    <div class="hero-actions">
+      <a routerLink="/client/demandes/nouveau" class="btn-principal">
+        <span class="material-symbols-outlined">post_add</span>
+        Nouvelle demande
+      </a>
+      <a routerLink="/client/demandes" class="btn-principal secondaire">
+        <span class="material-symbols-outlined">list_alt</span>
+        Mes demandes
+      </a>
+    </div>
   </header>
 
   @if (chargement()) {
@@ -17,102 +23,143 @@
   } @else if (erreur(); as e) {
     <div class="etat erreur">{{ e }}</div>
   } @else {
-    <!-- Section Statistiques -->
-    <section class="stats">
-      <div class="stat-card">
-        <span class="icone icone-ascenseur">
-          <span class="material-symbols-outlined">elevator</span>
-        </span>
-        <div class="texte">
-          <span class="valeur">{{ nbAscenseurs() }}</span>
-          <span class="libelle">Ascenseurs</span>
+
+    <!-- ══ SECTION 1 — Compteurs ══ -->
+    @if (stats(); as s) {
+      <section class="stats">
+        <div class="stat-card">
+          <span class="icone icone-demandes">
+            <span class="material-symbols-outlined">elevator</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.nombreAscenseurs }}</span>
+            <span class="libelle">Mes ascenseurs</span>
+          </div>
         </div>
+        <div class="stat-card">
+          <span class="icone icone-assignees">
+            <span class="material-symbols-outlined">receipt_long</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.demandesTotal }}</span>
+            <span class="libelle">Demandes totales</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-cours">
+            <span class="material-symbols-outlined">build</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.enCours }}</span>
+            <span class="libelle">En cours</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-resolues">
+            <span class="material-symbols-outlined">check_circle</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.resolues }}</span>
+            <span class="libelle">Résolues</span>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- ══ SECTIONS 2 + 3 — Suivi demandes / État des ascenseurs ══ -->
+    <section class="deux-colonnes">
+
+      <!-- Colonne gauche : mes demandes en cours -->
+      <div class="tableau-card">
+        <div class="tableau-header">
+          <h2>Mes demandes en cours</h2>
+          <a routerLink="/client/demandes" class="lien-tout">Tout voir</a>
+        </div>
+
+        @if (suiviTrie().length === 0) {
+          <p class="vide">Aucune demande en cours. Tout va bien !</p>
+        } @else {
+          <div class="liste-suivi">
+            @for (d of suiviTrie(); track d.demandeId) {
+              <a [routerLink]="['/client/demandes', d.demandeId]" class="suivi-item">
+                <div class="suivi-contenu">
+                  <div class="suivi-ligne-1">
+                    <strong>{{ d.ascenseurNom }} · {{ typeLabel(d.typeDemande) }}</strong>
+                    <span class="badge" [class]="statutClass(d.statut)">
+                      {{ statutLabel(d.statut) }}
+                    </span>
+                  </div>
+                  <div class="suivi-meta">Demandé le {{ formatJour(d.dateDemande) }}</div>
+                  @if (d.technicienNom) {
+                    <div class="suivi-meta">Technicien assigné : <strong>{{ d.technicienNom }}</strong></div>
+                  } @else {
+                    <div class="suivi-meta">En attente de prise en charge</div>
+                  }
+                </div>
+                <span class="material-symbols-outlined chevron">chevron_right</span>
+              </a>
+            }
+          </div>
+        }
       </div>
 
-      <div class="stat-card">
-        <span class="icone icone-demandes">
-          <span class="material-symbols-outlined">receipt_long</span>
-        </span>
-        <div class="texte">
-          <span class="valeur">{{ nbDemandes() }}</span>
-          <span class="libelle">Demandes</span>
+      <!-- Colonne droite : état de mes ascenseurs -->
+      <div class="tableau-card">
+        <div class="tableau-header">
+          <h2>État de mes ascenseurs</h2>
         </div>
+
+        @if (ascenseursTries().length === 0) {
+          <p class="vide">Aucun ascenseur enregistré.</p>
+        } @else {
+          <div class="liste-ascenseurs">
+            @for (a of ascenseursTries(); track a.ascenseurId) {
+              <div class="asc-item">
+                <span class="asc-icone">
+                  <span class="material-symbols-outlined">elevator</span>
+                </span>
+                <div class="asc-texte">
+                  <strong>{{ a.nom }}</strong>
+                  <span class="asc-adresse">{{ a.siteAdresse || '—' }}</span>
+                </div>
+                <span class="badge" [class]="etatClass(a)">{{ etatLabel(a) }}</span>
+              </div>
+            }
+          </div>
+        }
       </div>
 
-      <div class="stat-card">
-        <span class="icone icone-attente">
-          <span class="material-symbols-outlined">schedule</span>
-        </span>
-        <div class="texte">
-          <span class="valeur">{{ nbEnAttente() }}</span>
-          <span class="libelle">En attente</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <span class="icone icone-cours">
-          <span class="material-symbols-outlined">build</span>
-        </span>
-        <div class="texte">
-          <span class="valeur">{{ nbEnCours() }}</span>
-          <span class="libelle">En cours</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <span class="icone icone-resolues">
-          <span class="material-symbols-outlined">check_circle</span>
-        </span>
-        <div class="texte">
-          <span class="valeur">{{ nbResolues() }}</span>
-          <span class="libelle">Résolues</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <span class="icone icone-evaluations">
-          <span class="material-symbols-outlined">rate_review</span>
-        </span>
-        <div class="texte">
-          <span class="valeur">{{ nbEvaluations() }}</span>
-          <span class="libelle">Évaluations</span>
-        </div>
-      </div>
     </section>
 
-    <!-- Section Dernières Demandes -->
+    <!-- ══ SECTION 4 — Historique récent ══ -->
     <section class="tableau-card">
       <div class="tableau-header">
-        <h2>Dernières demandes</h2>
-        <a routerLink="/client/demandes" class="lien-tout">Voir tout</a>
+        <h2>Les 5 dernières demandes closes</h2>
+        <a routerLink="/client/demandes" class="lien-tout">Tout voir</a>
       </div>
 
-      @if (dernieresDemandes().length === 0) {
-        <p class="vide">Aucune demande pour le moment.</p>
+      @if (historique().length === 0) {
+          <p class="vide">Aucune demande close pour le moment.</p>
       } @else {
         <div class="tableau-wrapper">
-          <table class="tableau">
+          <table class="tableau compact">
             <thead>
-            <tr>
-              <th>N°</th>
-              <th>Type</th>
-              <th>Ascenseur</th>
-              <th>Statut</th>
-              <th>Date</th>
-            </tr>
+              <tr>
+                <th>Type</th>
+                <th>Ascenseur</th>
+                <th>Clôturée le</th>
+                <th>Statut</th>
+                <th></th>
+              </tr>
             </thead>
             <tbody>
-              @for (d of dernieresDemandes(); track d.id) {
+              @for (d of historique(); track d.id) {
                 <tr>
-                  <td>
-                    <a routerLink="/client/demandes/{{ d.id }}" class="ref">#{{ d.id }}</a>
-                  </td>
                   <td>{{ typeLabel(d.typeDemande) }}</td>
-                  <td>{{ d.ascenseurNom || '—' }}</td>
-                  <td>
-                    <span class="badge {{ statutClass(d.statut) }}">{{ statutLabel(d.statut) }}</span>
-                  </td>
-                  <td>{{ formatDate(d.createdAt) }}</td>
+                  <td>{{ d.ascenseurNom }}</td>
+                  <td>{{ formatDate(d.dateResolution ?? d.createdAt) }}</td>
+                  <td><span class="badge" [class]="statutClass(d.statut)">{{ statutLabel(d.statut) }}</span></td>
+                  <td><a [routerLink]="['/client/demandes', d.id]" class="lien-action">Voir</a></td>
                 </tr>
               }
             </tbody>

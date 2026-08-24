@@ -1,0 +1,467 @@
+// ── Palette identique aux dashboards Admin / Responsable ──
+$navy: #0f172a;
+$navy-light: #1e293b;
+$navy-deep: #102a63;
+$accent: #f59e0b;
+$accent-hover: #d97706;
+$red-urgent: #dc2626;
+$green-ok: #059669;
+$bg-color: #f8fafc;
+$slate-50: #f8fafc;
+$slate-100: #f1f5f9;
+$slate-200: #e2e8f0;
+$white: #ffffff;
+$border-color: #e2e8f0;
+
+.dashboard {
+  min-height: 100vh;
+  padding: 32px 24px;
+  position: relative;
+  font-family: 'Hanken Grotesk', 'Segoe UI', Roboto, sans-serif;
+  background-color: $bg-color;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1350px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  @media (min-width: 1024px) {
+    padding: 40px 32px;
+  }
+}
+
+// ── En-tête ──────────────────────────────────────────────
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 24px 32px;
+  background: $white;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+
+  h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $navy;
+    letter-spacing: -0.025em;
+  }
+
+  .sous-titre {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 0.92rem;
+    font-weight: 400;
+  }
+}
+
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-principal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  background: $accent;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+
+  &:hover {
+    background: $accent-hover;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+  }
+
+  .material-symbols-outlined { font-size: 20px; }
+}
+
+// ── États chargement / erreur ────────────────────────────
+.etat {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+  background: $white;
+  border-radius: 16px;
+  border: 1px solid $border-color;
+
+  &.erreur {
+    color: #dc2626;
+    background: #fef2f2;
+    border-color: #fecaca;
+  }
+}
+
+// ── Grille KPI — identique Admin / Responsable ───────────
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @media (max-width: 1200px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 900px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px)  { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: $white;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+  }
+
+  .icone {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    .material-symbols-outlined { font-size: 24px; }
+
+    &.icone-demandes { background: rgba(37, 99, 235, 0.08); color: #2563eb; }
+    &.icone-attente  { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+    &.icone-cours    { background: rgba(124, 58, 237, 0.08); color: #7c3aed; }
+    &.icone-resolues { background: rgba(16, 185, 129, 0.08); color: $green-ok; }
+  }
+
+  .texte {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    .valeur {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: $navy;
+      line-height: 1.2;
+    }
+
+    .libelle {
+      color: #64748b;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+  }
+}
+
+// ── Carte "Ma prochaine intervention" ────────────────────
+.prochaine-card {
+  background: linear-gradient(135deg, #fffbeb 0%, $white 55%);
+  border: 1px solid rgba($accent, 0.35);
+  border-left: 6px solid $accent;
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.2s ease;
+
+  // Passe en rouge si le technicien est en retard
+  &.prochaine-retard {
+    border-color: rgba($red-urgent, 0.35);
+    border-left-color: $red-urgent;
+    background: linear-gradient(135deg, #fef2f2 0%, $white 55%);
+  }
+}
+
+.prochaine-entete {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+
+  .heure-grande {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $navy;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .contexte-badge {
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563eb;
+  }
+}
+
+.compte-a-rebours {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(5, 150, 105, 0.1);
+  color: $green-ok;
+  font-weight: 700;
+  font-size: 0.92rem;
+
+  &.retard {
+    background: rgba(220, 38, 38, 0.1);
+    color: $red-urgent;
+    animation: pulsation 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes pulsation {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.65; }
+}
+
+.prochaine-corps {
+  margin-bottom: 18px;
+
+  .ascenseur-nom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $navy;
+
+    .material-symbols-outlined { color: #7c3aed; font-size: 24px; }
+  }
+
+  .lieu {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: #64748b;
+    font-size: 0.95rem;
+
+    .material-symbols-outlined { font-size: 20px; color: #94a3b8; }
+  }
+}
+
+.btn-prochaine {
+  float: right;
+}
+
+// ── Badges — mêmes couleurs que le Responsable ───────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  &.statut-attente   { background: #fef3c7; color: #b45309; }
+  &.statut-cours     { background: #f5f3ff; color: #6d28d9; }
+  &.statut-resolue   { background: #ecfdf5; color: #047857; }
+  &.statut-annulee   { background: #fef2f2; color: #b91c1c; }
+  &.priorite-urgente { background: #fee2e2; color: #991b1b; margin-left: 10px; }
+}
+
+// ── Deux colonnes — identique Admin / Responsable ────────
+.deux-colonnes {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Cartes tableau ───────────────────────────────────────
+.tableau-card {
+  padding: 24px 32px;
+  background: $white;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.tableau-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid $border-color;
+
+  h2 { margin: 0; font-size: 1.15rem; font-weight: 700; color: $navy; }
+}
+
+.vide {
+  color: #64748b;
+  text-align: center;
+  padding: 32px;
+  font-size: 0.95rem;
+}
+
+// ── Timeline du jour ─────────────────────────────────────
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid $border-color;
+
+  &:last-child { border-bottom: none; }
+
+  .puce {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    background: $white;
+    flex-shrink: 0;
+
+    &.puce-active {
+      border-color: #7c3aed;
+      background: #7c3aed;
+      box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+    }
+
+    &.puce-faite {
+      border-color: $green-ok;
+      background: $green-ok;
+    }
+  }
+
+  .heure {
+    min-width: 56px;
+    text-align: center;
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  .infos {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+
+    .ascenseur { font-weight: 600; color: $navy; font-size: 0.92rem; }
+    .lieu      { color: #64748b; font-size: 0.82rem; }
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 18px;
+    background: $navy-deep;
+    color: white;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.15s;
+
+    &:hover {
+      background: #0d1f4a;
+      transform: translateX(2px);
+    }
+  }
+}
+
+// ── Planning de la semaine ───────────────────────────────
+.semaine {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.semaine-ligne {
+  display: grid;
+  grid-template-columns: 44px 1fr 32px;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 6px;
+  border-radius: 10px;
+
+  // Surligne le jour actuel
+  &.aujourdhui {
+    background: rgba(245, 158, 11, 0.07);
+
+    .jour { color: #d97706; font-weight: 700; }
+  }
+
+  .jour {
+    color: #334155;
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+
+  .nombre {
+    text-align: right;
+    font-weight: 600;
+    color: $navy;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.barre-piste {
+  height: 12px;
+  background: $slate-100;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barre {
+  height: 100%;
+  border-radius: 999px;
+  min-width: 4px;
+  transition: width 0.4s ease;
+
+  &.remplissage-orange { background: $accent; }
+}
+
+// ── Responsive ───────────────────────────────────────────
+@media (max-width: 768px) {
+  .dashboard { padding: 16px 12px; }
+  .hero { flex-direction: column; align-items: flex-start; padding: 20px; }
+  .tableau-card { padding: 16px; }
+  .prochaine-card { padding: 20px; }
+  .btn-prochaine { float: none; display: flex; width: 100%; justify-content: center; }
+
+  .timeline-item {
+    flex-wrap: wrap;
+
+    .btn-action { margin-left: 42px; }
+  }
+}

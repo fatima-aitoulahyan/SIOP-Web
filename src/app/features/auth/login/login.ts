@@ -48,7 +48,7 @@ export class LoginComponent {
 private redirigerSelonRole(role: string): void {
   const routes: Record<string, string> = {
     ADMINISTRATEUR: '/dashboard/admin',
-    TECHNICIEN: '/technicien/bons-travail',
+    TECHNICIEN: '/technicien/dashboard',
     CLIENT: '/client/dashboard',
     RESPONSABLE_MAINTENANCE: '/dashboard/responsable-maintenance',
     RESPONSABLE_ACHATS: '/dashboard/responsable-achats',

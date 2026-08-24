@@ -140,3 +140,9 @@ export interface CommentaireDTO {
   contenu: string;
   createdAt: string;
 }
+export const STATUT_BON_TRAVAIL_LABELS: Record<StatutBonTravail, string> = {
+  [StatutBonTravail.PLANIFIE]: 'Planifié',
+  [StatutBonTravail.EN_COURS]: 'En cours',
+  [StatutBonTravail.TERMINE]: 'Terminé',
+  [StatutBonTravail.ANNULE]: 'Annulé',
+};

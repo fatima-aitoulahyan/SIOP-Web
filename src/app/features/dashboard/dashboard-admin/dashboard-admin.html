@@ -1,0 +1,217 @@
+<div class="dashboard">
+
+  <!-- ══ En-tête ══ -->
+  <header class="hero">
+    <div>
+      <h1>{{ bonjour() }}</h1>
+      <p class="sous-titre">Administration du système · {{ dateDuJour() }}</p>
+    </div>
+    <div class="hero-actions">
+      <a routerLink="/utilisateurs" class="btn-principal">
+        <span class="material-symbols-outlined">manage_accounts</span>
+        Utilisateurs
+      </a>
+      <a routerLink="/parcs" class="btn-principal">
+        <span class="material-symbols-outlined">domain</span>
+        Parcs
+      </a>
+    </div>
+  </header>
+
+  @if (chargement()) {
+    <div class="etat">Chargement…</div>
+  } @else if (erreur(); as e) {
+    <div class="etat erreur">{{ e }}</div>
+  } @else {
+
+    @if (stats(); as s) {
+
+      <!-- ══ SECTION 1 — Structure du système ══ -->
+      <section class="stats">
+        <div class="stat-card">
+          <span class="icone icone-demandes">
+            <span class="material-symbols-outlined">domain</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.nombreParcs }}</span>
+            <span class="libelle">Parcs</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-assignees">
+            <span class="material-symbols-outlined">location_on</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.nombreSites }}</span>
+            <span class="libelle">Sites</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-resolues">
+            <span class="material-symbols-outlined">elevator</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.nombreAscenseurs }}</span>
+            <span class="libelle">Ascenseurs</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-evaluations">
+            <span class="material-symbols-outlined">groups</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.nombreClients }}</span>
+            <span class="libelle">Clients</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SECTION 3 — Santé opérationnelle ══ -->
+      <section class="stats">
+        <div class="stat-card">
+          <span class="icone icone-demandes">
+            <span class="material-symbols-outlined">receipt_long</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.demandesTotales }}</span>
+            <span class="libelle">Demandes totales</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-attente">
+            <span class="material-symbols-outlined">schedule</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.demandesEnAttente }}</span>
+            <span class="libelle">En attente</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-cours">
+            <span class="material-symbols-outlined">build</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.interventionsEnCours }}</span>
+            <span class="libelle">Interventions en cours</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-resolues">
+            <span class="material-symbols-outlined">check_circle</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ formatTaux(s.tauxResolution) }}</span>
+            <span class="libelle">Taux de résolution</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Alerte anomalies critiques — même bloc que le dashboard Responsable -->
+      @if (s.anomaliesCritiques > 0) {
+        <section class="alerte-critique-premium">
+          <header class="alerte-premium-entete">
+            <div class="alerte-icone-wrapper">
+              <span class="material-symbols-outlined">warning</span>
+            </div>
+            <div>
+              <h3>Anomalies critiques — 7 derniers jours</h3>
+              <p>{{ s.anomaliesCritiques }} anomalie(s) détectée(s) lors des contrôles de maintenance</p>
+            </div>
+          </header>
+        </section>
+      }
+    }
+
+ <!-- ══ Répartition + Activité par parc (côte à côte) ══ -->
+    <section class="deux-colonnes">
+
+      <!-- Colonne gauche : répartition des utilisateurs -->
+      @if (repartition(); as r) {
+        <div class="tableau-card">
+          <div class="tableau-header">
+            <h2>Répartition des utilisateurs</h2>
+          </div>
+          <div class="barres">
+            <div class="barre-ligne">
+              <span class="barre-label">Clients</span>
+              <div class="barre-piste">
+                <div class="barre remplissage-bleu" [style.width.%]="largeurBarre(r.clients)"></div>
+              </div>
+              <span class="barre-valeur">{{ r.clients }}</span>
+            </div>
+            <div class="barre-ligne">
+              <span class="barre-label">Techniciens</span>
+              <div class="barre-piste">
+                <div class="barre remplissage-vert" [style.width.%]="largeurBarre(r.techniciens)"></div>
+              </div>
+              <span class="barre-valeur">{{ r.techniciens }}</span>
+            </div>
+            <div class="barre-ligne">
+              <span class="barre-label">Responsables</span>
+              <div class="barre-piste">
+                <div class="barre remplissage-violet" [style.width.%]="largeurBarre(r.responsables)"></div>
+              </div>
+              <span class="barre-valeur">{{ r.responsables }}</span>
+            </div>
+            <div class="barre-ligne">
+              <span class="barre-label">Admins</span>
+              <div class="barre-piste">
+                <div class="barre remplissage-orange" [style.width.%]="largeurBarre(r.administrateurs)"></div>
+              </div>
+              <span class="barre-valeur">{{ r.administrateurs }}</span>
+            </div>
+          </div>
+          <div class="total-ligne">Total : {{ r.total }} utilisateurs</div>
+        </div>
+      }
+
+      <!-- Colonne droite : activité par parc -->
+      <div class="tableau-card">
+        <div class="tableau-header">
+          <h2>Activité par parc</h2>
+        </div>
+
+        @if (activite().length === 0) {
+          <p class="vide">Aucun parc enregistré.</p>
+        } @else {
+          <div class="tableau-wrapper">
+            <table class="tableau compact">
+              <thead>
+                <tr>
+                  <th>Parc</th>
+                  <th>Sites</th>
+                  <th>Tech.</th>
+                  <th>En attente</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (parc of activite(); track parc.parcId) {
+                  <tr>
+                    <td>{{ parc.parcNom }}</td>
+                    <td>{{ parc.nombreSites }}</td>
+                    <td>
+                      {{ parc.nombreTechniciens }}
+                      @if (sansTechnicien(parc)) {
+                        <span class="badge-alerte" title="Aucun technicien affecté">⚠️</span>
+                      }
+                    </td>
+                    <td>
+                      <div class="cellule-demandes">
+                        <div class="barre-piste mini">
+                          <div class="barre remplissage-bleu"
+                               [style.width.%]="largeurDemandes(parc.demandesEnAttente)"></div>
+                        </div>
+                        <span>{{ parc.demandesEnAttente }}</span>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+    </section>
+  }
+</div>

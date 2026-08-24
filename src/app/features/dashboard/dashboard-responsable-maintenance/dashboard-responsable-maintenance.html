@@ -1,0 +1,256 @@
+<div class="dashboard">
+
+  <!-- ══ En-tête + actions rapides ══ -->
+  <header class="hero">
+    <div>
+      <h1>{{ bonjour() }}</h1>
+      <p class="sous-titre">{{ sousTitreDemandes() }}</p>
+    </div>
+    <div class="hero-actions">
+      <a routerLink="/responsable/demandes" class="btn-principal">
+        <span class="material-symbols-outlined">receipt_long</span>
+        Voir les demandes
+      </a>
+      <a routerLink="/responsable/bons-travail/nouveau" class="btn-principal">
+        <span class="material-symbols-outlined">add_task</span>
+        Créer un bon de travail
+      </a>
+      <a routerLink="/responsable/calendrier" class="btn-principal">
+        <span class="material-symbols-outlined">calendar_month</span>
+        Calendrier
+      </a>
+    </div>
+  </header>
+
+  @if (chargement()) {
+    <div class="etat">Chargement…</div>
+  } @else if (erreur(); as e) {
+    <div class="etat erreur">{{ e }}</div>
+  } @else {
+
+    <!-- ══ 1. GRILLE DES 8 KPIs (EN PREMIER) ══ -->
+    @if (stats(); as s) {
+      <section class="stats">
+        <div class="stat-card">
+          <span class="icone icone-demandes">
+            <span class="material-symbols-outlined">receipt_long</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.demandesCeMois }}</span>
+            <span class="libelle">Demandes ce mois</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="icone icone-attente">
+            <span class="material-symbols-outlined">schedule</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.enAttente }}</span>
+            <span class="libelle">En attente</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="icone icone-assignees">
+            <span class="material-symbols-outlined">assignment</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.assignees }}</span>
+            <span class="libelle">Assignées</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="icone icone-cours">
+            <span class="material-symbols-outlined">build</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.enCours }}</span>
+            <span class="libelle">En cours</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="icone icone-resolues">
+            <span class="material-symbols-outlined">check_circle</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.resoluesCeMois }}</span>
+            <span class="libelle">Résolues ce mois</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="icone icone-urgentes">
+            <span class="material-symbols-outlined">priority_high</span>
+          </span>
+          <div class="texte">
+            <span class="valeur valeur-alerte">{{ s.urgentesEnAttente }}</span>
+            <span class="libelle">Urgentes en attente</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="icone icone-evaluations">
+            <span class="material-symbols-outlined">rate_review</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.evaluationsAValider }}</span>
+            <span class="libelle">Évaluations à valider</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="icone icone-techniciens">
+            <span class="material-symbols-outlined">engineering</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">
+              {{ s.techniciensEnInterventionAujourdhui }} / {{ s.techniciensTotal }}
+            </span>
+            <span class="libelle">Techniciens en intervention aujourd'hui</span>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- ══ 2. ALERTES CRITIQUES — EXCELLENCE PROFESSIONNELLE (EN DESSOUS) ══ -->
+    @if (anomalies().length > 0) {
+      <section class="alerte-critique-premium">
+        <!-- En-tête commun -->
+        <header class="alerte-premium-entete">
+          <div class="alerte-icone-wrapper">
+            <span class="material-symbols-outlined">warning</span>
+          </div>
+          <div>
+            <h3>Anomalies critiques — 7 derniers jours</h3>
+            <p>{{ anomalies().length }} anomalie(s) détectée(s) lors des contrôles de maintenance</p>
+          </div>
+        </header>
+
+        <!-- Grille 2 colonnes des cartes -->
+        <div class="alerte-premium-grille">
+          @for (a of anomalies(); track $index) {
+            <article class="intervention-carte">
+              <!-- Grille interne 2x2 -->
+              <div class="carte-infos">
+                <div class="info-col">
+                  <span class="material-symbols-outlined info-icone">elevator</span>
+                  <div>
+                    <span class="info-label">ASCENSEUR</span>
+                    <span class="info-valeur">{{ a.ascenseurNom }}</span>
+                  </div>
+                </div>
+                <div class="info-col">
+                  <span class="material-symbols-outlined info-icone">location_on</span>
+                  <div>
+                    <span class="info-label">SITE</span>
+                    <span class="info-valeur">{{ a.siteAdresse }}</span>
+                  </div>
+                </div>
+                <div class="info-col">
+                  <span class="material-symbols-outlined info-icone">schedule</span>
+                  <div>
+                    <span class="info-label">DATE</span>
+                    <span class="info-valeur">{{ formatDate(a.dateCloture) }}</span>
+                  </div>
+                </div>
+                <div class="info-col">
+                  <span class="material-symbols-outlined info-icone">build</span>
+                  <div>
+                    <span class="info-label">CONTRÔLE</span>
+                    <span class="info-valeur urgence">{{ a.libelleItem }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Séparateur + Barre d'action -->
+              <footer class="carte-action">
+                <div class="action-texte">
+                  <span class="material-symbols-outlined icone-action">build</span>
+                  <span class="action-desc">{{ a.remarque || 'Anomalie détectée' }}</span>
+                </div>
+                @if (a.bonTravailId) {
+                  <a [routerLink]="['/responsable/bons-travail', a.bonTravailId]" class="btn-detail">
+                    <span>Détails</span>
+                    <span class="material-symbols-outlined">chevron_right</span>
+                  </a>
+                } @else {
+                  <span class="btn-detail desactive">
+                    <span>Pas de bon de travail</span>
+                  </span>
+                }
+              </footer>
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- ══ 3. Deux colonnes : urgences + interventions du jour ══ -->
+    <section class="deux-colonnes">
+
+
+     <!-- Colonne gauche : demandes à traiter -->
+<div class="tableau-card">
+  <div class="tableau-header">
+    <h2>Demandes à traiter <span class="compteur">{{ stats()?.enAttente }}</span></h2>
+  </div>
+
+  @if (demandesAtraiter().length === 0) {
+    <p class="vide">Aucune demande en attente.</p>
+  } @else {
+    <ul class="liste-a-traiter">
+      @for (d of demandesAtraiter(); track d.id; let i = $index) {
+        <li>
+          <a [routerLink]="['/responsable', d.id]" class="a-traiter-item">
+            <span class="rang">{{ i + 1 }}.</span>
+            <span class="badge {{ prioriteClass(d.priorite) }}">{{ prioriteLabel(d.priorite) }}</span>
+            <span class="objet">{{ d.ascenseurNom || '—' }}</span>
+            <span class="badge {{ typeClass(d.typeDemande) }}">{{ typeLabel(d.typeDemande) }}</span>
+            <span class="temps">{{ tempsEcoule(d.createdAt) }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+
+    @if (stats(); as s) {
+     <a routerLink="/responsable/demandes" class="lien-voir-total">
+      <span class="material-symbols-outlined">arrow_forward</span>
+      <span class="texte">Voir les {{ s.enAttente }} demandes</span>
+     </a>
+   }
+  }
+</div>
+
+      <!-- Colonne droite : interventions du jour -->
+      <div class="tableau-card">
+        <div class="tableau-header">
+          <h2>Interventions du jour</h2>
+          <a routerLink="/responsable/calendrier" class="lien-tout">Calendrier</a>
+        </div>
+
+        @if (interventions().length === 0) {
+          <p class="vide">Aucune intervention prévue aujourd'hui.</p>
+        } @else {
+          <ul class="liste-interventions">
+            @for (b of interventions(); track b.id) {
+              <li class="intervention">
+                <span class="heure">{{ formatHeure(b.dateInterventionPrevue) }}</span>
+                <div class="infos">
+                  <span class="ascenseur">{{ b.ascenseurNom }}</span>
+                  <span class="technicien">{{ b.technicienResponsableNom }}</span>
+                </div>
+                <span class="badge {{ statutBonClass(b.statut) }}">
+                  {{ statutBonLabel(b.statut) }}
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+    </section>
+  }
+</div>

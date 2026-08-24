@@ -1,0 +1,170 @@
+<div class="dashboard">
+
+  <!-- ══ En-tête ══ -->
+  <header class="hero">
+    <div>
+      <h1>Bonjour {{ prenom() || '…' }} 👋</h1>
+      <p class="sous-titre">{{ sousTitreAujourdhui() }}</p>
+    </div>
+    <div class="hero-actions">
+      <a routerLink="/technicien/interventions" class="btn-principal">
+        <span class="material-symbols-outlined">assignment</span>
+        Mes interventions
+      </a>
+      <a routerLink="/technicien/calendrier" class="btn-principal">
+        <span class="material-symbols-outlined">calendar_month</span>
+        Calendrier
+      </a>
+    </div>
+  </header>
+
+  @if (chargement()) {
+    <div class="etat">Chargement…</div>
+  } @else if (erreur(); as e) {
+    <div class="etat erreur">{{ e }}</div>
+  } @else {
+
+    <!-- ══ SECTION 1 — Aperçu personnel ══ -->
+    @if (stats(); as s) {
+      <section class="stats">
+        <div class="stat-card">
+          <span class="icone icone-attente">
+            <span class="material-symbols-outlined">today</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.interventionsAujourdhui }}</span>
+            <span class="libelle">Prévues aujourd'hui</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-cours">
+            <span class="material-symbols-outlined">build</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.enCours }}</span>
+            <span class="libelle">En cours</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-demandes">
+            <span class="material-symbols-outlined">calendar_month</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.totalCeMois }}</span>
+            <span class="libelle">Prévues ce mois</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="icone icone-resolues">
+            <span class="material-symbols-outlined">check_circle</span>
+          </span>
+          <div class="texte">
+            <span class="valeur">{{ s.termineesCeMois }}</span>
+            <span class="libelle">Terminées ce mois</span>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- ══ SECTION 2 — Ma prochaine intervention ══ -->
+    @if (prochaine(); as p) {
+      @if (p.intervention; as iv) {
+        <section class="prochaine-card" [class.prochaine-retard]="estEnRetard(iv)">
+          <div class="prochaine-entete">
+            <span class="heure-grande">{{ formatHeure(iv.dateInterventionPrevue) }}</span>
+            <span class="compte-a-rebours" [class.retard]="estEnRetard(iv)">
+              {{ tempsRestant(iv) }}
+            </span>
+            <span class="badge contexte-badge">
+              {{ p.contexte === 'DEMAIN' ? 'Demain' : "Aujourd'hui" }}
+            </span>
+          </div>
+
+          <div class="prochaine-corps">
+            <h2 class="ascenseur-nom">
+              <span class="material-symbols-outlined">elevator</span>
+              {{ iv.ascenseurNom }}
+              @if (iv.priorite === 'URGENTE') {
+                <span class="badge priorite-urgente">{{ prioriteLabel(iv.priorite) }}</span>
+              }
+            </h2>
+            <p class="lieu">
+              <span class="material-symbols-outlined">location_on</span>
+              {{ iv.parcNom }} · {{ iv.siteAdresse || 'Adresse non renseignée' }}
+            </p>
+          </div>
+
+          <a [routerLink]="['/technicien/interventions', iv.id]" class="btn-principal btn-prochaine">
+            Démarrer l'intervention
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </a>
+        </section>
+      } @else {
+        <section class="etat">Aucune intervention planifiée prochainement. Profitez-en !</section>
+      }
+    }
+
+    <!-- ══ Sections 3 & 4 — Journée + Semaine ══ -->
+    <section class="deux-colonnes">
+
+      <!-- Colonne gauche : timeline du jour -->
+      <div class="tableau-card">
+        <div class="tableau-header">
+          <h2>Mes interventions du jour</h2>
+        </div>
+
+        @if (aujourdhui().length === 0) {
+          <p class="vide">Aucune intervention prévue aujourd'hui.</p>
+        } @else {
+          <ul class="timeline">
+            @for (iv of aujourdhui(); track iv.id) {
+              <li class="timeline-item">
+                <span class="puce"
+                      [class.puce-active]="iv.statut === 'EN_COURS'"
+                      [class.puce-faite]="iv.statut === 'TERMINE'"></span>
+                <span class="heure">{{ formatHeure(iv.dateInterventionPrevue) }}</span>
+                <div class="infos">
+                  <span class="ascenseur">{{ iv.ascenseurNom }}</span>
+                  <span class="lieu">{{ iv.parcNom }}</span>
+                </div>
+                <span class="badge {{ statutBonClass(iv.statut) }}">
+                  {{ statutBonLabel(iv.statut) }}
+                </span>
+                @if (iv.statut === 'PLANIFIE' || iv.statut === 'EN_COURS') {
+                  <a [routerLink]="['/technicien/interventions', iv.id]" class="btn-action">
+                    {{ actionLabel(iv.statut) }}
+                  </a>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <!-- Colonne droite : planning de la semaine -->
+      <div class="tableau-card">
+        <div class="tableau-header">
+          <h2>Ma semaine</h2>
+        </div>
+
+        @if (planning().length === 0) {
+          <p class="vide">Planning indisponible.</p>
+        } @else {
+          <div class="semaine">
+            @for (jour of planning(); track jour.date) {
+              <div class="semaine-ligne" [class.aujourdhui]="estAujourdhui(jour)">
+                <span class="jour">{{ jour.jourLabel }}</span>
+                <div class="barre-piste">
+                  <div class="barre remplissage-orange"
+                       [style.width.%]="largeurJour(jour.nombreInterventions)"></div>
+                </div>
+                <span class="nombre">{{ jour.nombreInterventions }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </section>
+  }
+</div>

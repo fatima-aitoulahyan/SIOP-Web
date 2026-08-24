@@ -96,5 +96,6 @@ export interface DemandeMaintenanceDTO {
   clientNom: string;
 
   createdAt: string;
+  dateResolution: string | null;
   photos: PieceJointeAvecUrlDTO[];
 }
