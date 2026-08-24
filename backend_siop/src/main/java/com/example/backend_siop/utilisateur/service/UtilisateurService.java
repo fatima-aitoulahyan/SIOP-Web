@@ -2,6 +2,7 @@ package com.example.backend_siop.utilisateur.service;
 
 import com.example.backend_siop.utilisateur.dto.*;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -20,4 +21,5 @@ public interface UtilisateurService {
     ProfilDTO getProfil(Utilisateur utilisateur);
     ProfilDTO modifierMonProfil(Utilisateur utilisateur, ModifierProfilDTO dto);
     ProfilDTO modifierPhotoProfil(Utilisateur utilisateur, MultipartFile fichier);
+    Resource getPhotoProfil(Utilisateur utilisateur);
 }

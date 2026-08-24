@@ -32,12 +32,18 @@ public interface BonTravailService {
 
     List<TechnicienResumeDTO> listerTechniciensDisponibles(
             Long ascenseurId, LocalDateTime debut, int dureeMinutes);
-            
-   
+
+    // 🔥 Méthode ajoutée par deploy-dokploy
+    List<TechnicienResumeDTO> listerTechniciensDisponiblesParSite(
+            Long siteId,
+            LocalDateTime debut,
+            int dureeMinutes
+    );
+
     BonTravailDTO demarrer(Long id, Technicien technicien);
-    
+
     BonTravailDTO terminer(Long id, ClotureBonTravailDTO dto);
 
-    //  Nouvelle méthode dédiée à l'intégration externe
+    // 🔥 Méthode ajoutée pour l'intégration n8n
     BonTravailDTO creerIntegration(BonTravailIntegrationCreateDTO dto, Utilisateur creePar);
 }

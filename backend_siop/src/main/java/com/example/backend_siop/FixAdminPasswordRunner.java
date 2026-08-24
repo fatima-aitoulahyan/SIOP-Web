@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import java.util.function.Supplier;
 
 @Component
 @RequiredArgsConstructor
@@ -17,48 +16,88 @@ public class FixAdminPasswordRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        String password = passwordEncoder.encode("123456789");
+        String password = "123456789";
+        String encodedPassword = passwordEncoder.encode(password);
 
         // 1. Administrateur Principal
-        upsertUser("aitoulahyanfatima310@gmail.com", "aitoulahyan", "fatima", password, Administrateur::new);
+        creerOuMettreAJour(
+                "aitoulahyanfatima310@gmail.com",
+                password,
+                "aitoulahyan",
+                "fatima",
+                new Administrateur()
+        );
 
         // 2. Client
-        upsertUser("client1@gmail.com", "client1", "client1", password, Client::new);
+        creerOuMettreAJour(
+                "client1@gmail.com",
+                password,
+                "client1",
+                "client1",
+                new Client()
+        );
 
         // 3. Responsable Maintenance
-        upsertUser("rmaintenance@gmail.com", "Responsable", "Maintenance", password, ResponsableMaintenance::new);
+        creerOuMettreAJour(
+                "rmaintenance@gmail.com",
+                password,
+                "Responsable",
+                "Maintenance",
+                new ResponsableMaintenance()
+        );
 
         // 4. Technicien
-        upsertUser("technicien1@gmail.com", "Technicien1", "Technicien1", password, Technicien::new);
+        creerOuMettreAJour(
+                "technicien1@gmail.com",
+                password,
+                "Technicien1",
+                "Technicien1",
+                new Technicien()
+        );
 
-        // 5. Hamza (Admin ou autre selon votre choix)
-        upsertUser("hamza.elbarrak-etu@etu.univh2c.ma", "EL BARRAK", "HAMZA", password, Administrateur::new);
+        // 5. Hamza (Admin)
+        creerOuMettreAJour(
+                "hamza.elbarrak-etu@etu.univh2c.ma",
+                password,
+                "EL BARRAK",
+                "HAMZA",
+                new Administrateur()
+        );
 
-        System.out.println("--> Initialisation des utilisateurs terminée avec le mot de passe: 123456789");
+        System.out.println("══════════════════════════════════════");
+        System.out.println("  Comptes initialisés avec succès !");
+        System.out.println("  Mot de passe par défaut : " + password);
+        System.out.println("══════════════════════════════════════");
     }
 
     /**
-     * Méthode utilitaire pour créer ou mettre à jour un utilisateur
+     * Crée l'utilisateur s'il n'existe pas, sinon met à jour le mot de passe.
      */
-    private void upsertUser(String email, String nom, String prenom, String encodedPassword, Supplier<Utilisateur> userSupplier) {
+    private void creerOuMettreAJour(
+            String email,
+            String motDePasse,
+            String nom,
+            String prenom,
+            Utilisateur template
+    ) {
         utilisateurRepository.findByEmail(email).ifPresentOrElse(
                 user -> {
-                    user.setMotDePasse(encodedPassword);
+                    user.setMotDePasse(passwordEncoder.encode(motDePasse));
                     user.setActif(true);
+                    // On met à jour le nom et prénom au cas où ils changeraient
                     user.setNom(nom);
                     user.setPrenom(prenom);
                     utilisateurRepository.save(user);
-                    System.out.println("--> Mis à jour : " + email);
+                    System.out.println("[" + user.getType() + "] Mis à jour : " + email);
                 },
                 () -> {
-                    Utilisateur newUser = userSupplier.get();
-                    newUser.setEmail(email);
-                    newUser.setMotDePasse(encodedPassword);
-                    newUser.setNom(nom);
-                    newUser.setPrenom(prenom);
-                    newUser.setActif(true);
-                    utilisateurRepository.save(newUser);
-                    System.out.println("--> Créé (" + newUser.getClass().getSimpleName() + ") : " + email);
+                    template.setEmail(email);
+                    template.setMotDePasse(passwordEncoder.encode(motDePasse));
+                    template.setNom(nom);
+                    template.setPrenom(prenom);
+                    template.setActif(true);
+                    utilisateurRepository.save(template);
+                    System.out.println("[" + template.getType() + "] Créé : " + email);
                 }
         );
     }

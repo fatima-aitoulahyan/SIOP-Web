@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { ApiResponse } from '../../../core/models/api-response.model';
 import { VilleDTO } from '../../../core/models/ville.model';
-import { environment } from '../../../../environments/environment.development';
-
+import { environment } from '../../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class VilleService {
   private http = inject(HttpClient);
@@ -12,7 +11,7 @@ export class VilleService {
 
   listerTous(): Observable<VilleDTO[]> {
     return this.http
-      .get<ApiResponse<VilleDTO[]>>(`${this.baseUrl}/referentiel/villes` )
+      .get<ApiResponse<VilleDTO[]>>(`${this.baseUrl}/villes` )
       .pipe(map((res) => res.data!));
   }
 

@@ -15,7 +15,11 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("http://localhost:*", "https://*.spelev.com"));
+        config.setAllowedOriginPatterns(List.of(
+            "http://localhost:*",
+            "https://siop.stage.enset.top",
+          "https://*.stage.enset.top"
+        ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 

@@ -1,5 +1,5 @@
-/* Variables globales de style (adaptables selon votre charte) */
-$primary-color: #4f46e5; // Indigo moderne
+/* Variables globales de style */
+$primary-color: #4f46e5;
 $primary-hover: #4338ca;
 $bg-color: #ffffff;
 $border-color: #e5e7eb;
@@ -12,6 +12,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   position: relative;
   display: inline-block;
   font-family: inherit;
+  z-index: 1000;
 }
 
 /* Bouton Cloche */
@@ -26,6 +27,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 
   .bell-icon {
     width: 22px;
@@ -48,7 +50,6 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     }
   }
 
-  /* Badge de notification (pastille rouge) */
   .badge {
     position: absolute;
     top: 2px;
@@ -68,12 +69,12 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   }
 }
 
-/* Panneau déroulant */
+/* Panneau déroulant corrigé */
 .notification-panel {
   position: absolute;
-  right: 0;
+  right: -70px;
   top: calc(100% + 10px);
-  width: 380px;
+  width: 320px;
   max-height: 480px;
   background: $bg-color;
   border-radius: 12px;
@@ -81,9 +82,10 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
   border: 1px solid $border-color;
   display: flex;
   flex-direction: column;
-  z-index: 1000;
+  z-index: 99999;
   animation: panelSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  box-sizing: border-box;
 
   .panel-header {
     padding: 16px;
@@ -114,7 +116,6 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     overflow-y: auto;
     max-height: 400px;
 
-    /* Scrollbar discrète */
     &::-webkit-scrollbar {
       width: 6px;
     }
@@ -159,7 +160,6 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     background-color: #f9fafb;
   }
 
-  /* Style spécifique pour une notification non lue */
   &.unread {
     background-color: $unread-bg;
 
@@ -172,7 +172,6 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     }
   }
 
-  /* Petit point bleu/indigo sur le côté pour marquer le non-lu */
   .notif-indicator {
     position: absolute;
     left: 8px;
@@ -192,6 +191,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       justify-content: space-between;
       align-items: center;
       margin-bottom: 4px;
+      gap: 8px;
 
       strong {
         font-size: 13px;
@@ -202,6 +202,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       small {
         font-size: 11px;
         color: $text-muted;
+        white-space: nowrap;
       }
     }
 
@@ -211,14 +212,14 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
       color: $text-muted;
       line-height: 1.4;
       display: -webkit-box;
-      -webkit-line-clamp: 2; /* Limite à 2 lignes max */
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
   }
 }
 
-/* Animation d'apparition fluide */
+/* Animation */
 @keyframes panelSlideIn {
   from {
     opacity: 0;

@@ -1,8 +1,14 @@
 {
   "/api": {
-    "target": "http://localhost:8080",
+    "target": "http://rag.stage.enset.top:8000",
     "secure": false,
     "changeOrigin": true,
-    "logLevel": "debug"
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": ""
+    },
+    "headers": {
+      "X-API-Key": "spelev-sec-key-zxvbnEE8YT65"
+    }
   }
 }

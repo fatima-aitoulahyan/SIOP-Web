@@ -20,6 +20,7 @@ import com.example.backend_siop.common.util.FileStorageUtil;
 import com.example.backend_siop.utilisateur.entity.Client;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
 import com.example.backend_siop.utilisateur.repository.UtilisateurRepository;
+import com.example.backend_siop.tache.repository.TacheRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class AscenseurServiceImpl implements AscenseurService {
 
     private final AscenseurRepository ascenseurRepository;
     private final SiteRepository siteRepository;
+    private final TacheRepository tacheRepository;
     private final PieceJointeRepository pieceJointeRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final FileStorageUtil fileStorageUtil;
@@ -166,8 +168,6 @@ public class AscenseurServiceImpl implements AscenseurService {
         ascenseur.setSiteEntity(siteRepository.findById(dto.getSiteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Site introuvable")));
 
-
-
         Ascenseur saved = ascenseurRepository.save(ascenseur);
 
         AscenseurDTO result = mapper.toDTO(saved);
@@ -181,6 +181,15 @@ public class AscenseurServiceImpl implements AscenseurService {
         Ascenseur ascenseur = ascenseurRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ascenseur introuvable"));
 
+        // Vérification des tâches associées (feature/deploy-dokploy)
+        boolean hasTaches = tacheRepository.existsByAscenseurId(id);
+        if (hasTaches) {
+            throw new IllegalStateException(
+                    "Impossible de supprimer cet ascenseur car il est encore utilisé dans le système."
+            );
+        }
+
+        // Suppression des pièces jointes (HEAD + deploy-dokploy)
         List<PieceJointe> pieces = pieceJointeRepository.findByEntiteTypeAndEntiteId(
                 TypeEntiteJointe.ASCENSEUR, id);
         pieces.forEach(p -> fileStorageUtil.delete(p.getCheminFichier()));
@@ -221,6 +230,9 @@ public class AscenseurServiceImpl implements AscenseurService {
         return result;
     }
 
+    // ==============================================================
+    // 🔥 RECHERCHE FLOUE POUR L'INTÉGRATION n8n (HEAD)
+    // ==============================================================
 
     @Override
     @Transactional(readOnly = true)
@@ -244,7 +256,6 @@ public class AscenseurServiceImpl implements AscenseurService {
                             adresseComplete += ", " + ville;
                         }
                     }
-                    // Score simple : on peut l'affiner plus tard
                     int score = calculerScore(a, normalized);
                     return new AscenseurRechercheDTO(
                             a.getId(),
@@ -287,5 +298,4 @@ public class AscenseurServiceImpl implements AscenseurService {
         }
         return Math.min(score, 100);
     }
-    
 }

@@ -3,7 +3,6 @@ package com.example.backend_siop.ascenseur.entity;
 import com.example.backend_siop.common.audit.Auditable;
 import com.example.backend_siop.ascenseur.enums.TypeAscenseur;
 import com.example.backend_siop.utilisateur.entity.Client;
-import com.example.backend_siop.ascenseur.entity.Site;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -5,14 +5,13 @@ import com.example.backend_siop.ascenseur.dto.Ascenseur.AscenseurDTO;
 import com.example.backend_siop.ascenseur.dto.Ascenseur.AscenseurUpdateDTO;
 import com.example.backend_siop.ascenseur.service.AscenseurService;
 import com.example.backend_siop.common.dto.ApiResponse;
-import com.example.backend_siop.utilisateur.entity.Client;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.backend_siop.utilisateur.entity.Client;
 import java.util.List;
 
 @RestController
@@ -22,8 +21,14 @@ public class AscenseurController {
 
     private final AscenseurService ascenseurService;
 
+    @GetMapping("/mes-ascenseurs")
+    @PreAuthorize("hasAnyAuthority('CLIENT', 'ROLE_CLIENT')")
+    public ApiResponse<List<AscenseurDTO>> mesAscenseurs(@AuthenticationPrincipal Client client) {
+        return ApiResponse.success(ascenseurService.listerParClient(client.getId()));
+    }
+
     @PostMapping
-    @PreAuthorize("hasAnyRole('RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR')")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRATEUR', 'ROLE_ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE', 'ROLE_RESPONSABLE_MAINTENANCE')")
     public ApiResponse<AscenseurDTO> creer(
             @Valid @RequestBody AscenseurCreateDTO dto,
             @AuthenticationPrincipal Utilisateur createur) {
@@ -31,29 +36,25 @@ public class AscenseurController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRATEUR', 'ROLE_ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE', 'ROLE_RESPONSABLE_MAINTENANCE')")
     public ApiResponse<AscenseurDTO> getById(@PathVariable Long id) {
         return ApiResponse.success(ascenseurService.getById(id));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR')")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRATEUR', 'ROLE_ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE', 'ROLE_RESPONSABLE_MAINTENANCE')")
     public ApiResponse<List<AscenseurDTO>> listerTous() {
         return ApiResponse.success(ascenseurService.listerTous());
     }
 
     @GetMapping("/client/{clientId}")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRATEUR', 'ROLE_ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE', 'ROLE_RESPONSABLE_MAINTENANCE')")
     public ApiResponse<List<AscenseurDTO>> listerParClient(@PathVariable Long clientId) {
-         return ApiResponse.success(ascenseurService.listerParClient(clientId));
-    }
-
-    @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("/mes-ascenseurs")
-    public ApiResponse<List<AscenseurDTO>> mesAscenseurs(@AuthenticationPrincipal Client client) {
-        return ApiResponse.success(ascenseurService.listerParClient(client.getId()));
+        return ApiResponse.success(ascenseurService.listerParClient(clientId));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR')")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRATEUR', 'ROLE_ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE', 'ROLE_RESPONSABLE_MAINTENANCE')")
     public ApiResponse<AscenseurDTO> modifier(
             @PathVariable Long id,
             @Valid @RequestBody AscenseurUpdateDTO dto) {
@@ -61,21 +62,17 @@ public class AscenseurController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR')")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRATEUR', 'ROLE_ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE', 'ROLE_RESPONSABLE_MAINTENANCE')")
     public ApiResponse<Void> supprimer(@PathVariable Long id) {
         ascenseurService.supprimer(id);
         return ApiResponse.success(null);
     }
 
     @GetMapping("/site/{siteId}")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRATEUR', 'ROLE_ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE', 'ROLE_RESPONSABLE_MAINTENANCE')")
     public ApiResponse<List<AscenseurDTO>> listerParSite(
             @PathVariable Long siteId,
             @AuthenticationPrincipal Utilisateur utilisateur) {
         return ApiResponse.success(ascenseurService.listerParSite(siteId, utilisateur));
-    }
-    @PatchMapping("/{id}/statut")
-    @PreAuthorize("hasAnyRole('RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR')")
-    public ApiResponse<AscenseurDTO> changerStatut(@PathVariable Long id) {
-        return ApiResponse.success(ascenseurService.basculerStatut(id));
     }
 }

@@ -14,19 +14,15 @@ import { NotificationBellComponent } from '../notification-bell/notification-bel
 })
 export class TechnicienLayoutComponent {
   private router = inject(Router);
-  // private authService = inject(AuthService);
 
   sidebarReduite = signal(false);
 
-  // Exemple si vous souhaitez lier le rôle dynamiquement
-  // role = this.authService.getRole;
 
   toggleSidebar(): void {
     this.sidebarReduite.update((val) => !val);
   }
 
   deconnexion(): void {
-    // Nettoyez le stockage local si nécessaire (ex: localStorage.removeItem('token'))
     this.router.navigate(['/login']);
   }
 }

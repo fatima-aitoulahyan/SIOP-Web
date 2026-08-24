@@ -27,7 +27,6 @@ import com.example.backend_siop.notification.enums.TypeNotification;
 import com.example.backend_siop.notification.service.NotificationService;
 import com.example.backend_siop.utilisateur.entity.Client;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +61,20 @@ public class DemandeMaintenanceServiceImpl implements DemandeMaintenanceService 
         demande.setAscenseur(ascenseur);
         demande.setClient(client);
         demande.setStatut(StatutDemande.EN_ATTENTE);
+
+        return mapper.toDTO(demandeRepository.save(demande));
+    }
+
+    @Override
+    @Transactional
+    public DemandeMaintenanceDTO accepter(Long id) {
+        DemandeMaintenance demande = demandeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande introuvable"));
+
+        if (demande.getStatut() != StatutDemande.EN_ATTENTE) {
+            throw new BusinessRuleException("Seules les demandes en attente peuvent être acceptées.");
+        }
+        demande.setStatut(StatutDemande.ASSIGNEE);
 
         return mapper.toDTO(demandeRepository.save(demande));
     }
@@ -194,6 +207,49 @@ public class DemandeMaintenanceServiceImpl implements DemandeMaintenanceService 
                 .orElseThrow(() -> new ResourceNotFoundException("Demande introuvable"));
     }
 
+    // 🔥 Méthode d'intégration n8n (HEAD)
+    @Override
+    @Transactional
+    public DemandeMaintenanceDTO creerDepuisIntegration(DemandeMaintenanceIntegrationCreateDTO dto, Utilisateur createur) {
+
+        // 1. Si un ascenseur est fourni, on le vérifie
+        Ascenseur ascenseur = null;
+        Client client = null;
+        Site site = null;
+
+        if (dto.getAscenseurId() != null) {
+            ascenseur = ascenseurRepository.findById(dto.getAscenseurId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Ascenseur introuvable"));
+            client = ascenseur.getClient();
+            site = ascenseur.getSiteEntity();
+        }
+
+        // 2. Création de la demande
+        DemandeMaintenance demande = new DemandeMaintenance();
+        demande.setAscenseur(ascenseur);
+        demande.setClient(client); // peut être null si ascenseur non trouvé
+        demande.setSite(site);
+        demande.setTypeDemande(dto.getTypeDemande());
+        demande.setPriorite(dto.getPriorite());
+        demande.setDescription(dto.getDescription());
+        demande.setDateSouhaitee(dto.getDateSouhaitee());
+        demande.setStatut(StatutDemande.EN_ATTENTE);
+
+        // 3. Si l'ascenseur n'est pas connu, on stocke l'adresse libre
+        if (ascenseur == null) {
+            demande.setVilleSaisie(dto.getVilleLibre());
+            demande.setAdresseSaisie(dto.getAdresseLibre());
+        }
+
+        // 4. Sauvegarde
+        DemandeMaintenance saved = demandeRepository.save(demande);
+
+        // 5. Notification au responsable (optionnel mais recommandé)
+        // notificationService.creer(...)
+
+        // 6. Retour du DTO
+        return mapper.toDTO(saved);
+    }
 
     private DemandeMaintenanceDTO toDTOAvecPhotos(DemandeMaintenance demande) {
         DemandeMaintenanceDTO dto = mapper.toDTO(demande);
@@ -214,47 +270,4 @@ public class DemandeMaintenanceServiceImpl implements DemandeMaintenanceService 
         dto.setPhotos(photosAvecUrl);
         return dto;
     }
-
-    @Override
-@Transactional
-public DemandeMaintenanceDTO creerDepuisIntegration(DemandeMaintenanceIntegrationCreateDTO dto, Utilisateur createur) {
-
-    // 1. Si un ascenseur est fourni, on le vérifie
-    Ascenseur ascenseur = null;
-    Client client = null;
-    Site site = null;
-
-    if (dto.getAscenseurId() != null) {
-        ascenseur = ascenseurRepository.findById(dto.getAscenseurId())
-                .orElseThrow(() -> new ResourceNotFoundException("Ascenseur introuvable"));
-        client = ascenseur.getClient();
-        site = ascenseur.getSiteEntity();
-    }
-
-    // 2. Création de la demande
-    DemandeMaintenance demande = new DemandeMaintenance();
-    demande.setAscenseur(ascenseur);
-    demande.setClient(client); // peut être null si ascenseur non trouvé
-    demande.setSite(site);
-    demande.setTypeDemande(dto.getTypeDemande());
-    demande.setPriorite(dto.getPriorite());
-    demande.setDescription(dto.getDescription());
-    demande.setDateSouhaitee(dto.getDateSouhaitee());
-    demande.setStatut(StatutDemande.EN_ATTENTE);
-
-    // 3. Si l'ascenseur n'est pas connu, on stocke l'adresse libre
-    if (ascenseur == null) {
-        demande.setVilleSaisie(dto.getVilleLibre());
-        demande.setAdresseSaisie(dto.getAdresseLibre());
-    }
-
-    // 4. Sauvegarde
-    DemandeMaintenance saved = demandeRepository.save(demande);
-
-    // 5. (Optionnel) Notification au responsable
-    // notificationService.creer(...)
-
-    // 6. Retour du DTO
-    return mapper.toDTO(saved);
-}
 }

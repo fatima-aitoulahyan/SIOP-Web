@@ -4,7 +4,6 @@ import com.example.backend_siop.ascenseur.dto.Assemblage.AssemblageCreateDTO;
 import com.example.backend_siop.ascenseur.dto.Assemblage.AssemblageDTO;
 import com.example.backend_siop.ascenseur.dto.Assemblage.AssemblageTreeDTO;
 import com.example.backend_siop.ascenseur.dto.Assemblage.AssemblageUpdateDTO;
-import com.example.backend_siop.ascenseur.dto.composant.ComposantDTO;
 import com.example.backend_siop.ascenseur.service.AssemblageService;
 import com.example.backend_siop.ascenseur.service.impl.ArborescenceService;
 import com.example.backend_siop.common.dto.ApiResponse;

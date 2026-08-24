@@ -37,5 +37,9 @@ public interface DemandeMaintenanceService {
 
     DemandeMaintenance getEntitePourResponsable(Long id);
 
+    // 🔥 HEAD : méthode pour l'intégration n8n
     DemandeMaintenanceDTO creerDepuisIntegration(DemandeMaintenanceIntegrationCreateDTO dto, Utilisateur createur);
+
+    // 🔥 deploy-dokploy : méthode pour accepter une demande
+    DemandeMaintenanceDTO accepter(Long id);
 }

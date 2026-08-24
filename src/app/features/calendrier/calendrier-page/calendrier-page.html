@@ -1,37 +1,42 @@
 <div class="page-wrapper">
-  <div class="calendrier-header">
-    <h1>Calendrier</h1>
+  <!-- Début de la carte unique qui englobe tout -->
+  <div class="calendrier-card-wrapper">
+    <div class="calendrier-header">
+      <h1>Calendrier</h1>
 
-    <div class="header-actions">
-      <!-- Filtre par technicien -->
-      <select class="select-technicien" (change)="onChangerFiltre($event)">
-        <option [value]="null">Tous les techniciens</option>
-        @for (tech of techniciensListe(); track tech.id) {
-          <option [value]="tech.id">{{ tech.nom }} {{ tech.prenom }}</option>
-        }
-      </select>
+      <div class="header-actions">
+        <!-- Filtre par technicien -->
+        <select class="select-technicien" (change)="onChangerFiltre($event)">
+          <option [value]="null">Tous les techniciens</option>
+          @for (tech of techniciensListe(); track tech.id) {
+            <option [value]="tech.id">{{ tech.nom }} {{ tech.prenom }}</option>
+          }
+        </select>
 
-      <button type="button" class="btn-primary" (click)="ouvrirNouvelEvenement()">
-        + Nouvel événement
-      </button>
+        <button type="button" class="btn-primary" (click)="ouvrirNouvelEvenement()">
+          + Nouvel événement
+        </button>
+      </div>
     </div>
-  </div>
 
-  <!-- Légende des couleurs -->
-  <div class="calendrier-legende">
-    <span class="legende-titre">Légende :</span>
-    <div class="legende-groupe">
-      <span class="legende-item"><span class="dot planifie"></span> Planifié</span>
-      <span class="legende-item"><span class="dot en-cours"></span> En cours</span>
-      <span class="legende-item"><span class="dot termine"></span> Terminé</span>
-      <span class="legende-item"><span class="dot annule"></span> Annulé</span>
-      <span class="legende-item"><span class="dot reunion"></span> Réunion</span>
-      <span class="legende-item"><span class="dot conge"></span> Congé</span>
-      <span class="legende-item"><span class="dot formation"></span> Formation</span>
+    <!-- Légende des couleurs -->
+    <div class="calendrier-legende">
+      <span class="legende-titre">Légende :</span>
+      <div class="legende-groupe">
+        <span class="legende-item"><span class="dot planifie"></span> Planifié</span>
+        <span class="legende-item"><span class="dot en-cours"></span> En cours</span>
+        <span class="legende-item"><span class="dot termine"></span> Terminé</span>
+        <span class="legende-item"><span class="dot annule"></span> Annulé</span>
+        <span class="legende-item"><span class="dot reunion"></span> Réunion</span>
+        <span class="legende-item"><span class="dot conge"></span> Congé</span>
+        <span class="legende-item"><span class="dot formation"></span> Formation</span>
+      </div>
     </div>
-  </div>
 
-  <full-calendar [options]="calendarOptions"></full-calendar>
+    <!-- Le calendrier est maintenant proprement à l'intérieur de la carte -->
+    <full-calendar [options]="calendarOptions"></full-calendar>
+  </div>
+  <!-- Fin de la carte unique -->
 
   @if (modalOuverte()) {
     <app-evenement-form

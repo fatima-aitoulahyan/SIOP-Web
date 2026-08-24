@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class UtilisateurRequestDTO {
@@ -16,6 +18,8 @@ public class UtilisateurRequestDTO {
     private String email;
 
     private String telephone;
+
+    private String motDePasse;
 
     @NotBlank
     private String nom;
@@ -30,4 +34,7 @@ public class UtilisateurRequestDTO {
 
     private String adresse;
     private String specialite;
+    private Boolean actif = true;
+
+    private List<Long> parcIds;
 }

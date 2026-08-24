@@ -50,7 +50,7 @@ public class BonTravailDTO {
     private LocalDateTime createdAt;
 
     // ==============================================================
-    //  NOUVEAUX CHAMPS POUR L'INTÉGRATION
+    //  NOUVEAUX CHAMPS POUR L'INTÉGRATION (n8n)
     // ==============================================================
     private String adresseLibre;
     private String villeLibre;

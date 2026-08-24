@@ -1,0 +1,66 @@
+<div class="page-wrapper">
+  <div class="list-card chat-card">
+
+    <!-- En-tête de la carte -->
+    <div class="card-header">
+      <div>
+        <h2>Assistant Intelligent RAG</h2>
+        <p class="subtitle">Posez vos questions sur la base documentaire de l'entreprise</p>
+      </div>
+      <div class="bot-status-badge">
+        <span class="badge badge-actif">En ligne</span>
+      </div>
+    </div>
+
+    <!-- Zone d'affichage des messages -->
+    <div class="chat-messages-container" #scrollContainer>
+      @if (messages.length === 0) {
+        <div class="empty">
+          <p>Bonjour ! Je suis votre assistant connecté à la base documentaire. Comment puis-je vous aider aujourd'hui ?</p>
+        </div>
+      }
+
+      @for (msg of messages; track msg) {
+        <div class="message-row" [ngClass]="msg.sender">
+          <div class="message-bubble">
+            <div class="message-text">{{ msg.text }}</div>
+            <span class="message-time">{{ msg.timestamp | date: 'shortTime' }}</span>
+          </div>
+        </div>
+      }
+
+      @if (isLoading()) {
+        <div class="message-row bot">
+          <div class="message-bubble loading-bubble">
+            <div class="typing-indicator">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Barre de saisie -->
+    <div class="chat-input-area">
+      <div class="search-wrapper input-chat-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="userInput"
+          (keyup.enter)="sendMessage()"
+          placeholder="Tapez votre question ici..."
+          [disabled]="isLoading()"
+        />
+      </div>
+      <button class="btn-add" (click)="sendMessage()" [disabled]="!userInput.trim() || isLoading()">
+        <span>Envoyer</span>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</div>

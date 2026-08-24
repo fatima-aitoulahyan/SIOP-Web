@@ -16,4 +16,8 @@ public class SiteDTO {
     private String clientNom;
     private Long parcId;
     private String parcNom;
+    private String clientPrenom;
+    private String clientEmail;
+    private String createdAt;
+
 }

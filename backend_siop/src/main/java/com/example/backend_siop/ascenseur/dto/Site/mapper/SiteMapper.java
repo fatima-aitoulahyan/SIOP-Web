@@ -10,6 +10,8 @@ public interface SiteMapper {
 
     @Mapping(target = "clientId", source = "client.id")
     @Mapping(target = "clientNom", source = "client.nom")
+    @Mapping(target = "clientPrenom", source = "client.prenom")
+    @Mapping(target = "clientEmail", source = "client.email")
     @Mapping(target = "villeId", source = "ville.id")
     @Mapping(target = "villeNom", source = "ville.nom")
     @Mapping(target = "villeCodePostal", source = "ville.codePostal")
