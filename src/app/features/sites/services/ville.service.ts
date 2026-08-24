@@ -17,7 +17,7 @@ export class VilleService {
 
   creer(dto: { nom: string; region?: string; codePostal?: string }): Observable<VilleDTO> {
     return this.http
-      .post<ApiResponse<VilleDTO>>(`${this.baseUrl}/referentiel/villes` , dto)
+      .post<ApiResponse<VilleDTO>>(`${this.baseUrl}/villes`, dto)
       .pipe(map((res) => res.data!));
   }
 }

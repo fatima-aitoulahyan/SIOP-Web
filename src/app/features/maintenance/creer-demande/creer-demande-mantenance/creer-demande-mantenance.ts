@@ -75,7 +75,7 @@ export class CreerDemandeMantenanceComponent implements OnInit, OnDestroy {
   private chargerAscenseurs(): void {
     this.authService.monProfil().subscribe({
       next: (profil) => {
-        this.ascenseurService.listerParClient(profil.id).subscribe({
+        this.ascenseurService.mesAscenseurs().subscribe({
           next: (res) => this.ascenseurs.set(res.data),
           error: () => this.erreur.set('Impossible de charger vos ascenseurs.'),
         });
