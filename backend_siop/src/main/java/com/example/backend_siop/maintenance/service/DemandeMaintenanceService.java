@@ -36,4 +36,6 @@ public interface DemandeMaintenanceService {
     DemandeMaintenance getEntitePourResponsable(Long id);
 
     DemandeMaintenanceDTO accepter(Long id);
+
+    List<DemandeMaintenanceDTO> listerDemandesAtraiter();
 }

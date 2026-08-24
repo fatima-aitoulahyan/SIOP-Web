@@ -16,4 +16,6 @@ public interface EvaluationAscenseurRepository extends JpaRepository<EvaluationA
     List<EvaluationAscenseur> findByTechnicien_Id(Long technicienId);
 
     List<EvaluationAscenseur> findByBonTravail_DemandeMaintenance_Client_Id(Long clientId);
+    
+    long countByStatut(StatutEvaluation statut);
 }

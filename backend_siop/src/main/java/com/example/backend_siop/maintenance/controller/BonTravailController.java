@@ -131,4 +131,10 @@ public class BonTravailController {
         @Valid @RequestBody ClotureBonTravailDTO dto) {
     return ApiResponse.success(bonTravailService.terminer(id, dto));
    }
+
+    @GetMapping("/aujourd-hui")
+    @PreAuthorize("hasAnyRole('RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR')")
+    public ApiResponse<List<BonTravailResumeDTO>> interventionsAujourdhui() {
+       return ApiResponse.success(bonTravailService.listerInterventionsAujourdhui());
+    }
 }

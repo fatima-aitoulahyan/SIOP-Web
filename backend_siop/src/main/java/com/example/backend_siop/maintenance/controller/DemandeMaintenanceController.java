@@ -148,4 +148,10 @@ public class DemandeMaintenanceController {
         return ApiResponse.success(demandeService.accepter(id));
     }
 
+    @GetMapping("/a-traiter")
+    @PreAuthorize("hasAnyRole('RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR')")
+    public ApiResponse<List<DemandeMaintenanceDTO>> demandesAtraiter() {
+         return ApiResponse.success(demandeService.listerDemandesAtraiter());
+    }
+
 }

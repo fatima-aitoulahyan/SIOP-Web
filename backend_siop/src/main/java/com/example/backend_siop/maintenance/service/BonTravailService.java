@@ -42,4 +42,6 @@ public interface BonTravailService {
             LocalDateTime debut,
             int dureeMinutes
     );
+
+    List<BonTravailResumeDTO> listerInterventionsAujourdhui();
 }
