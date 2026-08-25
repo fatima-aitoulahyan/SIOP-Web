@@ -18,6 +18,5 @@ public interface SiteMapper {
     @Mapping(target = "villeRegion", source = "ville.region")
     @Mapping(target = "parcId", source = "parc.id")
     @Mapping(target = "parcNom", source = "parc.nom")
-
     SiteDTO toDTO(Site site);
 }

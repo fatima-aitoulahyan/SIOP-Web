@@ -1,6 +1,7 @@
 package com.example.backend_siop.maintenance.controller;
 
 import com.example.backend_siop.common.dto.ApiResponse;
+import com.example.backend_siop.maintenance.dto.DemandeEvaluationCreateDTO;
 import com.example.backend_siop.maintenance.dto.DemandeMaintenanceCreateDTO;
 import com.example.backend_siop.maintenance.dto.DemandeMaintenanceDTO;
 import com.example.backend_siop.maintenance.dto.RejetDemandeDTO;
@@ -44,6 +45,22 @@ public class DemandeMaintenanceController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(demandeService.creer(dto, client)));
+    }
+
+    @PostMapping("/evaluation")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<DemandeMaintenanceDTO>> creerEvaluation(
+            @Valid @RequestBody DemandeEvaluationCreateDTO dto,
+            @AuthenticationPrincipal Utilisateur utilisateur) {
+
+        if (!(utilisateur instanceof Client client)) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Accès réservé aux clients");
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(demandeService.creerEvaluation(dto, client)));
     }
 
     @GetMapping("/mes-demandes")

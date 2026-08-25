@@ -13,11 +13,8 @@ import java.util.List;
 public class BonTravailCreateDTO {
 
     private Long demandeMaintenanceId;
-
     private Long ascenseurId;
-
     private Long parcId;
-
     private Long siteId;
 
     @NotNull(message = "Le technicien responsable est obligatoire")
@@ -32,7 +29,6 @@ public class BonTravailCreateDTO {
     private Integer dureeEstimeeMinutes;
 
     private PrioriteDemande priorite;
-
     private String description;
 
     private boolean visitePreventive = false;

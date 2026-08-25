@@ -1,5 +1,6 @@
 package com.example.backend_siop.ascenseur.service.impl;
 
+import com.example.backend_siop.ascenseur.dto.AscenseurRechercheDTO;
 import com.example.backend_siop.ascenseur.dto.Ascenseur.AscenseurCreateDTO;
 import com.example.backend_siop.ascenseur.dto.Ascenseur.AscenseurDTO;
 import com.example.backend_siop.ascenseur.dto.Ascenseur.AscenseurUpdateDTO;
@@ -19,11 +20,11 @@ import com.example.backend_siop.common.util.FileStorageUtil;
 import com.example.backend_siop.utilisateur.entity.Client;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
 import com.example.backend_siop.utilisateur.repository.UtilisateurRepository;
+import com.example.backend_siop.tache.repository.TacheRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.backend_siop.tache.repository.TacheRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,7 +35,7 @@ public class AscenseurServiceImpl implements AscenseurService {
 
     private final AscenseurRepository ascenseurRepository;
     private final SiteRepository siteRepository;
-    private final TacheRepository  tacheRepository;
+    private final TacheRepository tacheRepository;
     private final PieceJointeRepository pieceJointeRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final FileStorageUtil fileStorageUtil;
@@ -167,8 +168,6 @@ public class AscenseurServiceImpl implements AscenseurService {
         ascenseur.setSiteEntity(siteRepository.findById(dto.getSiteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Site introuvable")));
 
-
-
         Ascenseur saved = ascenseurRepository.save(ascenseur);
 
         AscenseurDTO result = mapper.toDTO(saved);
@@ -180,27 +179,22 @@ public class AscenseurServiceImpl implements AscenseurService {
     @Transactional
     public void supprimer(Long id) {
         Ascenseur ascenseur = ascenseurRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Ascenseur introuvable"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ascenseur introuvable"));
 
+        // Vérification des tâches associées (feature/deploy-dokploy)
         boolean hasTaches = tacheRepository.existsByAscenseurId(id);
-
         if (hasTaches) {
             throw new IllegalStateException(
                     "Impossible de supprimer cet ascenseur car il est encore utilisé dans le système."
             );
         }
 
-        List<PieceJointe> pieces =
-                pieceJointeRepository.findByEntiteTypeAndEntiteId(
-                        TypeEntiteJointe.ASCENSEUR, id);
+        // Suppression des pièces jointes (HEAD + deploy-dokploy)
+        List<PieceJointe> pieces = pieceJointeRepository.findByEntiteTypeAndEntiteId(
+                TypeEntiteJointe.ASCENSEUR, id);
+        pieces.forEach(p -> fileStorageUtil.delete(p.getCheminFichier()));
+        pieceJointeRepository.deleteByEntiteTypeAndEntiteId(TypeEntiteJointe.ASCENSEUR, id);
 
-        pieces.forEach(p ->
-                fileStorageUtil.delete(p.getCheminFichier())
-        );
-        pieceJointeRepository.deleteByEntiteTypeAndEntiteId(
-                TypeEntiteJointe.ASCENSEUR, id
-        );
         ascenseurRepository.delete(ascenseur);
     }
 
@@ -234,5 +228,74 @@ public class AscenseurServiceImpl implements AscenseurService {
         AscenseurDTO result = mapper.toDTO(saved);
         result.setPiecesJointes(chargerPiecesJointes(id));
         return result;
+    }
+
+    // ==============================================================
+    // 🔥 RECHERCHE FLOUE POUR L'INTÉGRATION n8n (HEAD)
+    // ==============================================================
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AscenseurRechercheDTO> rechercherParTexteLibre(String query) {
+        if (query == null || query.trim().length() < 2) {
+            return List.of();
+        }
+
+        String normalized = query.trim();
+        List<Ascenseur> resultats = ascenseurRepository.rechercherParTexteLibre(normalized);
+
+        return resultats.stream()
+                .map(a -> {
+                    String adresseComplete = "";
+                    String ville = "";
+                    if (a.getSiteEntity() != null) {
+                        Site s = a.getSiteEntity();
+                        adresseComplete = s.getAdresse();
+                        if (s.getVille() != null) {
+                            ville = s.getVille().getNom();
+                            adresseComplete += ", " + ville;
+                        }
+                    }
+                    int score = calculerScore(a, normalized);
+                    return new AscenseurRechercheDTO(
+                            a.getId(),
+                            a.getNom(),
+                            adresseComplete,
+                            ville,
+                            a.getNumeroSerie(),
+                            score
+                    );
+                })
+                .sorted((a, b) -> b.getScore().compareTo(a.getScore()))
+                .toList();
+    }
+
+    private int calculerScore(Ascenseur a, String query) {
+        String lowerQuery = query.toLowerCase();
+        int score = 0;
+
+        if (a.getNumeroSerie() != null && a.getNumeroSerie().toLowerCase().contains(lowerQuery)) {
+            score += 50;
+        }
+        if (a.getCodeBarre() != null && a.getCodeBarre().toLowerCase().contains(lowerQuery)) {
+            score += 40;
+        }
+        if (a.getNom() != null && a.getNom().toLowerCase().contains(lowerQuery)) {
+            score += 30;
+        }
+        if (a.getSiteEntity() != null) {
+            Site s = a.getSiteEntity();
+            if (s.getAdresse() != null && s.getAdresse().toLowerCase().contains(lowerQuery)) {
+                score += 25;
+            }
+            if (s.getVille() != null && s.getVille().getNom().toLowerCase().contains(lowerQuery)) {
+                score += 20;
+            }
+            if (s.getClient() != null && s.getClient().getNom() != null
+                    && s.getClient().getNom().toLowerCase().contains(lowerQuery)) {
+                score += 15;
+            }
+        }
+        return Math.min(score, 100);
     }
 }

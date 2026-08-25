@@ -60,6 +60,7 @@ public class IaDescriptionServiceImpl implements IaDescriptionService {
 
             JsonNode racine = objectMapper.readTree(response.getBody());
 
+            // Vérification d'erreur de l'API (ajout deploy-dokploy)
             if (racine.has("error")) {
                 String errorMsg = racine.path("error").path("message").asText("Erreur inconnue de l'API IA");
                 throw new BusinessRuleException("Erreur API Groq : " + errorMsg);

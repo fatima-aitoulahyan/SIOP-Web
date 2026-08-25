@@ -3,6 +3,7 @@ package com.example.backend_siop.ascenseur.service;
 import com.example.backend_siop.ascenseur.dto.Ascenseur.AscenseurCreateDTO;
 import com.example.backend_siop.ascenseur.dto.Ascenseur.AscenseurDTO;
 import com.example.backend_siop.ascenseur.dto.Ascenseur.AscenseurUpdateDTO;
+import com.example.backend_siop.ascenseur.dto.AscenseurRechercheDTO;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
 
 import java.util.List;
@@ -20,6 +21,11 @@ public interface AscenseurService {
     List<AscenseurDTO> listerParClient(Long clientId);
 
     List<AscenseurDTO> listerTous();
+
     List<AscenseurDTO> listerParSite(Long siteId, Utilisateur utilisateur);
+
     AscenseurDTO basculerStatut(Long id);
+
+    // 🔥 Nouvelle méthode pour la recherche floue (intégration n8n)
+    List<AscenseurRechercheDTO> rechercherParTexteLibre(String query);
 }

@@ -24,5 +24,6 @@ public class UtilisateurResponseDTO {
     private String specialite;
     private LocalDateTime createdAt;
 
+    // 🔥 Ajout de la liste des parcs (nécessaire pour les techniciens)
     private List<Long> parcIds;
 }

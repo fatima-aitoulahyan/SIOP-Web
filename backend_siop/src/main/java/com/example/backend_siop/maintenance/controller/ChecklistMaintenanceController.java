@@ -3,6 +3,7 @@ package com.example.backend_siop.maintenance.controller;
 import com.example.backend_siop.common.dto.ApiResponse;
 import com.example.backend_siop.maintenance.dto.ChecklistMaintenanceDTO;
 import com.example.backend_siop.maintenance.dto.ClotureChecklistDTO;
+import com.example.backend_siop.maintenance.dto.ItemCheckListDTO;
 import com.example.backend_siop.maintenance.dto.ItemCheckListUpdateDTO;
 import com.example.backend_siop.maintenance.service.ChecklistMaintenanceService;
 import com.example.backend_siop.utilisateur.entity.Technicien;
@@ -11,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import com.example.backend_siop.maintenance.dto.ItemCheckListDTO;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/checklists")
@@ -66,11 +67,10 @@ public class ChecklistMaintenanceController {
         return ApiResponse.success(checklistService.cloturer(id, dto));
     }
 
-   
     @GetMapping("/par-bon-travail/{bonTravailId}")
     @PreAuthorize("hasAnyRole('TECHNICIEN', 'RESPONSABLE_MAINTENANCE', 'ADMINISTRATEUR')")
     public ApiResponse<ChecklistMaintenanceDTO> getDetailParBonTravail(
             @PathVariable Long bonTravailId) {
-       return ApiResponse.success(checklistService.getDetailParBonTravail(bonTravailId));
+        return ApiResponse.success(checklistService.getDetailParBonTravail(bonTravailId));
     }
 }

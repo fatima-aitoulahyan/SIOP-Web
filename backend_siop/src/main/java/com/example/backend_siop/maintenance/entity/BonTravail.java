@@ -88,6 +88,7 @@ public class BonTravail extends Auditable {
 
     @Column(columnDefinition = "TEXT")
     private String recommandations;
+
     @OneToMany(mappedBy = "bonTravail", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id ASC")
     private List<CommentaireBonTravail> commentaires = new ArrayList<>();
@@ -95,4 +96,23 @@ public class BonTravail extends Auditable {
     @ManyToOne
     @JoinColumn(name = "cree_par_id")
     private Utilisateur creePar;
+
+    // ==============================================================
+    //  NOUVEAUX CHAMPS POUR L'INTÉGRATION (WHATSAPP / n8n)
+    // ==============================================================
+
+    @Column(name = "adresse_libre", columnDefinition = "TEXT")
+    private String adresseLibre;
+
+    @Column(name = "ville_libre")
+    private String villeLibre;
+
+    @Column(name = "nom_ascenseur_libre")
+    private String nomAscenseurLibre;
+
+    @Column(name = "message_original", columnDefinition = "TEXT")
+    private String messageOriginal;
+
+    @Column(name = "est_urgence")
+    private boolean estUrgence = false;
 }

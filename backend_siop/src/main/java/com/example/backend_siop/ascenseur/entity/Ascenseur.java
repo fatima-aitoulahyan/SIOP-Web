@@ -3,7 +3,6 @@ package com.example.backend_siop.ascenseur.entity;
 import com.example.backend_siop.common.audit.Auditable;
 import com.example.backend_siop.ascenseur.enums.TypeAscenseur;
 import com.example.backend_siop.utilisateur.entity.Client;
-import com.example.backend_siop.ascenseur.entity.Site;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -30,9 +29,6 @@ public class Ascenseur extends Auditable {
     @Column(nullable = false)
     private String nom;
 
-    @Column(nullable=false)
-    private String marque;
-
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -41,6 +37,9 @@ public class Ascenseur extends Auditable {
 
     @Column(nullable = false)
     private String fabricant;
+
+    @Column(nullable = true)
+    private String marque;
 
     @Column(name = "nombre_etages")
     private Integer nombreEtages;

@@ -113,8 +113,8 @@ public class BonTravailController {
                 "ascenseurId ou siteId doit être fourni"
         );
     }
-    
-   
+
+
 
    @PatchMapping("/{id}/demarrer")
    @PreAuthorize("hasRole('TECHNICIEN')")

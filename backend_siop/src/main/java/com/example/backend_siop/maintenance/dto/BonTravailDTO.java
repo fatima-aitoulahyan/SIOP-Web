@@ -48,4 +48,13 @@ public class BonTravailDTO {
     private List<PieceJointeAvecUrlDTO> piecesJointesBonTravail;
 
     private LocalDateTime createdAt;
+
+    // ==============================================================
+    //  NOUVEAUX CHAMPS POUR L'INTÉGRATION (n8n)
+    // ==============================================================
+    private String adresseLibre;
+    private String villeLibre;
+    private String nomAscenseurLibre;
+    private String messageOriginal;
+    private boolean estUrgence;
 }

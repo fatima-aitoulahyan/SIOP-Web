@@ -2,6 +2,7 @@ package com.example.backend_siop.maintenance.service;
 
 import com.example.backend_siop.maintenance.dto.BonTravailCreateDTO;
 import com.example.backend_siop.maintenance.dto.BonTravailDTO;
+import com.example.backend_siop.maintenance.dto.BonTravailIntegrationCreateDTO;
 import com.example.backend_siop.maintenance.dto.BonTravailResumeDTO;
 import com.example.backend_siop.maintenance.dto.ConflitTechnicienDTO;
 import com.example.backend_siop.utilisateur.dto.TechnicienResumeDTO;
@@ -31,10 +32,10 @@ public interface BonTravailService {
 
     List<TechnicienResumeDTO> listerTechniciensDisponibles(
             Long ascenseurId, LocalDateTime debut, int dureeMinutes);
-            
-   
+
+
     BonTravailDTO demarrer(Long id, Technicien technicien);
-    
+
     BonTravailDTO terminer(Long id, ClotureBonTravailDTO dto);
 
     List<TechnicienResumeDTO> listerTechniciensDisponiblesParSite(
@@ -44,4 +45,8 @@ public interface BonTravailService {
     );
 
     List<BonTravailResumeDTO> listerInterventionsAujourdhui();
+}
+
+    // 🔥 Méthode ajoutée pour l'intégration n8n
+    BonTravailDTO creerIntegration(BonTravailIntegrationCreateDTO dto, Utilisateur creePar);
 }

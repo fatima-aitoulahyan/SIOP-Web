@@ -28,6 +28,7 @@ public class UtilisateurMapper {
         } else if (u instanceof Technicien technicien) {
             builder.specialite(technicien.getSpecialite());
 
+            // 🔥 Ajout de la liste des parcs pour les techniciens (deploy-dokploy)
             if (technicien.getParcs() != null) {
                 List<Long> parcIds = technicien.getParcs()
                         .stream()

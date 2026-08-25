@@ -2,8 +2,8 @@ package com.example.backend_siop.utilisateur.service.impl;
 
 import com.example.backend_siop.common.exception.BusinessRuleException;
 import com.example.backend_siop.common.exception.ResourceNotFoundException;
-import org.springframework.dao.DataIntegrityViolationException;
 import com.example.backend_siop.common.util.FileStorageUtil;
+import com.example.backend_siop.parc.entity.Parc;
 import com.example.backend_siop.parc.repository.ParcRepository;
 import com.example.backend_siop.utilisateur.dto.ActivationCompteDTO;
 import com.example.backend_siop.utilisateur.dto.ModifierProfilDTO;
@@ -18,11 +18,11 @@ import com.example.backend_siop.utilisateur.repository.UtilisateurRepository;
 import com.example.backend_siop.utilisateur.service.EmailService;
 import com.example.backend_siop.utilisateur.service.UtilisateurService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import com.example.backend_siop.parc.entity.Parc;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -128,6 +128,8 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                     utilisateur.getResetPasswordToken()
             );
         });
+        // Pas d'exception si l'email n'existe pas : on ne révèle jamais
+        // si un email est enregistré ou non (protection contre l'énumération de comptes).
     }
 
     @Override
@@ -265,18 +267,18 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
-public void supprimer(Long id) {
-    Utilisateur utilisateur = findOrThrow(id);
-    try {
-        utilisateurRepository.delete(utilisateur);
-        utilisateurRepository.flush();
-    } catch (DataIntegrityViolationException e) {
-        throw new BusinessRuleException(
-            "Impossible de supprimer cet utilisateur : il est lié à des données existantes " +
-            "(bons de travail, ascenseurs, etc.). Désactivez-le plutôt que de le supprimer."
-        );
+    public void supprimer(Long id) {
+        Utilisateur utilisateur = findOrThrow(id);
+        try {
+            utilisateurRepository.delete(utilisateur);
+            utilisateurRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessRuleException(
+                "Impossible de supprimer cet utilisateur : il est lié à des données existantes " +
+                "(bons de travail, ascenseurs, etc.). Désactivez-le plutôt que de le supprimer."
+            );
+        }
     }
-}
 
     @Override
     public void desactiver(Long id) {

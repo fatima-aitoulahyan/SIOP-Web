@@ -1,4 +1,4 @@
-package com.example.backend_siop.common.controller;
+package com.example.backend_siop.common;
 
 import com.example.backend_siop.common.entity.PieceJointe;
 import com.example.backend_siop.common.exception.ResourceNotFoundException;

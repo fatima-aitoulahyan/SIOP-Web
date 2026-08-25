@@ -26,6 +26,7 @@ import com.example.backend_siop.utilisateur.entity.Technicien;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.backend_siop.maintenance.dto.ItemCheckListDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -73,7 +74,6 @@ public class ChecklistMaintenanceServiceImpl implements ChecklistMaintenanceServ
     @Transactional(readOnly = true)
     public List<ChecklistMaintenanceDTO> getRapportsAValider() {
         List<ChecklistMaintenance> checklists = checklistRepository.findByHeureDepartIsNotNullOrderByHeureDepartDesc();
-
         return checklists.stream()
                 .map(this::toDTOAvecItems)
                 .toList();
@@ -160,14 +160,15 @@ public class ChecklistMaintenanceServiceImpl implements ChecklistMaintenanceServ
         try {
             String chemin = fileStorageUtil.store(file, "item_checklist/" + itemId);
 
-            com.example.backend_siop.common.enums.TypeFichier typeFichier = com.example.backend_siop.common.enums.TypeFichier.DOCUMENT; // Valeur par défaut
-
+            com.example.backend_siop.common.enums.TypeFichier typeFichier = com.example.backend_siop.common.enums.TypeFichier.DOCUMENT;
             String contentType = file.getContentType();
             if (contentType != null) {
                 if (contentType.startsWith("image/")) {
                     typeFichier = com.example.backend_siop.common.enums.TypeFichier.IMAGE;
                 } else if (contentType.startsWith("audio/")) {
+                    typeFichier = com.example.backend_siop.common.enums.TypeFichier.AUDIO;
                 } else if (contentType.startsWith("video/")) {
+                    typeFichier = com.example.backend_siop.common.enums.TypeFichier.VIDEO;
                 }
             }
 
@@ -188,6 +189,24 @@ public class ChecklistMaintenanceServiceImpl implements ChecklistMaintenanceServ
         }
     }
 
+    private ChecklistMaintenanceDTO toDTOAvecItems(ChecklistMaintenance checklist) {
+        ChecklistMaintenanceDTO dto = mapper.toDTO(checklist);
+
+        List<ItemCheckList> items = itemCheckListRepository
+                .findByChecklistMaintenanceIdOrderByOrdreAsc(checklist.getId());
+
+        List<ItemCheckListDTO> itemsDTO = items.stream()
+                .map(item -> {
+                    ItemCheckListDTO itemDTO = mapper.toItemDTO(item);
+                    itemDTO.setPiecesJointes(recupererPieces(item.getId()));
+                    return itemDTO;
+                })
+                .toList();
+
+        dto.setItems(itemsDTO);
+        return dto;
+    }
+
     private List<PieceJointeAvecUrlDTO> recupererPieces(Long itemId) {
         List<PieceJointe> pieces = pieceJointeRepository
                 .findByEntiteTypeAndEntiteId(TypeEntiteJointe.ITEM_CHECKLIST, itemId);
@@ -202,7 +221,7 @@ public class ChecklistMaintenanceServiceImpl implements ChecklistMaintenanceServ
                 .toList();
     }
 
-    
+
     @Override
     @Transactional(readOnly = true)
     public ChecklistMaintenanceDTO getDetailParBonTravail(Long bonTravailId) {

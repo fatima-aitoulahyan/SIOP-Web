@@ -1,0 +1,105 @@
+[35mbackend_siop/src/main/java/com/example/backend_siop/ascenseur/service/impl/AscenseurServiceImpl.java[m[36m:[m[32m233[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m======
+[35mbackend_siop/src/main/java/com/example/backend_siop/ascenseur/service/impl/AscenseurServiceImpl.java[m[36m:[m[32m235[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m======
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/BonTravailDTO.java[m[36m:[m[32m52[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m======
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/BonTravailDTO.java[m[36m:[m[32m54[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m======
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/BonTravailResumeDTO.java[m[36m:[m[32m25[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m======
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/BonTravailResumeDTO.java[m[36m:[m[32m27[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m======
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/mapper/BonTravailMapper.java[m[36m:[m[32m16[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m=
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/mapper/BonTravailMapper.java[m[36m:[m[32m18[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m=
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/mapper/BonTravailMapper.java[m[36m:[m[32m47[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m=
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/mapper/BonTravailMapper.java[m[36m:[m[32m49[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m=
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/mapper/BonTravailMapper.java[m[36m:[m[32m61[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m=
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/dto/mapper/BonTravailMapper.java[m[36m:[m[32m63[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m=
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/entity/BonTravail.java[m[36m:[m[32m100[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m======
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/entity/BonTravail.java[m[36m:[m[32m102[m[36m:[m    // [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m======
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m16[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m19[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m22[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m44[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m59[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m69[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m95[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m105[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m111[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m122[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m125[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m128[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m141[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m144[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m146[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m218[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m219[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m221[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m239[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m254[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m255[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m267[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m270[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m281[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m287[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m290[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m292[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m401[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m403[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m405[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m453[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m454[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m456[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m491[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m492[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m494[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m508[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m511[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m513[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m545[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m547[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m548[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m556[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m559[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m561[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m608[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m732[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/BonTravailServiceImpl.java[m[36m:[m[32m742[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/ChecklistMaintenanceServiceImpl.java[m[36m:[m[32m29[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/ChecklistMaintenanceServiceImpl.java[m[36m:[m[32m30[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/ChecklistMaintenanceServiceImpl.java[m[36m:[m[32m34[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/ChecklistMaintenanceServiceImpl.java[m[36m:[m[32m77[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/ChecklistMaintenanceServiceImpl.java[m[36m:[m[32m78[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/ChecklistMaintenanceServiceImpl.java[m[36m:[m[32m89[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/ChecklistMaintenanceServiceImpl.java[m[36m:[m[32m160[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/ChecklistMaintenanceServiceImpl.java[m[36m:[m[32m161[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/ChecklistMaintenanceServiceImpl.java[m[36m:[m[32m199[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m17[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m19[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m20[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m32[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m35[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m36[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m77[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m78[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m93[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m240[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m284[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/DemandeMaintenanceServiceImpl.java[m[36m:[m[32m285[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/IaDescriptionServiceImpl.java[m[36m:[m[32m62[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/IaDescriptionServiceImpl.java[m[36m:[m[32m64[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/IaDescriptionServiceImpl.java[m[36m:[m[32m75[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/IaDescriptionServiceImpl.java[m[36m:[m[32m104[m[36m:[m[1;31m<<<<<<<[m HEAD
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/IaDescriptionServiceImpl.java[m[36m:[m[32m106[m[36m:[m[1;31m=======[m
+[35mbackend_siop/src/main/java/com/example/backend_siop/maintenance/service/impl/IaDescriptionServiceImpl.java[m[36m:[m[32m109[m[36m:[m[1;31m>>>>>>>[m origin/feature/deploy-dokploy
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m4[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m6[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m22[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m24[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m29[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m31[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m42[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m44[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m53[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m55[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m59[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m61[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m67[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m69[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m76[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====
+[35mbackend_siop/src/main/resources/application.properties[m[36m:[m[32m78[m[36m:[m# [1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m[1;31m=======[m====

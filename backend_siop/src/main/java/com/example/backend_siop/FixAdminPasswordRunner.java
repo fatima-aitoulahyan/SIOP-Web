@@ -1,8 +1,6 @@
 package com.example.backend_siop;
 
-import com.example.backend_siop.utilisateur.entity.Administrateur;
-import com.example.backend_siop.utilisateur.entity.ResponsableMaintenance;
-import com.example.backend_siop.utilisateur.entity.Utilisateur;
+import com.example.backend_siop.utilisateur.entity.*;
 import com.example.backend_siop.utilisateur.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -18,26 +16,57 @@ public class FixAdminPasswordRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // 1. Administrateur
+        String password = "123456789";
+        String encodedPassword = passwordEncoder.encode(password);
+
+        // 1. Administrateur Principal
         creerOuMettreAJour(
                 "aitoulahyanfatima310@gmail.com",
-                "fatima",
+                password,
                 "aitoulahyan",
                 "fatima",
                 new Administrateur()
         );
 
-        // 2. Responsable de maintenance (toi !)
+        // 2. Client
         creerOuMettreAJour(
-                "fatimazahraazzabi24@gmail.com",
-                "resp123",
-                "azzabi",
-                "fatima zahra",
+                "client1@gmail.com",
+                password,
+                "client1",
+                "client1",
+                new Client()
+        );
+
+        // 3. Responsable Maintenance
+        creerOuMettreAJour(
+                "rmaintenance@gmail.com",
+                password,
+                "Responsable",
+                "Maintenance",
                 new ResponsableMaintenance()
+        );
+
+        // 4. Technicien
+        creerOuMettreAJour(
+                "technicien1@gmail.com",
+                password,
+                "Technicien1",
+                "Technicien1",
+                new Technicien()
+        );
+
+        // 5. Hamza (Admin)
+        creerOuMettreAJour(
+                "hamza.elbarrak-etu@etu.univh2c.ma",
+                password,
+                "EL BARRAK",
+                "HAMZA",
+                new Administrateur()
         );
 
         System.out.println("══════════════════════════════════════");
         System.out.println("  Comptes initialisés avec succès !");
+        System.out.println("  Mot de passe par défaut : " + password);
         System.out.println("══════════════════════════════════════");
     }
 
@@ -55,8 +84,11 @@ public class FixAdminPasswordRunner implements CommandLineRunner {
                 user -> {
                     user.setMotDePasse(passwordEncoder.encode(motDePasse));
                     user.setActif(true);
+                    // On met à jour le nom et prénom au cas où ils changeraient
+                    user.setNom(nom);
+                    user.setPrenom(prenom);
                     utilisateurRepository.save(user);
-                    System.out.println("[" + user.getType() + "] Mot de passe mis à jour : " + email);
+                    System.out.println("[" + user.getType() + "] Mis à jour : " + email);
                 },
                 () -> {
                     template.setEmail(email);
@@ -65,7 +97,7 @@ public class FixAdminPasswordRunner implements CommandLineRunner {
                     template.setPrenom(prenom);
                     template.setActif(true);
                     utilisateurRepository.save(template);
-                    System.out.println("[" + template.getType() + "] Compte créé : " + email);
+                    System.out.println("[" + template.getType() + "] Créé : " + email);
                 }
         );
     }

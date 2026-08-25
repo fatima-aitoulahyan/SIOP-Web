@@ -49,9 +49,10 @@ public class TemplateAscenseurSeeder implements ApplicationRunner {
         z.setParent(parent);
 
         if (imageRessource != null) {
+            // Vous pouvez stocker les images des zones dans un dossier distinct dans MinIO
             String chemin = fileStorageUtil.storeFromClasspath(
                     "images/templates/" + imageRessource, "templates/assemblages");
-            z.setImageUrl(chemin);
+            z.setImageUrl(chemin); // Assurez-vous que le champ imageUrl existe dans AssemblageTemplate
         }
 
         if (parent != null) {

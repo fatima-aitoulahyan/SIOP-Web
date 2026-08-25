@@ -21,4 +21,11 @@ public class BonTravailResumeDTO {
     private String parcNom;
 
     private String technicienResponsableNom;
+
+    // ==============================================================
+    // 🔥 NOUVEAUX CHAMPS POUR L'INTÉGRATION (n8n)
+    // ==============================================================
+    private String adresseLibre;
+    private String villeLibre;
+    private boolean estUrgence;
 }

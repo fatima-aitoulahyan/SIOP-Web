@@ -3,7 +3,6 @@ package com.example.backend_siop.maintenance.service;
 import com.example.backend_siop.maintenance.dto.EvaluationAscenseurDTO;
 import com.example.backend_siop.maintenance.dto.EvaluationAscenseurSoumissionDto;
 import com.example.backend_siop.maintenance.dto.EvaluationAscenseurValidationDto;
-import com.example.backend_siop.maintenance.entity.EvaluationAscenseur;
 
 import java.util.List;
 

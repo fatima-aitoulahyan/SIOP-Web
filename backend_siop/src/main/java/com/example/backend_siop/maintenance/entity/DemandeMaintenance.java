@@ -57,13 +57,12 @@ public class DemandeMaintenance extends Auditable {
     @JoinColumn(name = "ascenseur_id", nullable = true)
     private Ascenseur ascenseur;
 
-    // Toujours obligatoire, quel que soit le type de demande
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "client_id", nullable = false)
+    // ⚠️ Rendre nullable = true pour permettre les demandes sans client (intégration n8n)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = true)
     private Client client;
 
     // Nullable : absent pour type=EVALUATION, le site n'existe pas encore
-    // (le client tape ville/adresse en texte libre via villeSaisie/adresseSaisie ci-dessous)
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "site_id", nullable = true)
     private Site site;

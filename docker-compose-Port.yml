@@ -1,7 +1,4 @@
 services:
-  # =====================================================
-  # PostgreSQL
-  # =====================================================
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -17,21 +14,12 @@ services:
       timeout: 5s
       retries: 5
 
-  # =====================================================
-  # Adminer (interface de gestion de la base de données)
-  # =====================================================
   adminer:
     image: adminer:latest
     restart: unless-stopped
     depends_on:
-      postgres:
-        condition: service_healthy
-    ports:
-      - "8081:8080"
+      - postgres
 
-  # =====================================================
-  # MinIO (stockage de fichiers)
-  # =====================================================
   minio:
     image: minio/minio:RELEASE.2024-10-13T13-34-11Z
     restart: unless-stopped
@@ -40,23 +28,13 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
       - minio_data:/data
-    command:
-      - server
-      - /data
-      - --console-address
-      - ":9001"
+    command: server /data --console-address ":9001"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-      - "9000:9000"
-      - "9001:9001"
 
-  # =====================================================
-  # Backend Spring Boot
-  # =====================================================
   backend:
     build:
       context: ./backend_siop
@@ -69,43 +47,29 @@ services:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      # PostgreSQL
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       JPA_DDL_AUTO: update
       JPA_SHOW_SQL: "false"
-      # JWT
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION_MS: 86400000
-      # MinIO
       MINIO_URL: http://minio:9000
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKET_NAME: siop-fichiers
-      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
-      # Mail
       MAIL_HOST: smtp.gmail.com
       MAIL_PORT: 587
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
-      # Frontend
       APP_FRONTEND_URL: ${APP_FRONTEND_URL}
-      # Groq
       GROQ_API_KEY: ${GROQ_API_KEY}
       GROQ_MODEL: llama-3.3-70b-versatile
-      # Logging
       LOG_LEVEL_WEB: INFO
       LOG_LEVEL_SECURITY: INFO
       LOG_LEVEL_APP: INFO
-      # Intégration externe (n8n)
       INTEGRATION_API_KEY: ${INTEGRATION_API_KEY}
-    ports:
-      - "8080:8080"
 
-  # =====================================================
-  # Frontend Angular / Nginx
-  # =====================================================
   frontend:
     build:
       context: .
@@ -113,12 +77,7 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
-    ports:
-      - "4200:80"
 
-# =====================================================
-# Volumes
-# =====================================================
 volumes:
   siop_pgdata:
   minio_data:

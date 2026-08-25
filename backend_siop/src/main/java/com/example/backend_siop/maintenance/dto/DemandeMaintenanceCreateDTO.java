@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Setter
 public class DemandeMaintenanceCreateDTO {
 
-    private Long ascenseurId;
+    private Long ascenseurId; // ✅ Plus obligatoire (permet les demandes sans ascenseur)
 
     @NotNull(message = "Le type de demande est obligatoire")
     private TypeDemande typeDemande;
@@ -26,7 +26,7 @@ public class DemandeMaintenanceCreateDTO {
 
     private LocalDate dateSouhaitee;
 
-
+    // 🔥 Nouveaux champs pour l'intégration (adresse libre)
     private String villeSaisie;
     private String adresseSaisie;
 }

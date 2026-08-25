@@ -13,6 +13,7 @@ import com.example.backend_siop.common.repository.PieceJointeRepository;
 import com.example.backend_siop.common.util.FileStorageUtil;
 import com.example.backend_siop.maintenance.dto.BonTravailCreateDTO;
 import com.example.backend_siop.maintenance.dto.BonTravailDTO;
+import com.example.backend_siop.maintenance.dto.BonTravailIntegrationCreateDTO;
 import com.example.backend_siop.maintenance.dto.BonTravailResumeDTO;
 import com.example.backend_siop.maintenance.dto.ClotureBonTravailDTO;
 import com.example.backend_siop.maintenance.dto.ConflitTechnicienDTO;
@@ -36,13 +37,14 @@ import com.example.backend_siop.maintenance.service.BonTravailService;
 import com.example.backend_siop.notification.enums.TypeNotification;
 import com.example.backend_siop.notification.service.NotificationService;
 import com.example.backend_siop.parc.entity.Parc;
+import com.example.backend_siop.parc.repository.ParcRepository;
 import com.example.backend_siop.utilisateur.dto.TechnicienResumeDTO;
 import com.example.backend_siop.utilisateur.dto.mapper.TechnicienMapper;
 import com.example.backend_siop.utilisateur.entity.Technicien;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
 import com.example.backend_siop.utilisateur.repository.TechnicienRepository;
-import com.example.backend_siop.parc.repository.ParcRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,6 +75,9 @@ public class BonTravailServiceImpl implements BonTravailService {
     private final ParcRepository parcRepository;
     private final SiteRepository siteRepository;
     private final NotificationService notificationService;
+
+    @Value("${integration.fallback.technician-email}")
+    private String fallbackTechnicianEmail;
 
     @Override
     @Transactional
@@ -366,6 +371,22 @@ public class BonTravailServiceImpl implements BonTravailService {
                 .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<TechnicienResumeDTO> listerTechniciensDisponiblesParSite(
+            Long siteId, LocalDateTime debut, int dureeMinutes) {
+        
+        // Cette méthode est une implémentation simplifiée. Dans un vrai projet, vous filtreriez par site.
+        return technicienRepository.findAll()
+                .stream()
+                .filter(t -> {
+                    // Ici vous pouvez ajouter une logique de vérification de disponibilité si nécessaire
+                    return true;
+                })
+                .map(technicienMapper::toResumeDTO)
+                .toList();
+    }
+
     private void verifierCouvreParc(Technicien technicien, Parc parc) {
         boolean couvre = technicien.getParcs().stream()
                 .anyMatch(p -> p.getId().equals(parc.getId()));
@@ -516,15 +537,123 @@ public class BonTravailServiceImpl implements BonTravailService {
         return toDTOAvecPhotos(bonTravailRepository.save(bonTravail));
     }
 
+    // 🔥 Méthode d'intégration n8n (HEAD)
     @Override
-    @Transactional(readOnly = true)
-    public List<TechnicienResumeDTO> listerTechniciensDisponiblesParSite(
-            Long siteId, LocalDateTime debut, int dureeMinutes) {
+    @Transactional
+    public BonTravailDTO creerIntegration(BonTravailIntegrationCreateDTO dto, Utilisateur creePar) {
 
-        return technicienRepository.findAll()
-                .stream()
-                .map(technicienMapper::toResumeDTO)
-                .toList();
+        // --- 1. Validation minimale ---
+        if (dto.getAscenseurId() == null &&
+                (dto.getAdresseLibre() == null || dto.getAdresseLibre().isBlank())) {
+            throw new BusinessRuleException(
+                    "Pour une intervention externe, veuillez fournir soit un ascenseurId, soit une adresse libre."
+            );
+        }
+
+        // --- 2. Gestion de la priorité ---
+        PrioriteDemande priorite = dto.getPriorite();
+        if (dto.isEstUrgence()) {
+            priorite = PrioriteDemande.URGENTE;
+        } else if (priorite == null) {
+            priorite = PrioriteDemande.NORMALE;
+        }
+
+        // --- 3. Récupération de l'ascenseur (si fourni) ---
+        Ascenseur ascenseur = null;
+        Parc parcAscenseur = null;
+        if (dto.getAscenseurId() != null) {
+            ascenseur = ascenseurRepository.findById(dto.getAscenseurId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Ascenseur introuvable"));
+            if (ascenseur.getSiteEntity() != null && ascenseur.getSiteEntity().getParc() != null) {
+                parcAscenseur = ascenseur.getSiteEntity().getParc();
+            }
+        }
+
+        // --- 4. Gestion du technicien responsable (fallback si absent) ---
+        Technicien responsable;
+        if (dto.getTechnicienResponsableId() != null) {
+            responsable = technicienRepository.findByIdWithParcs(dto.getTechnicienResponsableId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Technicien responsable introuvable"));
+            if (parcAscenseur != null) {
+                verifierCouvreParc(responsable, parcAscenseur);
+            }
+        } else {
+            // Fallback : technicien de secours
+            responsable = technicienRepository.findByEmail(fallbackTechnicianEmail)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Aucun technicien fallback configuré. Veuillez définir 'integration.fallback.technician-email'."
+                    ));
+        }
+
+        // --- 5. Gestion des techniciens renfort ---
+        List<Technicien> renfort = (dto.getTechnicienIdsRenfort() == null || dto.getTechnicienIdsRenfort().isEmpty())
+                ? List.of()
+                : technicienRepository.findAllById(dto.getTechnicienIdsRenfort());
+
+        for (Technicien t : renfort) {
+            Technicien managed = technicienRepository.findByIdWithParcs(t.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Technicien introuvable"));
+            if (parcAscenseur != null) {
+                verifierCouvreParc(managed, parcAscenseur);
+            }
+        }
+
+        // --- 6. Conflits de planning ---
+        List<Technicien> equipeComplete = new ArrayList<>();
+        equipeComplete.add(responsable);
+        equipeComplete.addAll(renfort);
+
+        LocalDateTime debut = dto.getDateInterventionPrevue();
+        LocalDateTime fin = debut.plusMinutes(dto.getDureeEstimeeMinutes());
+
+        for (Technicien t : equipeComplete) {
+            boolean enConflit = bonTravailRepository
+                    .findByTechniciensContainingAndStatutIn(t, STATUTS_ACTIFS)
+                    .stream()
+                    .anyMatch(b -> chevauche(b, debut, fin));
+            if (enConflit) {
+                throw new BusinessRuleException(
+                        "Le technicien " + t.getNom() + " a déjà une intervention sur ce créneau."
+                );
+            }
+        }
+
+        // --- 7. Construction du BonTravail ---
+        BonTravail bonTravail = new BonTravail();
+        bonTravail.setAscenseur(ascenseur);
+        bonTravail.setTechnicienResponsable(responsable);
+        bonTravail.setTechniciens(equipeComplete);
+        bonTravail.setStatut(StatutBonTravail.PLANIFIE);
+        bonTravail.setPriorite(priorite);
+        bonTravail.setDateInterventionPrevue(debut);
+        bonTravail.setDureeEstimeeMinutes(dto.getDureeEstimeeMinutes());
+        bonTravail.setDescription(dto.getDescription());
+        bonTravail.setCreePar(creePar);
+
+        // --- 8. Renseignement des champs libres (intégration) ---
+        bonTravail.setAdresseLibre(dto.getAdresseLibre());
+        bonTravail.setVilleLibre(dto.getVilleLibre());
+        bonTravail.setNomAscenseurLibre(dto.getNomAscenseurLibre());
+        bonTravail.setMessageOriginal(dto.getMessageOriginal());
+        bonTravail.setEstUrgence(dto.isEstUrgence());
+
+        // --- 9. Sauvegarde ---
+        BonTravail saved = bonTravailRepository.save(bonTravail);
+
+        // --- 10. Notifications ---
+        for (Technicien t : equipeComplete) {
+            notificationService.creer(
+                    t,
+                    TypeNotification.NOUVEAU_TRAVAIL_ASSIGNE,
+                    "Nouveau travail assigné (via intégration)",
+                    "Une intervention " + (dto.isEstUrgence() ? "URGENTE " : "") +
+                            "est prévue le " + debut + (ascenseur != null ? " sur " + ascenseur.getNom() : ""),
+                    "BON_TRAVAIL",
+                    saved.getId()
+            );
+        }
+
+        return toDTOAvecPhotos(saved);
     }
 
     @Override

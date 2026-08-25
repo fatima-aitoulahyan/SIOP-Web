@@ -15,4 +15,7 @@ public interface TechnicienRepository extends JpaRepository<Technicien, Long> {
     @Query("SELECT t FROM Technicien t LEFT JOIN FETCH t.parcs WHERE t.id = :id")
     Optional<Technicien> findByIdWithParcs(@Param("id") Long id);
     List<Technicien> findByActifTrue();
+
+    //  Méthode ajoutée pour rechercher un technicien par email (intégration n8n)
+    Optional<Technicien> findByEmail(String email);
 }
