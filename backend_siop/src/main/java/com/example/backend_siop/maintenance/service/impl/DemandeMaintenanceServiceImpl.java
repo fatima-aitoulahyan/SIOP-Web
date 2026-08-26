@@ -19,6 +19,7 @@ import com.example.backend_siop.maintenance.entity.DemandeMaintenance;
 import com.example.backend_siop.maintenance.enums.PrioriteDemande;
 import com.example.backend_siop.maintenance.enums.StatutDemande;
 import com.example.backend_siop.maintenance.enums.TypeDemande;
+import com.example.backend_siop.ascenseur.entity.Site;
 import com.example.backend_siop.maintenance.repository.DemandeMaintenanceRepository;
 import com.example.backend_siop.maintenance.service.DemandeMaintenanceService;
 import com.example.backend_siop.notification.enums.TypeNotification;
