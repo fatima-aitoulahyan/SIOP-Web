@@ -142,22 +142,6 @@ public class DemandeMaintenanceController {
     }
 
 
-    @PostMapping("/evaluation")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<DemandeMaintenanceDTO>> creerEvaluation(
-            @Valid @RequestBody com.example.backend_siop.maintenance.dto.DemandeEvaluationCreateDTO dto,
-            @AuthenticationPrincipal Utilisateur utilisateur) {
-
-        if (!(utilisateur instanceof Client client)) {
-            throw new org.springframework.security.access.AccessDeniedException(
-                    "Accès réservé aux clients");
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(demandeService.creerEvaluation(dto, client)));
-    }
-
     @PatchMapping("/{id}/accepter")
     @PreAuthorize("hasAnyAuthority('ADMINISTRATEUR', 'ROLE_ADMINISTRATEUR', 'RESPONSABLE_MAINTENANCE', 'ROLE_RESPONSABLE_MAINTENANCE')")
     public ApiResponse<DemandeMaintenanceDTO> accepter(

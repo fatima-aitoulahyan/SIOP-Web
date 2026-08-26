@@ -189,23 +189,6 @@ public class ChecklistMaintenanceServiceImpl implements ChecklistMaintenanceServ
         }
     }
 
-    private ChecklistMaintenanceDTO toDTOAvecItems(ChecklistMaintenance checklist) {
-        ChecklistMaintenanceDTO dto = mapper.toDTO(checklist);
-
-        List<ItemCheckList> items = itemCheckListRepository
-                .findByChecklistMaintenanceIdOrderByOrdreAsc(checklist.getId());
-
-        List<ItemCheckListDTO> itemsDTO = items.stream()
-                .map(item -> {
-                    ItemCheckListDTO itemDTO = mapper.toItemDTO(item);
-                    itemDTO.setPiecesJointes(recupererPieces(item.getId()));
-                    return itemDTO;
-                })
-                .toList();
-
-        dto.setItems(itemsDTO);
-        return dto;
-    }
 
     private List<PieceJointeAvecUrlDTO> recupererPieces(Long itemId) {
         List<PieceJointe> pieces = pieceJointeRepository
