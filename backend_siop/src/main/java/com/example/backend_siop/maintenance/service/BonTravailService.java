@@ -45,8 +45,6 @@ public interface BonTravailService {
     );
 
     List<BonTravailResumeDTO> listerInterventionsAujourdhui();
-}
 
-    // 🔥 Méthode ajoutée pour l'intégration n8n
     BonTravailDTO creerIntegration(BonTravailIntegrationCreateDTO dto, Utilisateur creePar);
 }
