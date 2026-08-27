@@ -1,6 +1,6 @@
 services:
   # =====================================================
-  # PostgreSQL
+  # PostgreSQL — jamais exposé publiquement
   # =====================================================
   postgres:
     image: postgres:16-alpine
@@ -11,6 +11,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - siop_pgdata:/var/lib/postgresql/data
+    networks:
+      - siop_internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -18,19 +20,8 @@ services:
       retries: 5
 
   # =====================================================
-  # Adminer (interface de gestion de la base de données)
-  # =====================================================
-  adminer:
-    image: adminer:latest
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-    ports:
-      - "8081:8080"
-
-  # =====================================================
-  # MinIO (stockage de fichiers)
+  # MinIO — accès interne pour le backend, accès public
+  # limité à la génération d'URLs présignées via Traefik
   # =====================================================
   minio:
     image: minio/minio:RELEASE.2024-10-13T13-34-11Z
@@ -45,14 +36,14 @@ services:
       - /data
       - --console-address
       - ":9001"
+    networks:
+      - siop_internal
+      - dokploy-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-      - "9000:9000"
-      - "9001:9001"
 
   # =====================================================
   # Backend Spring Boot
@@ -73,17 +64,23 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      JPA_DDL_AUTO: update
+      # Validation uniquement — jamais de modification automatique du schéma
+      # en production. Le schéma doit être piloté par les migrations
+      # (Flyway) et non par Hibernate.
+      JPA_DDL_AUTO: validate
       JPA_SHOW_SQL: "false"
       # JWT
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION_MS: 86400000
-      # MinIO
+      # MinIO — URL interne pour les opérations serveur (upload)
       MINIO_URL: http://minio:9000
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKET_NAME: siop-fichiers
-      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
+      # URL publique réelle (sous-domaine dédié), utilisée uniquement pour
+      # générer les liens présignés consultables depuis le navigateur —
+      # jamais http://minio:9000, qui ne se résout qu'entre conteneurs.
+      MINIO_PUBLIC_URL:  ${MINIO_PUBLIC_URL}
       # Mail
       MAIL_HOST: smtp.gmail.com
       MAIL_PORT: 587
@@ -100,11 +97,18 @@ services:
       LOG_LEVEL_APP: INFO
       # Intégration externe (n8n)
       INTEGRATION_API_KEY: ${INTEGRATION_API_KEY}
-    ports:
-      - "8080:8080"
+    networks:
+      - siop_internal
+      - dokploy-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # =====================================================
-  # Frontend Angular / Nginx
+  # Frontend / Nginx
   # =====================================================
   frontend:
     build:
@@ -112,9 +116,18 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
-      - backend
-    ports:
-      - "4200:80"
+      backend:
+        condition: service_healthy
+    networks:
+      - dokploy-network
+
+# =====================================================
+# Réseaux
+# =====================================================
+networks:
+  siop_internal:
+  dokploy-network:
+    external: true
 
 # =====================================================
 # Volumes
