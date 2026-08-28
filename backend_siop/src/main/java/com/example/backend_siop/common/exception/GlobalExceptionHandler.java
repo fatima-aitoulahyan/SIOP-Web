@@ -33,13 +33,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccountStatusException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccountStatus(AccountStatusException ex) {
-        String message = switch (ex) {
-            case LockedException e -> "Ce compte est verrouillé.";
-            case DisabledException e -> "Ce compte est désactivé.";
-            case AccountExpiredException e -> "Ce compte a expiré.";
-            case CredentialsExpiredException e -> "Le mot de passe a expiré.";
-            default -> "Accès au compte refusé.";
-        };
+        String message;
+        if (ex instanceof LockedException) {
+            message = "Ce compte est verrouillé.";
+        } else if (ex instanceof DisabledException) {
+            message = "Ce compte est désactivé.";
+        } else if (ex instanceof AccountExpiredException) {
+            message = "Ce compte a expiré.";
+        } else if (ex instanceof CredentialsExpiredException) {
+            message = "Le mot de passe a expiré.";
+        } else {
+            message = "Accès au compte refusé.";
+        }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error(message));
     }
