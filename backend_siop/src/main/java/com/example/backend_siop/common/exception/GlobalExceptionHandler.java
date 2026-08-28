@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.authentication.AccountStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleBusinessRule(BusinessRuleException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AccountStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccountStatus(AccountStatusException ex) {
+        String message = switch (ex) {
+            case LockedException e -> "Ce compte est verrouillé.";
+            case DisabledException e -> "Ce compte est désactivé.";
+            case AccountExpiredException e -> "Ce compte a expiré.";
+            case CredentialsExpiredException e -> "Le mot de passe a expiré.";
+            default -> "Accès au compte refusé.";
+        };
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(message));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
