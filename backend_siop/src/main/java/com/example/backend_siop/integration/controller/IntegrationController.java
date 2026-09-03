@@ -10,6 +10,8 @@ import com.example.backend_siop.maintenance.dto.DemandeMaintenanceIntegrationCre
 import com.example.backend_siop.maintenance.service.BonTravailService;
 import com.example.backend_siop.maintenance.service.DemandeMaintenanceService;
 import com.example.backend_siop.utilisateur.entity.Utilisateur;
+import com.example.backend_siop.utilisateur.dto.PhoneVerificationResponseDTO;
+import com.example.backend_siop.utilisateur.service.UtilisateurService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ public class IntegrationController {
     private final BonTravailService bonTravailService;
     private final AscenseurService ascenseurService;
     private final DemandeMaintenanceService demandeMaintenanceService;
+    private final UtilisateurService utilisateurService;
 
     /**
      * Endpoint de recherche floue d'ascenseurs.
@@ -68,5 +71,10 @@ public ApiResponse<DemandeMaintenanceDTO> creerDemandeMaintenance(
     return ApiResponse.success("Demande de maintenance créée avec succès.", created);
 }
 
+@GetMapping("/utilisateurs/verifier-phone")
+public ApiResponse<PhoneVerificationResponseDTO> verifierPhone(@RequestParam String phoneNumber) {
+    log.info("Vérification du numéro de téléphone via intégration : {}", phoneNumber);
+    return ApiResponse.success(utilisateurService.verifierTelephone(phoneNumber));
+}
 
 }

@@ -22,4 +22,5 @@ public interface UtilisateurService {
     ProfilDTO modifierMonProfil(Utilisateur utilisateur, ModifierProfilDTO dto);
     ProfilDTO modifierPhotoProfil(Utilisateur utilisateur, MultipartFile fichier);
     Resource getPhotoProfil(Utilisateur utilisateur);
+    PhoneVerificationResponseDTO verifierTelephone(String telephone);
 }

@@ -8,6 +8,7 @@ import com.example.backend_siop.parc.repository.ParcRepository;
 import com.example.backend_siop.utilisateur.dto.ActivationCompteDTO;
 import com.example.backend_siop.utilisateur.dto.ModifierProfilDTO;
 import com.example.backend_siop.utilisateur.dto.MotDePasseOublieRequestDTO;
+import com.example.backend_siop.utilisateur.dto.PhoneVerificationResponseDTO;
 import com.example.backend_siop.utilisateur.dto.ProfilDTO;
 import com.example.backend_siop.utilisateur.dto.ReinitialisationMotDePasseDTO;
 import com.example.backend_siop.utilisateur.dto.UtilisateurRequestDTO;
@@ -324,4 +325,35 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             return null;
         }
     }
+
+
+    @Override
+public PhoneVerificationResponseDTO verifierTelephone(String telephone) {
+    if (telephone == null || telephone.isBlank()) {
+        return new PhoneVerificationResponseDTO(false, null, null, null, null, null, false);
+    }
+
+    String cleanedPhone = telephone.trim().replaceAll("\\s+", "");
+
+    return utilisateurRepository.findByTelephone(cleanedPhone)
+            .map(user -> {
+                String role = user.getType().name();
+                boolean isInternal = switch (user.getType()) {
+                    case ADMINISTRATEUR, RESPONSABLE_MAINTENANCE, TECHNICIEN -> true;
+                    default -> false;
+                };
+                return new PhoneVerificationResponseDTO(
+                        true,
+                        user.getId(),
+                        user.getNom(),
+                        user.getPrenom(),
+                        user.getTelephone(),
+                        role,
+                        isInternal
+                );
+            })
+            .orElse(new PhoneVerificationResponseDTO(false, null, null, null, null, null, false));
+}
+
+
 }

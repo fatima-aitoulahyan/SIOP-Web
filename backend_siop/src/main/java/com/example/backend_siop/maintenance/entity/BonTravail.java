@@ -115,4 +115,5 @@ public class BonTravail extends Auditable {
 
     @Column(name = "est_urgence")
     private boolean estUrgence = false;
+    // private Boolean estUrgence = false;
 }
