@@ -71,10 +71,17 @@ public ApiResponse<DemandeMaintenanceDTO> creerDemandeMaintenance(
     return ApiResponse.success("Demande de maintenance créée avec succès.", created);
 }
 
-@GetMapping("/utilisateurs/verifier-phone")
-public ApiResponse<PhoneVerificationResponseDTO> verifierPhone(@RequestParam String phoneNumber) {
-    log.info("Vérification du numéro de téléphone via intégration : {}", phoneNumber);
-    return ApiResponse.success(utilisateurService.verifierTelephone(phoneNumber));
+// @GetMapping("/utilisateurs/verifier-phone")
+// public ApiResponse<PhoneVerificationResponseDTO> verifierPhone(@RequestParam String phoneNumber) {
+//     log.info("Vérification du numéro de téléphone via intégration : {}", phoneNumber);
+//     return ApiResponse.success(utilisateurService.verifierTelephone(phoneNumber));
+// }
+
+
+@GetMapping("/utilisateurs/is-internal")
+public ApiResponse<Boolean> isInternal(@RequestParam String phoneNumber) {
+    log.info("Vérification interne pour le numéro : {}", phoneNumber);
+    return ApiResponse.success(utilisateurService.isInternalPhone(phoneNumber));
 }
 
 }

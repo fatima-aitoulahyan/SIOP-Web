@@ -355,5 +355,18 @@ public PhoneVerificationResponseDTO verifierTelephone(String telephone) {
             .orElse(new PhoneVerificationResponseDTO(false, null, null, null, null, null, false));
 }
 
+@Override
+public boolean isInternalPhone(String telephone) {
+    if (telephone == null || telephone.isBlank()) {
+        return false;
+    }
+    String cleaned = telephone.trim().replaceAll("\\s+", "");
+    return utilisateurRepository.findByTelephone(cleaned)
+            .map(user -> switch (user.getType()) {
+                case ADMINISTRATEUR, RESPONSABLE_MAINTENANCE, TECHNICIEN -> true;
+                default -> false;
+            })
+            .orElse(false);
+}
 
 }

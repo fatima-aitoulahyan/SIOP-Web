@@ -23,4 +23,5 @@ public interface UtilisateurService {
     ProfilDTO modifierPhotoProfil(Utilisateur utilisateur, MultipartFile fichier);
     Resource getPhotoProfil(Utilisateur utilisateur);
     PhoneVerificationResponseDTO verifierTelephone(String telephone);
+    boolean isInternalPhone(String telephone);
 }
